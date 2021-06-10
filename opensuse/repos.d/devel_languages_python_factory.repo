@@ -1,0 +1,8 @@
+[devel_languages_python_Factory]
+name=Development versions of Python interpreters and other stuff (openSUSE_Leap_15.1)
+type=rpm-md
+baseurl=http://download.opensuse.org/repositories/devel:/languages:/python:/Factory/openSUSE_Leap_15.1/
+priority=90
+gpgcheck=1
+gpgkey=http://download.opensuse.org/repositories/devel:/languages:/python:/Factory/openSUSE_Leap_15.1/repodata/repomd.xml.key
+enabled=1

@@ -1,0 +1,9 @@
+[server_database_postgresql]
+name=PostgreSQL and related packages (openSUSE_Leap_15.1)
+enabled=1
+autorefresh=0
+baseurl=http://download.opensuse.org/repositories/server:/database:/postgresql/openSUSE_Leap_15.1/
+type=rpm-md
+priority=90
+gpgcheck=1
+gpgkey=http://download.opensuse.org/repositories/server:/database:/postgresql/openSUSE_Leap_15.1/repodata/repomd.xml.key

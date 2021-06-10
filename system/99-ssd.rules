@@ -1,0 +1,8 @@
+# /etc/udev/rules.d/99-ssd.rules
+# udevadm info -a -p /sys/block/nvme0n1
+# http://unix.stackexchange.com/a/71409/36574
+# Setting specific kernel parameters for a subset of block devices (Intel SSDs)
+SUBSYSTEM=="block", ATTRS{model}=="Intel SSDSC*", ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{bdi/read_ahead_kb}="2048", ATTR{queue/scheduler}="deadline"
+# for all other non-rotational block devices set a scheduler to 'noop' and readahead to 1024KB
+SUBSYSTEM=="block", ATTR{queue/rotational}=="0", ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{bdi/read_ahead_kb}="1024", ATTR{queue/scheduler}="noop"
+SUBSYSTEM=="block", ATTR{queue/rotational}=="0", ACTION=="add|change", KERNEL=="nvme[0-9]n[0-9]", ATTR{bdi/read_ahead_kb}="8", ATTR{queue/scheduler}="deadline"

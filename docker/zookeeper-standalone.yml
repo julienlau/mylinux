@@ -1,0 +1,28 @@
+version: '2.4'
+
+services:
+  zoo1:
+    image: zookeeper:3.6.2
+    cpus: 2.0
+    mem_limit: 1g
+    mem_reservation: 512m
+    #restart: always
+    hostname: zoo1
+    ports:
+      - 2181:2181
+    environment:
+      JVMFLAGS: "-Xms800m -Xmx800m"
+      ZOO_STANDALONE_ENABLED: "true"
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181
+    volumes:
+      - type: volume
+        source: zoodata
+        target: /data
+      - type: volume
+        source: zoodatalog
+        target: /datalog
+
+volumes:
+  zoodata:
+  zoodatalog:

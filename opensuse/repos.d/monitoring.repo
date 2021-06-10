@@ -1,0 +1,8 @@
+[http-download.opensuse.org-ac022a29]
+name=server:monitoring
+enabled=1
+autorefresh=1
+baseurl=http://download.opensuse.org/repositories/server:/monitoring/openSUSE_Leap_15.1/
+type=rpm-md
+priority=97
+keeppackages=0

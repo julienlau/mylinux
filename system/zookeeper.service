@@ -1,0 +1,26 @@
+# /lib/systemd/system/zookeeper.service
+# groupadd data ; useradd -g data zookeeper; mkdir -p /var/lib/zookeeper ; chown -R zookeeper:data /var/lib/zookeeper
+
+[Unit]
+Description=ZooKeeper Service
+Documentation=http://zookeeper.apache.org
+Requires=network.target
+After=network.target
+
+[Service]
+Type=forking
+User=zookeeper
+Group=data
+#suse 
+#Environment=JAVA_HOME=/usr/lib64/jvm/java-1.8.0-openjdk
+# centos 
+#Environment=JAVA_HOME=/usr/lib/jvm/jre-1.8.0
+# ubuntu
+Environment=JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
+ExecStart=/opt/zookeeper/bin/zkServer.sh start /opt/zookeeper/conf/zookeeper.conf
+ExecStop=/opt/zookeeper/bin/zkServer.sh stop /opt/zookeeper/conf/zookeeper.conf
+ExecReload=/opt/zookeeper/bin/zkServer.sh restart /opt/zookeeper/conf/zookeeper.conf
+WorkingDirectory=/var/lib/zookeeper
+
+[Install]
+WantedBy=default.target

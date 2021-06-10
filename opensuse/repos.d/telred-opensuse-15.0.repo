@@ -1,0 +1,8 @@
+[telred-opensuse-15.1]
+name=telred-opensuse-15.1
+enabled=0
+autorefresh=1
+baseurl=https://tel.red/repos/opensuse/15.1/
+type=rpm-md
+priority=98
+keeppackages=0

@@ -1,0 +1,20 @@
+# useradd -m -s /bin/bash prometheus
+# mkdir -p /home/prometheus/prometheus/data
+
+[Unit]
+Description=Prometheus Server
+Documentation=https://prometheus.io/docs/introduction/overview/
+After=network-online.target
+
+[Service]
+User=prometheus
+Restart=on-failure
+
+#Change this line if you download the 
+#Prometheus on different path user
+ExecStart=/opt/prometheus/prometheus \
+  --config.file=/home/prometheus/prometheus/prometheus.yml \
+  --storage.tsdb.path=/home/prometheus/prometheus/data
+
+[Install]
+WantedBy=multi-user.target

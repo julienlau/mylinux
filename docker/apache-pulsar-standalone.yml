@@ -1,0 +1,35 @@
+# Verify with cmd:
+# bin/pulsar-client --url pulsar://localhost:6650/ produce persistent://public/default/test -n 1 -m "Hello Pulsar"
+
+version: '2.4'
+services:
+  pulsar_standalone:
+    image: apachepulsar/pulsar:2.7.1
+    cpus: 2.0
+    mem_limit: 2g
+    mem_reservation: 512m
+    ports:
+      - 8080:8080
+      - 6650:6650
+      - 8081:8081
+      - 6651:6651
+    environment:
+      PULSAR_MEM: " -Xms512m -Xmx512m -XX:MaxDirectMemorySize=1g"
+    command: bin/pulsar standalone
+    volumes:
+      # either use docker volume or bind volume
+      - type: volume
+        source: pulsardata
+        target: /pulsar/data
+      # - type: volume
+      #   source: pulsarconf
+      #   target: /pulsar/conf
+      # - type: bind
+      #   source: /nvme/pulsar/data
+      #   target: /pulsar/data
+      - type: bind
+        source: /nvme/pulsar/conf
+        target: /pulsar/conf
+volumes:
+  pulsardata:
+#  pulsarconf:

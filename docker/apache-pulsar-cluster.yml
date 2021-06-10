@@ -1,0 +1,104 @@
+# Pre-requisistes:
+# 1/ Run a Zookeeper cluster or standalone, for example using zookeeper-standalone.yml
+# 2/ initialize metadata of the cluster with
+# docker run -it --network docker_default apachepulsar/pulsar:2.7.1 bin/pulsar initialize-cluster-metadata --cluster pulsar-cluster-1 --zookeeper zoo1:2181 --configuration-store zoo1:2181 --web-service-url pulsarbookie1:8080,pulsarbookie2:8080,pulsarbookie3:8080 --broker-service-url pulsarbroker1:6650
+# or for a zookeeper cluster
+# docker run -it --network docker_default apachepulsar/pulsar:2.7.1 bin/pulsar initialize-cluster-metadata --cluster pulsar-cluster-1 --zookeeper zoo1:2181,zoo2:2181,zoo3:2181 --configuration-store zoo1:2181,zoo2:2181,zoo3:2181 --web-service-url pulsarbookie1:8080,pulsarbookie2:8080,pulsarbookie3:8080 --broker-service-url pulsarbroker1:6650,pulsarbroker2:6650,pulsarbroker3:6650
+# 3/ Prepare a shared directory to be mount as a volume containing the configuration of apache pulsar
+# retrieve the conf/ directory from a running docker image (using `docker copy`) or the archive conf-docker-pulsar2.7.1.tgz
+# put it in a specified directory on your local FS, for me it was /nvme/pulsar/conf
+# 4/ Configure apache pulsar: bookkeeper.conf broker.conf 
+# I used the same files for all broker, because I use a configuration based on Hostname (disable by default) and not IpAddress
+# 5/ Verify bookie is ok with cmd:
+# did=`docker ps | grep docker_pulsarbookie3_1 | awk '{print $1}'` && docker exec ${did} bin/bookkeeper shell bookiesanity
+# did=`docker ps | grep docker_pulsarbookie3_1 | awk '{print $1}'` && docker exec ${did} bin/bookkeeper shell listbookies -rw
+# did=`docker ps | grep docker_pulsarbookie3_1 | awk '{print $1}'` && docker exec ${did} bin/bookkeeper shell simpletest --ensemble 3 --writeQuorum 3 --ackQuorum 3 --numEntries 100
+# 6/ Publish
+
+version: '2.4'
+services:
+  pulsarbookie1:
+    hostname: pulsarbookie1
+    image: apachepulsar/pulsar:2.7.1
+    cpus: 4.0
+    mem_limit: 8g
+    mem_reservation: 1g
+    ports:
+      - 13181:3181
+      - 18000:8000
+    environment:
+      PULSAR_MEM: " -Xms7g -Xmx7g -XX:MaxDirectMemorySize=1g"
+    command: bin/pulsar bookie
+    volumes:
+      - type: volume
+        source: bookie1data
+        target: /pulsar/data
+      - type: bind
+        source: /nvme/pulsar/conf
+        target: /pulsar/conf
+
+  pulsarbookie2:
+    hostname: pulsarbookie2
+    image: apachepulsar/pulsar:2.7.1
+    cpus: 4.0
+    mem_limit: 8g
+    mem_reservation: 1g
+    ports:
+      - 23181:3181
+      - 28000:8000
+    environment:
+      PULSAR_MEM: " -Xms7g -Xmx7g -XX:MaxDirectMemorySize=1g"
+    command: bin/pulsar bookie
+    volumes:
+      - type: volume
+        source: bookie2data
+        target: /pulsar/data
+      - type: bind
+        source: /nvme/pulsar/conf
+        target: /pulsar/conf
+
+  pulsarbookie3:
+    hostname: pulsarbookie3
+    image: apachepulsar/pulsar:2.7.1
+    cpus: 4.0
+    mem_limit: 8g
+    mem_reservation: 1g
+    ports:
+      - 33181:3181
+      - 38000:8000
+    environment:
+      PULSAR_MEM: " -Xms7g -Xmx7g -XX:MaxDirectMemorySize=1g"
+    command: bin/pulsar bookie
+    volumes:
+      - type: volume
+        source: bookie3data
+        target: /pulsar/data
+      - type: bind
+        source: /nvme/pulsar/conf
+        target: /pulsar/conf
+
+  pulsarbroker1:
+    hostname: pulsarbroker1
+    image: apachepulsar/pulsar:2.7.1
+    cpus: 2.0
+    mem_limit: 2200m
+    mem_reservation: 1g
+    ports:
+      - 6650:6650
+      - 8080:8080
+    environment:
+      PULSAR_MEM: " -Xms2g -Xmx2g -XX:MaxDirectMemorySize=1g"
+    command: bin/pulsar broker
+    volumes:
+      - type: bind
+        source: /nvme/pulsar/conf
+        target: /pulsar/conf
+    depends_on:
+      - pulsarbookie1
+      - pulsarbookie2
+      - pulsarbookie3
+
+volumes:
+  bookie1data:
+  bookie2data:
+  bookie3data:

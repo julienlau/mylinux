@@ -1,0 +1,17 @@
+#!/bin/bash
+# USAGE:
+# git clone --mirror git://example.com/some-big-repo.git
+# bfg --no-blob-protection --prune-empty-commits --delete-files <fileName.extension> some-big-repo.git
+# bfg --no-blob-protection --prune-empty-commits --strip-blobs-bigger-than 100M some-big-repo.git
+# bfg --no-blob-protection --prune-empty-commits --delete-files '*.{hdf,mcd,yml.gz,tif,gz.parquet}' LRI.git
+# for f in spark-jobserver-jobserver-0.6.2-spark-1.6.1.tgz h27v12.txt h20v03.txt h20v04.txt h10v04.txt h13v10.txt ; do bfg --prune-empty-commits --delete-files $f LRI.git ; done
+# bfg --prune-empty-commits --delete-files spark-jobserver-jobserver-0.6.2-spark-1.6.1.tgz LRI.git
+# cd some-big-repo.git
+# git reflog expire --expire=now --all && git gc --prune=now --aggressive
+# git push
+
+echo "running command:"
+echo "java -jar /opt/bfg/bfg-1.13.0.jar $*"
+#java -jar bfg-1.12.13-SNAPSHOT-prune-empty-commits-52a2ae7.jar $*
+java -jar /opt/bfg/bfg-1.13.0.jar $*
+echo "Done"

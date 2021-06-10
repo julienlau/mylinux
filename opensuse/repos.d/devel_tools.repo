@@ -1,0 +1,10 @@
+[devel_tools]
+name=Generic Development Tools (openSUSE_Leap_15.1)
+enabled=1
+autorefresh=1
+baseurl=http://download.opensuse.org/repositories/devel:/tools/openSUSE_Leap_15.1/
+type=rpm-md
+priority=100
+gpgcheck=1
+gpgkey=http://download.opensuse.org/repositories/devel:/tools/openSUSE_Leap_15.1//repodata/repomd.xml.key
+keeppackages=0
