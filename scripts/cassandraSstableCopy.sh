@@ -157,8 +157,8 @@ fi
 unalias sstablecopyfile 2>/dev/null
 sstablecopyfile()
 {
-    src=$1
-    dest=$2
+    local src=$1
+    local dest=$2
 
     # option to enable many-to-many comparison of *-Data.db files to avoid duplicates even with name mismatch
     # this is time consuming

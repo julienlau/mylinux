@@ -1091,11 +1091,11 @@ mypromptcolor () {
     bash_prompt_shortener
     color_std=`mycolor black bold white`
     #color_std=`mycolor white bold black`
-    color_reset=${color_std}
+    color_reset=$(tput sgr0)
     if [[ $user = "root" ]]; then
         color_host=`mycolor white bold red`
         color_user=`mycolor white bold red`
-        color_path=`mycolor white bold $ihost`
+        color_path=`mycolor red bold $ihost`
     else
         color_host=`mycolor $ihost bold white`
         color_user=`mycolor $iuser bold black`
@@ -1115,7 +1115,7 @@ myprompt() {
         color_user=`mycolor $foregroud bold $background`
         color_path=`mycolor $foregroud bold $background`
         color_host=`mycolor $foregroud bold $background`
-        color_reset=`mycolor $foregroud bold $background`
+        color_reset=$(tput sgr0)
         export PS1="\[${color_path}\]\w/\[${color_reset}\]\n\[${color_user}\][\u\[${color_reset}\]@\[${color_host}\]\H]\[${color_reset}\]> "
     elif [[ $# -eq 1 ]] ; then
         foregroud=$1
@@ -1124,7 +1124,7 @@ myprompt() {
         color_user=`mycolor $foregroud bold $background`
         color_path=`mycolor $foregroud bold $background`
         color_host=`mycolor $foregroud bold $background`
-        color_reset=`mycolor $foregroud bold $background`
+        color_reset=$(tput sgr0)
         export PS1="\[${color_path}\]\w/\[${color_reset}\]\n\[${color_user}\][\u\[${color_reset}\]@\[${color_host}\]\H]\[${color_reset}\]> "
     else
         echo "ERROR need two inputs: foreground color and background color"
@@ -1659,6 +1659,7 @@ fi
 # sudo apt install dropwatch
 # sudo apt install prometheus-node-exporter prometheus prometheus-alertmanager netdata 
 # sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager libguestfs-tools
+# pip3 install bpytop --upgrade
 
 # zypper rm -u ffmpeg-3
 # cp /var/log/zypp/history zypper.history
