@@ -1,8 +1,0 @@
-[sublime-text]
-name=Sublime Text - x86_64 - Stable
-enabled=0
-autorefresh=1
-baseurl=https://download.sublimetext.com/rpm/stable/x86_64
-type=rpm-md
-gpgcheck=1
-gpgkey=https://download.sublimetext.com/sublimehq-rpm-pub.gpg

@@ -1,6 +1,0 @@
-[metasploit]
-name=Metasploit
-enabled=0
-autorefresh=0
-baseurl=http://downloads.metasploit.com/data/releases/metasploit-framework/rpm
-type=rpm-md

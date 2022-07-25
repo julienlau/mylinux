@@ -1,8 +1,0 @@
-[utilities]
-name=all the small tools for the shell (openSUSE_Leap_15.1)
-type=rpm-md
-baseurl=http://download.opensuse.org/repositories/utilities/openSUSE_Leap_15.1/
-gpgcheck=1
-gpgkey=http://download.opensuse.org/repositories/utilities/openSUSE_Leap_15.1/repodata/repomd.xml.key
-enabled=1
-priority=98

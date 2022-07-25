@@ -21,6 +21,7 @@ ExecStart=/opt/zookeeper/bin/zkServer.sh start /opt/zookeeper/conf/zookeeper.con
 ExecStop=/opt/zookeeper/bin/zkServer.sh stop /opt/zookeeper/conf/zookeeper.conf
 ExecReload=/opt/zookeeper/bin/zkServer.sh restart /opt/zookeeper/conf/zookeeper.conf
 WorkingDirectory=/var/lib/zookeeper
+Restart=no
 
 [Install]
 WantedBy=default.target

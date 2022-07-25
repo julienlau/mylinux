@@ -1,0 +1,8 @@
+#!/bin/bash
+# from https://github.com/mesoshq/mesosctl
+
+# Create .mesosctl folder in user's home directory is it doesn't exist
+mkdir -p ~/.mesosctl
+
+# Run Docker image and map the local configuration folder
+docker run --net=host -it -e MESOSCTL_CONFIGURATION_BASE_PATH=/config -v ~/.mesosctl:/config:rw mesoshq/mesosctl mesosctl

@@ -1,8 +1,0 @@
-[openSUSE-Leap-15.1-1]
-name=openSUSE-Leap-15.1-1
-enabled=0
-autorefresh=1
-baseurl=hd:/?device=/dev/disk/by-id/usb-SanDisk_Cruzer_Edge_4C530099950227118133-0:0-part2
-path=/
-type=rpm-md
-keeppackages=0

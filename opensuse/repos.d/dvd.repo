@@ -1,6 +1,0 @@
-[dvd]
-enabled=1
-autorefresh=1
-baseurl=http://opensuse-guide.org/repo/openSUSE_Leap_15.1/
-type=rpm-md
-priority=98

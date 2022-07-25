@@ -44,7 +44,7 @@
 #       <host mac='52:54:00:27:77:22' name='ubuntu-22' ip='192.168.122.22'/>
 #     </dhcp>
 #   </ip>
-# $> ./kvm-network-restart.sh
+# $> ./kvm-network-restart.sh default
 
 set -e
 
@@ -65,25 +65,27 @@ echo "--> network restarted"
 MACHINES=$( virsh list | tail -n +3 | head -n -1 | awk '{ print $2; }' )
 
 for m in $MACHINES ; do
-	echo "---> processing VM: $m"
+    echo "---> processing VM: $m"
 
-	MACHINE_INFO=$( virsh dumpxml "$m" | xpath -e /domain/devices/interface[1] 2> /dev/null )
-	MACHINE_MAC=$( echo "$MACHINE_INFO" | grep "mac address" | cut -d '"' -f 2 )
-	MACHINE_MOD=$( echo "$MACHINE_INFO" | grep "model type" | cut -d '"' -f 2 )
-	MACHINE_NET=$( echo "$MACHINE_INFO" | grep "source network" | cut -d '"' -f 2 )
+    MACHINE_INFO=$( virsh dumpxml "$m" | xpath -e /domain/devices/interface[1] 2> /dev/null )
+    MACHINE_MAC=$( echo "$MACHINE_INFO" | grep "mac address" | cut -d '"' -f 2 )
+    MACHINE_MOD=$( echo "$MACHINE_INFO" | grep "model type" | cut -d '"' -f 2 )
+    MACHINE_NET=$( echo "$MACHINE_INFO" | grep "source network" | cut -d '"' -f 2 )
 
-	if [ "$MACHINE_NET" == "$NETWORK_NAME" ]; then
-		echo "--> detaching and attaching interfaces for mac address $MACHINE_MAC ($m)"
-		set +e
-		virsh detach-interface "$m" network --mac "$MACHINE_MAC" && sleep 3
-		virsh attach-interface "$m" network $NETWORK_NAME --mac "$MACHINE_MAC" --model "$MACHINE_MOD"
-		set -e
+    if [ "$MACHINE_NET" == "$NETWORK_NAME" ]; then
+	echo "--> detaching and attaching interfaces for mac address $MACHINE_MAC ($m)"
+	set +e
+	virsh detach-interface "$m" network --mac "$MACHINE_MAC" && sleep 3
+	virsh attach-interface "$m" network $NETWORK_NAME --mac "$MACHINE_MAC" --model "$MACHINE_MOD"
+	set -e
 
-		echo "--> calling network hook script"
-		$NETWORK_HOOK "$m" stopped && sleep 3
-		$NETWORK_HOOK "$m" start
-	else
-		echo "--> machine $m is not attached to network $NETWORK_NAME, skipping"
-	fi
-	echo "--> done"
+        if [[ -x $NETWORK_HOOK ]]; then
+	    echo "--> calling network hook script"
+	    $NETWORK_HOOK "$m" stopped && sleep 3
+	    $NETWORK_HOOK "$m" start
+        fi
+    else
+	echo "--> machine $m is not attached to network $NETWORK_NAME, skipping"
+    fi
+    echo "--> done"
 done

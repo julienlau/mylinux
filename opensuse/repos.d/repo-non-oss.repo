@@ -1,8 +1,0 @@
-[repo-non-oss]
-name=Non-OSS Repository
-enabled=1
-autorefresh=1
-baseurl=http://download.opensuse.org/distribution/leap/$releasever/repo/non-oss/
-path=/
-type=rpm-md
-keeppackages=0

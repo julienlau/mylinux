@@ -1,13 +1,21 @@
 #!/bin/bash
-set -e
+#set -e
 
 if [[ $# -gt 0 ]]; then
     listKs=$1
 fi
 
-cassandra_dir=/opt/cassandra
-nt="nodetool"
+date
 
+#### TO BE ADAPTED TO THE ENV ###
+export cassandra_dir=/opt/apache-cassandra-3.11.12
+#alias mynt='sudo -u cassandra ${cassandra_dir}/bin/nodetool'
+#alias mycqlsh='sudo -u cassandra ${cassandra_dir}/bin/cqlsh'
+alias mynt='ccm node1 nodetool'
+alias mycqlsh='ccm node1 cqlsh -u cassandra -p cassandra'
+#################################
+
+java -version
 ps -ef | grep java |grep cassandra
 
 if [[ -e ${cassandra_dir}/conf/cassandra.yaml ]]; then
@@ -17,62 +25,77 @@ if [[ -e ${cassandra_dir}/conf/cassandra-env.sh ]]; then
     grep -v -e "^#" -e "^$" -e "\s#" ${cassandra_dir}/conf/cassandra-env.sh
 fi
 
-date
-
 echo "===== System ====="
-hostname; uname -a; uptime; echo 'Boot time :'; date -d @$(vmstat --stats | awk '/boot time/ {print $1}'); systemctl list-units
+hostname; uname -a; uptime; echo 'Boot time :'; date -d @$(vmstat --stats | awk '/boot time/ {print $1}'); systemctl list-units --no-pager
+echo "===== CPU ====="
+lscpu
+echo "===== MEM ====="
+free -k
+lsmem
 echo "===== Disk ====="
 lsblk -o NAME,KNAME,MAJ:MIN,RM,SIZE,RO,TYPE,MOUNTPOINT
+lshw -class disk
+smartctl -a /dev/sda
+hdparm -i /dev/sda
+hwinfo --disk
+pvdisplay -m
+lvs --segments -o +devices
 df -h
 echo "===== Clock ====="
 timedatectl | grep synchronized;
 # ntpstat
 systemctl status ntp*.service
-echo "===== VERSION ====="
-${nt} version
-echo "===== INFO ====="
-${nt} info
-echo "===== STATUS ====="
-${nt} status
-printf "statusbackup "; ${nt} statusbackup
-printf "statusbinary "; ${nt} statusbinary
-printf "statusgossip "; ${nt} statusgossip
-printf "statushandoff "; ${nt} statushandoff
-printf "statusthrift "; ${nt} statusthrift
-echo "===== describecluster ====="
-${nt} describecluster
-echo "===== ring ====="
-${nt} ring
-echo "===== SCHEMA ====="
-cqlsh -e "DESC tables; DESC schema;"
 
+echo "===== Connection to cassandra (assuming use of standard port) ====="
+lsof -i -n -P | grep 9042 | grep ESTABLISHED
+echo "===== VERSION ====="
+mynt version
+echo "===== INFO ====="
+mynt info
+echo "===== STATUS ====="
+mynt status
+echo ""
+printf "statusbackup "; mynt statusbackup
+printf "statusbinary "; mynt statusbinary
+printf "statusgossip "; mynt statusgossip
+printf "statushandoff "; mynt statushandoff
+printf "statusthrift "; mynt statusthrift
+echo "===== describecluster ====="
+mynt describecluster
+echo "===== cqlsh ====="
+mycqlsh -e 'SELECT * FROM system.peers;SELECT * FROM system.local;'
+mycqlsh -e 'SELECT * FROM system.peer_events;SELECT * FROM system.range_xfers;'
+echo "===== ring ====="
+mynt ring
+echo "===== SCHEMA ====="
+mycqlsh -e "DESC tables;DESC schema;DESC KEYSPACE system_traces;DESC KEYSPACE system_auth;DESC KEYSPACE system_distributed;"
 echo "===== compactionhistory ====="
-${nt} compactionhistory
+mynt compactionhistory
 echo "===== compactionstats ====="
-${nt} compactionstats
+mynt compactionstats
 echo "===== listsnapshots ====="
-${nt} listsnapshots
+mynt listsnapshots
 echo "\n===== gcstats ====="
-${nt} gcstats
+mynt gcstats
 echo "===== netstats ====="
-${nt} netstats
+mynt netstats
 echo "===== proxyhistograms ====="
-${nt} proxyhistograms
+mynt proxyhistograms
 echo "===== tpstats ====="
-${nt} tpstats
+mynt tpstats
 echo "===== tablestats ====="
-${nt} tablestats
+mynt tablestats
 
 if [[ -z ${listKs} ]]; then
-    listKs=`cqlsh -e "DESC keyspaces;" | grep -v -e '^[[:space:]]*$' | sed "s/ /\n/g" | grep -v ^system`
+    listKs=`mycqlsh -e 'DESC keyspaces;' | grep -v -e '^[[:space:]]*$' | sed 's/ /\n/g' | grep -v ^system`
 fi
 
 for ks in $listKs; do
-    listTable=`cqlsh -e "USE ${ks}; DESC tables;" | grep -v -e '^[[:space:]]*$'`
+    listTable=`mycqlsh -e 'USE ${ks}; DESC tables;' | grep -v -e '^[[:space:]]*$'`
     for table in $listTable ; do
         echo "===== tablehistograms ${ks} $table ====="
-        ${nt} tablehistograms ${ks} $table
+        mynt tablehistograms ${ks} $table
         # echo "===== toppartitions ${ks} $table ====="
-        # ${nt} toppartitions ${ks} $table 1000
+        # mynt toppartitions ${ks} $table 1000
     done
 done

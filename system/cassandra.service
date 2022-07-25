@@ -1,7 +1,7 @@
 # /lib/systemd/system/cassandra.service
 
 # groupadd data ; useradd -g data cassandra; export cver=2.2.16; mkdir -p /var/lib/cassandra /var/log/cassandra-${cver} /data/cassandra-${cver}/commitlog /nvme/cassandra/${cver}/cdc_raw /nvme/cassandra/${cver}/data /nvme/cassandra/${cver}/data/hints /nvme/cassandra/${cver}/saved_caches ; chown -R cassandra:data /var/lib/cassandra /data/cassandra-${cver}/commitlog /nvme/cassandra /var/log/cassandra-${cver}
-# groupadd data ; useradd -g data cassandra; export cver=2.2.16; export CASSANDRA_HOME=/opt/apache-cassandra-2.2.16 ; mkdir -p /var/lib/cassandra ${CASSANDRA_HOME}/logs ${CASSANDRA_HOME}/data/commitlog ${CASSANDRA_HOME}/data/cdc_raw ${CASSANDRA_HOME}/data/data ${CASSANDRA_HOME}/data/hints ${CASSANDRA_HOME}/saved_caches ; chown -R cassandra:data /var/lib/cassandra ${CASSANDRA_HOME}
+# groupadd data ; useradd -g data cassandra; export cver=2.2.16; export CASSANDRA_HOME=/opt/apache-cassandra-${cver} ; mkdir -p /var/lib/cassandra ${CASSANDRA_HOME}/logs ${CASSANDRA_HOME}/data/commitlog ${CASSANDRA_HOME}/data/cdc_raw ${CASSANDRA_HOME}/data/data ${CASSANDRA_HOME}/data/hints ${CASSANDRA_HOME}/saved_caches ; chown -R cassandra:data /var/lib/cassandra ${CASSANDRA_HOME}
 
 [Unit]
 Description=Cassandra
@@ -19,11 +19,18 @@ Group=data
 # ubuntu
 Environment=JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
 Environment=CASSANDRA_LOG_DIR=/var/log/cassandra-2.2.16
+ExecStartPre=- /sbin/swapoff -a
+ExecStartPre=- /bin/chown -R cassandra /opt/cassandra
 ExecStart=/opt/apache-cassandra-2.2.16/bin/cassandra -f -p /var/lib/cassandra/cassandra.pid
 StandardOutput=journal
 StandardError=journal
-LimitNOFILE=infinity
+LimitNOFILE=100000
 LimitMEMLOCK=infinity
+LimitNPROC=32768
+LimitAS=infinity
+Restart=no
+TimeoutStopSec=60
+TimeoutStartSec=60
 
 [Install]
 WantedBy=multi-user.target

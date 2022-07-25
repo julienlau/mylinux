@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Hook script for QEMU
+# Hook script for QEMU (vm instanciated with KVM)
 # 
 # adds port forwards via IPtables to your VMs
 #

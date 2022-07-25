@@ -1,0 +1,23 @@
+# docker run -d -p 8080:8080 -p 8081:8081 --name warp10 -e WARP10_HEAP=8g -e WARP10_HEAP_MAX=8g -e IN_MEMORY=true warp10io/warp10:2.8.1
+# Retrieve token :
+# docker exec -u warp10 -it warp10_standalone warp10-standalone.sh worf test 31536000000
+# push data with : curl -v -H "X-Warp10-Token: ${WRITE_TOKEN}" --data-binary "1// test{} 42" 'http://127.0.0.1:8080/api/v0/update'
+# get data with : curl -v --data-binary "[ 'READ_TOKEN' 'test' {} NOW -1 ] FETCH" 'http://127.0.0.1:8080/api/v0/exec'
+# explore by going to http://127.0.0.1:8081
+# {"read":{"token":"Nu1ROFkPylqmAAJHmbl6K4YbWFfmN0P6nUq5zmSBNdsjOOF4S1Ina6MLaLuJ9t2O0rlAxMANokUGzM.6HJLuh4_aeh1BW.lPbG3qM9uu1DiPic6y5Xoxfk","tokenIdent":"c83e8474514e3ce2","ttl":31536000000,"application":"test","applications":["test"],"owners":["0728a851-0ca7-4608-a0d4-650cafe43869"],"producer":"0728a851-0ca7-4608-a0d4-650cafe43869","producers":[]},"write":{"token":"Kz4_tLmHKlfuNeMaoWWxexvjPektIVSkHjfim_9rGBeafU57CmW2gSnKnma8KCyWKoARbZtAudK0XRqOR9pcajtLc6NII_363yT5QLn8AZo","tokenIdent":"adf4b5b45612aac3","ttl":31536000000,"application":"test","owner":"0728a851-0ca7-4608-a0d4-650cafe43869","producer":"0728a851-0ca7-4608-a0d4-650cafe43869"}}
+
+version: '2.4'
+services:
+  warp10_standalone:
+    container_name: warp10_standalone
+    image: warp10io/warp10:2.8.1
+    cpus: 3.0
+    mem_limit: 8g
+    mem_reservation: 4g
+    ports:
+      - 8080:8080
+      - 8081:8081
+    environment:
+      - WARP10_HEAP=4g
+      - WARP10_HEAP_MAX=4g
+      - IN_MEMORY=true

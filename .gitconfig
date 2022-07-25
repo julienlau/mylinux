@@ -1,0 +1,35 @@
+[user]
+#email = julien.laurenceau@pepitedata.com
+email = julien.laurenceau-ext@alteia.com
+name = Julien Laurenceau
+
+[credential]
+helper = /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret
+
+[merge]
+#ff = false
+tool = meld
+
+[diff]
+tool = meld
+
+[difftool]
+prompt = false
+
+[pull]
+rebase = true
+
+[push]
+followTags = true
+
+[alias]
+unstage = reset HEAD --
+last = log -1 HEAD
+slog = log --graph --all --topo-order --pretty='format:%h %ai %s%d (%an)'
+st = status
+pfl = push --force-with-lease
+f = fetch --all --tags
+#restore_from_origin = reset --hard @{u}
+
+[cola]
+spellcheck = false

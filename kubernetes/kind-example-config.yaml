@@ -1,0 +1,80 @@
+# kind create cluster --config kind-example-config.yaml
+# kubectl cluster-info --context kind-kind
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+# patch the generated kubeadm config with some extra settings
+# kubeadmConfigPatches:
+# - |
+#   kind: ClusterConfiguration
+#   metadata:
+#     name: config
+#   scheduler:
+#     extraArgs:
+#       "leader-elect": "false"
+#   controllerManager:
+#     extraArgs:
+#       "leader-elect": "false"
+kubeadmConfigPatches:
+- |
+  apiVersion: kubelet.config.k8s.io/v1beta1
+  kind: KubeletConfiguration
+  evictionHard:
+    nodefs.available: "0%"
+# patch it further using a JSON 6902 patch
+kubeadmConfigPatchesJSON6902:
+- group: kubeadm.k8s.io
+  version: v1beta2
+  kind: ClusterConfiguration
+  patch: |
+    - op: add
+      path: /apiServer/certSANs/-
+      value: my-hostname
+nodes:
+# the control plane node config
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 30080
+    hostPort: 7070
+  - containerPort: 80
+    hostPort: 9080
+  - containerPort: 443
+    hostPort: 9443
+    listenAddress: "0.0.0.0" # Optional, defaults to "0.0.0.0"
+    protocol: tcp # Optional, defaults to tcp
+# the three workers
+- role: worker
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 1080
+  - containerPort: 443
+    hostPort: 1443
+  - containerPort: 2379
+    hostPort: 12379
+  - containerPort: 2380
+    hostPort: 12380
+  - containerPort: 6650
+    hostPort: 16650
+  - containerPort: 8080
+    hostPort: 18080
+  - containerPort: 3000
+    hostPort: 13000
+  - containerPort: 8888
+    hostPort: 18888
+- role: worker
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 2080
+  - containerPort: 443
+    hostPort: 2443
+  - containerPort: 2379
+    hostPort: 22379
+  - containerPort: 2380
+    hostPort: 22380
+  - containerPort: 6650
+    hostPort: 26650
+  - containerPort: 8080
+    hostPort: 28080
+  - containerPort: 3000
+    hostPort: 23000
+  - containerPort: 8888
+    hostPort: 28888

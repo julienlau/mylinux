@@ -1,3 +1,4 @@
+# sudo journalctl --vacuum-time=14days --vacuum-size=500M
 # sudo usermod $UESR -a -G wheel
 #sudoers# %wheel ALL=(ALL) ALL
 #sudoers# Defaults    timestamp_timeout=-1
@@ -7,11 +8,11 @@
 # ssh-keygen -o -t rsa -b 4096 -f ~/.ssh/id_rsa
 
 # sudo sysctl -w vm.swappiness=1
-# kernel boot options : nomodeset nouveau.modeset=0 pci=noaer pci=nomsi libata.noacpi=1
+# kernel boot options : nomodeset nouveau.modeset=0 pci=noaer pci=nomsi libata.noacpi=1 nvidia-drm.modeset=1
+# ubuntu nvidia: echo "options nvidia-drm modeset=1" >> /etc/modprobe.d/nvidia.conf
 # ubuntu: install nvidia and blacklist nouveau; vi /etc/default/grub # GRUB_CMDLINE_LINUX="pci=nomsi" ; sudo update-grub; 
 # lspci -nnk | grep -i vga -A3 | grep 'in use'
 # hwinfo --gfxcard
-
 
 # blkid -c /dev/null -o list
 # lsblk -o name,label,partlabel,size,uuid,mountpoint
@@ -20,10 +21,23 @@
 # sudo mount.cifs //172.31.1.2/public /mnt/echange -o sec=ntlm,noperm,nounix,dir_mode=0777,file_mode=0777,user=jlu,dom=GEO6,vers=2.1
 # sudo mount -t ntfs -o "rw,nosuid,nodev,relatime,user_id=0,group_id=0,allow_other" "/dev/sdc2" "/mnt/ntfs-d"
 
+# egrep -v '^#' /etc/systemd/journald.conf 
+# SystemMaxUse=3G
+# MaxRetentionSec=1month
+# MaxFileSec=1week
+# sudo journalctl --rotate
+# sudo journalctl --vacuum-time=10minute
+
 # ecryptfs-simple /path/to/foo /path/to/bar
 
 # sudo certbot certonly --standalone --preferred-challenges http -d example.com
 # sudo certbot certonly --webroot -w /var/www/example -d www.example.com ### /var/www/example is a directory
+
+# tar compress parallel
+# tar -I "xz -T0" -cf archive.tar.xz ./file.csv
+# XZ_OPT='-T0 -9' tar -cJf archive.tar.xz ./file.csv
+
+# docker run -d --name=netdata   -p 19999:19999   -v netdataconfig:/etc/netdata   -v netdatalib:/var/lib/netdata   -v netdatacache:/var/cache/netdata   -v /etc/passwd:/host/etc/passwd:ro   -v /etc/group:/host/etc/group:ro   -v /proc:/host/proc:ro   -v /sys:/host/sys:ro   -v /etc/os-release:/host/etc/os-release:ro   --restart unless-stopped   --cap-add SYS_PTRACE   --security-opt apparmor=unconfined   netdata/netdata
 
 test -s ~/.alias && . ~/.alias || true
 
@@ -35,6 +49,8 @@ fi
 if [ -e ~/.xsh ]; then
     source ~/.xsh
 fi
+
+bind 'set enable-bracketed-paste off'
 
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
 # export SYSTEMD_PAGER=
@@ -51,7 +67,7 @@ export platform=$(uname -s)
 if [[ "$USER" = "root" ]]; then
     export HOME=/root
 fi
-export user=$USER
+#export user=$USER
 if [[ -z $HOST && -z $HOSTNAME  ]] ; then
     export HOST="$(uname -n)"
     export HOSTNAME="$(uname -n)"
@@ -61,6 +77,7 @@ elif [[ ! -z $HOST && -z $HOSTNAME  ]] ; then
     export HOSTNAME=$HOST
 fi
 export tabulation=`echo -e "\t"`
+# export pyver=`python -c 'import platform; major, minor, patch = platform.python_version_tuple(); print(f"{major}.{minor}")'`
 #============================================================
 export mylistSsh=$(grep -v -e "^#" -e "localhost" /etc/hosts | sed '/^$/d' | grep "^[0-9]" | awk '{print $2}' | sort | uniq)
 export allhost=($(grep -v -e "^#" -e "localhost" /etc/hosts | sed '/^$/d' | grep "^[0-9]" | awk '{print $2}'))
@@ -79,6 +96,52 @@ sudisp()
     sudo su - $usr
     export DISPLAY=$dis
     xauth add $xdis
+}
+
+unalias sourceprop 2>/dev/null
+sourceprop()
+{
+    javaproperties=$1
+    source <(awk 'BEGIN {
+    FS="=";
+    n="";
+    v="";
+    c=0; # Not a line continuation.
+}
+/^#/ { # The line is a comment.  Breaks line continuation.
+    c=0;
+    next;
+}
+/\\$/ && (c==0) && (NF>=2) { # Name value pair with a line continuation...
+    e=index($0,"=");
+    n=substr($0,1,e-1);
+    v=substr($0,e+1,length($0) - e - 1);    # Trim off the backslash.
+    c=1;                                    # Line continuation mode.
+    next;
+}
+/^[^\\]+\\$/ && (c==1) { # Line continuation.  Accumulate the value.
+    v= "" v substr($0,1,length($0)-1);
+    next;
+}
+((c==1) || (NF>=2)) && !/^[^\\]+\\$/ { # End of line continuation, or a single line name/value pair
+    if (c==0) {  # Single line name/value pair
+        e=index($0,"=");
+        n=substr($0,1,e-1);
+        v=substr($0,e+1,length($0) - e);
+    } else { # Line continuation mode - last line of the value.
+        c=0; # Turn off line continuation mode.
+        v= "" v $0;
+    }
+    # Make sure the name is a legal shell variable name
+    gsub(/[^A-Za-z0-9_]/,"_",n);
+    # Remove newlines from the value.
+    gsub(/[\n\r]/,"",v);
+    print n "=\"" v "\"";
+    n = "";
+    v = "";
+}
+END {
+}' ${javaproperties})
 }
 
 unalias exporte 2>/dev/null
@@ -141,6 +204,19 @@ myip()
 {
     ip route get 8.8.8.8 2>/dev/null | awk '{ for(i=1; i<NF; i++) { if($i == "src") {print $(i+1); exit} } }'
     # ip addr show dev eth1 primary | awk '/(inet .*\/)/ { print $2 }' | cut -d'/' -f1
+}
+
+unalias spfy 2>/dev/null
+spfy()
+{
+    if [[ $# -eq 0 ]]; then
+        # spotify pause
+        dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause
+    elif [[ "$1" = "n" ]]; then
+        dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next
+    else
+        dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous
+    fi
 }
 
 unalias disownall 2>/dev/null
@@ -212,6 +288,56 @@ dateEpochMs()
     echo $(($(date +%s%N)/1000000))
 }
 
+unalias dateEpochUsToH 2>/dev/null
+dateEpochUsToH()
+{
+    v=`echo $1 / 1000000 | bc`
+    date -d @$v +%Y-%m-%dT%H:%M:%S.%N' '%z
+}
+
+unalias dateEpochmicros 2>/dev/null
+dateEpochUs()
+{
+    echo $(($(date +%s%N)/1000))
+}
+
+unalias gitlabci 2>/dev/null
+gitlabci()
+{
+    # arg $1 is the name of the stage in your file .gitlab-ci.yml
+    docker run --rm -w $PWD -v $PWD:$PWD -v /var/run/docker.sock:/var/run/docker.sock gitlab/gitlab-runner:latest exec docker $1
+}
+
+unalias poetrya 2>/dev/null
+poetrya()
+{
+    poetryaPath=$1
+    if [[ -e $poetryaPath/pyproject.toml ]]; then
+        pwd
+        cd $poetryaPath
+        poetry env list
+        poetry env info --path
+        poetry shell
+    elif [[ -e $poetryaPath/bin/activate ]]; then
+        pwd
+        source $poetryaPath/bin/activate
+    else
+        poetrylist
+        echo "ERROR ! poetry env not found at $poetryaPath"
+    fi
+}
+
+unalias poetrylist 2>/dev/null
+poetrylist()
+{
+    if [[ -e pyproject.toml ]]; then
+        poetry env list
+        poetry env info --path
+    fi
+    poetryList=`poetry config virtualenvs.path`
+    ls -lad $poetryList/*-py[0-9]*
+}
+
 unalias dockernodexporter 2>/dev/null
 dockernodexporter()
 {
@@ -221,40 +347,126 @@ dockernodexporter()
     ss -tulpn | grep 9100
 }
 
+# Function dockercleanv
+unalias dockercleanv 2>/dev/null
+dockercleanv()
+{
+    pattern=`echo "$*" | sed -e 's: :\\\|:g'`
+    docker volume ls 2>&1 | grep -- "$pattern"
+    parent=`docker volume rm $* 2>&1 | grep 'volume is in use' | awk '{print $NF}' | tr -d '[]'`
+    parent=`echo $parent`
+    if [[ ! -z $parent ]]; then
+        for id in $parent; do 
+            docker inspect $id | jq '.[] | .Name, .Id '
+        done
+    docker stop $parent
+    docker rm $parent
+    docker volume rm $*
+    fi
+}
+
+# Function dockercleani
+unalias dockercleani 2>/dev/null
+dockercleani()
+{
+    docker images | awk '$2 ~ /<none>/' 
+    docker images | awk '$2 ~ /<none>/' | awk '{print $3}' | grep -v IMAGE | xargs docker rmi -f
+    echo "you may want to also run to clean networks and more : docker system prune"
+}
+
 # Function dockerclean
 unalias dockerclean 2>/dev/null
 dockerclean()
 {
     docker rm $(docker ps -qa --filter status=exited)
-    docker volume prune
-    list2clean=$(docker images 2>/dev/null | grep '<none>' | awk '{print $3}')
-    if [[ ! -z $list2clean ]]; then docker rmi $@ $list2clean ; fi
+    docker volume prune -f
+    docker image prune -a -f
+    docker images | awk '$2 !~ /^[[:digit:]]*$|^[0-9.]*$|latest|master|base/' 
+    docker images | awk '$2 !~ /^[[:digit:]]*$|^[0-9.]*$latest|master|base/' | awk '{print $3}' | grep -v IMAGE | xargs docker rmi -f
+}
+
+unalias dockerbuild 2>/dev/null
+dockerbuild()
+{
+    myimage=$(basename `pwd`)
+    if [[ $# -eq 0 ]]; then
+        for f in $(ls *.dockerfile); do
+            echo "===================>>> docker build image described by $f to $myimage:${f%.dockerfile}"
+            cat $f > ${f%.dockerfile}.log
+            docker build --progress=plain -t $myimage:${f%.dockerfile} -f $f . 2>&1 | tee -a ${f%.dockerfile}.log
+            docker image prune -f
+        done
+        f=Dockerfile
+    else
+        f=$1
+    fi
+    if [[ -e $f ]]; then
+        echo "===================>>> docker build image described by $f to $myimage:${f%.dockerfile}"
+        cat $f > ${f%.dockerfile}.log
+        docker build --progress=plain -t $myimage:${f%.dockerfile} -f $f .  2>&1 | tee -a ${f%.dockerfile}.log
+    fi
+}
+
+unalias dockerlogs 2>/dev/null
+dockerlogs() {
+    if [[ $# -eq 0 ]]; then
+        echo "ERROR : please providing a query string to grep !"
+    else
+        journalctl -u docker CONTAINER_ID=$1 | grep -i -v -e Elasticsearch -v -e ']: $' -v -e '  No living connections' -e '  No living connections' -e 'GET /healthz' -e 'lib.request_handlers.authentication - info - No bearer token found on request'
+
+        echo "journalctl -u docker --since=-5m CONTAINER_ID=$1 | grep -i -v -e Elasticsearch -e ']: $' -e '  No living connections' -e '  No living connections' -e 'GET /healthz' -e 'lib.request_handlers.authentication - info - No bearer token found on request'
+"
+    fi
+}
+
+unalias dockerjlog 2>/dev/null
+dockerjlog() {
+    if [[ $# -eq 0 ]]; then
+        echo "ERROR : please providing a query string to grep !"
+    else
+        journalstr=""
+        for str in $* ; do
+            ids=`docker ps | grep $str | awk '{print $1}'`
+            if [[ ! -z $ids ]]; then
+                for id in $ids; do 
+                    journalstr="CONTAINER_ID=$id $journalstr"
+                done
+            fi
+        done
+        journalctl -u docker --since=-5m $journalstr | grep -i -v -e Elasticsearch -v -e ']: $' -v -e '  No living connections' -e '  No living connections' -e 'GET /healthz' -e 'lib.request_handlers.authentication - info - No bearer token found on request'
+
+        echo "journalctl -u docker --since=-5m $journalstr | grep -i -v -e Elasticsearch -e ']: $' -e '  No living connections' -e '  No living connections' -e 'GET /healthz' -e 'lib.request_handlers.authentication - info - No bearer token found on request'
+"
+    fi
 }
 
 # Function grepsrc
+# Example of direct find cmd: 
+# find . -name "*.go" ! -name  '*_doc_generated.go'  ! \( -path '*/vendor/*' -o -path '*/test/*' -o -path '*/rbac/*' \) | xargs grep -ri --color leader
+# find . -name "*.go" ! -name  '*_doc_generated.go'  ! \( -path '*/vendor/*' -o -path '*/test/*' -o -path '*/rbac/*' -o -path '*/metrics/*' -o -path '*/testing/*' \) | xargs grep -ri --color watch
 unalias grepsrc 2>/dev/null
 grepsrc()
 {
     searchpath=.
     expression=''
-    opt=""
+    opt=''
     if [[ $# -eq 3 ]] ; then
+        searchpath=$1
+        opt=$2
+        expression=$3
+    elif [[ $# -eq 2 ]] ; then
         opt=$1
         expression=$2
-        searchpath=$3
-    elif [[ $# -eq 2 ]] ; then
-        expression=$1
-        searchpath=$2
     else
         expression=$1
     fi
-    find $searchpath \( -name '*.for' -o -name '*.f' -o -name '*.F' -o -name '*.h' -o -name '*.F90' -o -name '*.f90' -o -name '*.m' -o -name '*.M' -o -name '*.py' -o -name '*.c' -o -name '*.C' -o -name '*.cpp' -o -name '*.CPP' -o -name '*.c++' -o -name '*.C++' -o -name '*.H' -o -name '*.inc' -o -name '*.?sh' -o -name '*.??sh' -o -name '*.sh' -o -name '*.java' -o -name '*.scala' -o -name '*.julia' -o -name '*.js' -o -name '*.go' -o -name '*.php' -o -name '*.perl' -o -name '*.sbt' -o -name 'pom.xml' -o -name '*.t' \) -print 2>/dev/null | xargs grep --color -s $opt -- $expression
+    find $searchpath ! \( -path '*/node_modules/*' -o -path '*/vendor/*' \) \( -name '*.for' -o -name '*.f' -o -name '*.F' -o -name '*.h' -o -name '*.F90' -o -name '*.f90' -o -name '*.m' -o -name '*.M' -o -name '*.py' -o -name '*.c' -o -name '*.C' -o -name '*.cpp' -o -name '*.CPP' -o -name '*.c++' -o -name '*.C++' -o -name '*.H' -o -name '*.inc' -o -name '*.?sh' -o -name '*.??sh' -o -name '*.sh' -o -name '*.java' -o -name '*.scala' -o -name '*.julia' -o -name '*.js' -o -name '*.go' -o -name '*.php' -o -name '*.perl' -o -name '*.sbt' -o -name 'pom.xml' -o -name '*.t' \) -print 2>/dev/null | xargs grep --color -s $opt -- $expression
 }
 # end Function grepsrc
 
-# Function grepsrcc
-unalias grepsrcc 2>/dev/null
-grepsrcc()
+# Function grepjs
+unalias grepjs 2>/dev/null
+grepjs()
 {
     searchpath=.
     expression=''
@@ -269,9 +481,30 @@ grepsrcc()
     else
         expression=$1
     fi
-    find $searchpath \( -name '*.for' -o -name '*.f' -o -name '*.F' -o -name '*.h' -o -name '*.F90' -o -name '*.f90' -o -name '*.m' -o -name '*.M' -o -name '*.py' -o -name '*.c' -o -name '*.C' -o -name '*.cpp' -o -name '*.CPP' -o -name '*.c++' -o -name '*.C++' -o -name '*.H' -o -name '*.inc' -o -name '*.?sh' -o -name '*.??sh' -o -name '*.sh' -o -name '*.java' -o -name '*.scala' -o -name '*.julia' -o -name '*.js' -o -name '*.go' -o -name '*.php' -o -name '*.perl' -o -name '*.sbt'  -o -name '*.t' \) -print 2>/dev/null | xargs grep -c --color -s $opt -- $expression | grep -v ":0" | awk -F ":" '{print $1}'
+    find $searchpath -name '*.js' -print 2>/dev/null | xargs grep --color -s $opt -- $expression
 }
-# end Function grepsrcc
+# end Function
+
+# Function greppy
+unalias greppy 2>/dev/null
+greppy()
+{
+    searchpath=.
+    expression=''
+    opt=""
+    if [[ $# -eq 3 ]] ; then
+        opt=$1
+        expression=$2
+        searchpath=$3
+    elif [[ $# -eq 2 ]] ; then
+        expression=$1
+        searchpath=$2
+    else
+        expression=$1
+    fi
+    find $searchpath \( -name '*.py' -o -name '*.?sh' -o -name '*.??sh' -o -name '*.sh' \) -print 2>/dev/null | xargs grep --color -s $opt -- $expression
+}
+# end Function
 
 unalias inList 2>/dev/null
 inList() 
@@ -871,19 +1104,53 @@ sparkInit()
 unalias cpuPower 2>/dev/null
 cpuPower()
 {
-for CPUFREQ in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do [ -f $CPUFREQ ] || continue; sudo sh -c "echo -n powersave > $CPUFREQ"; done
+    for CPUFREQ in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do [ -f $CPUFREQ ] || continue; sudo sh -c "echo -n powersave > $CPUFREQ"; done
 }
 
 unalias cpuPerf 2>/dev/null
 cpuPerf()
 {
-for CPUFREQ in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do [ -f $CPUFREQ ] || continue; sudo sh -c "echo -n performance > $CPUFREQ"; done
+    for CPUFREQ in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do [ -f $CPUFREQ ] || continue; sudo sh -c "echo -n performance > $CPUFREQ"; done
+}
+
+# Modifies the configuration of a node in the CCM cluster.
+function ccm_update_node_config {
+    if [[ $# -eq 2 ]] ; then
+        nodeint=$1
+        newdc=$2
+        if [[ -z ${CLUSTER_NAME} ]]; then
+            CLUSTER_NAME=test
+        fi
+        CASSANDRA_YAML_SETTINGS="authenticator:PasswordAuthenticator \
+                          network_authorizer:CassandraNetworkAuthorizer \
+                          num_tokens:256 \
+                          endpoint_snitch:GossipingPropertyFileSnitch \
+                          seeds:127.0.0.1"
+
+        # CASSANDRA_YAML_SETTINGS="endpoint_snitch:GossipingPropertyFileSnitch \
+        #                   seeds:127.0.0.1,127.0.0.4"
+
+        for key_value_setting in ${CASSANDRA_YAML_SETTINGS}
+        do
+            setting_key=$(echo ${key_value_setting} | cut -d':' -f1)
+            setting_val=$(echo ${key_value_setting} | cut -d':' -f2)
+            sed -ie "s/${setting_key}\:\ .*/${setting_key}:\ ${setting_val}/g" \
+                ~/.ccm/${CLUSTER_NAME}/node${nodeint}/conf/cassandra.yaml
+        done
+
+        sed -ie "s/dc=.*/dc=${newdc}/g" \
+            ~/.ccm/${CLUSTER_NAME}/node${nodeint}/conf/cassandra-rackdc.properties
+        #sed -ie 's/\#MAX_HEAP_SIZE=\"4G\"/MAX_HEAP_SIZE=\"1G\"/g' \
+            #  ~/.ccm/${CLUSTER_NAME}/node${1}/conf/cassandra-env.sh
+        #sed -ie 's/\#HEAP_NEWSIZE=\"800M\"/HEAP_NEWSIZE=\"250M\"/g' \
+            #  ~/.ccm/${CLUSTER_NAME}/node${1}/conf/cassandra-env.sh
+    fi
 }
 
 unalias cassandraInit 2>/dev/null
 cassandraInit()
 {
-    export CASSANDRA_VERSION=2.2.16
+    export CASSANDRA_VERSION=3.11.5
     exporte CASSANDRA_HOME=/opt/apache-cassandra-${CASSANDRA_VERSION}
     exporte CASSANDRA_HOME=/opt/cassandra
     if [[ -e ${CASSANDRA_HOME} ]]; then
@@ -1091,11 +1358,11 @@ mypromptcolor () {
     bash_prompt_shortener
     color_std=`mycolor black bold white`
     #color_std=`mycolor white bold black`
-    color_reset=${color_std}
+    color_reset=$(tput -T xterm-256color sgr0)
     if [[ $user = "root" ]]; then
         color_host=`mycolor white bold red`
         color_user=`mycolor white bold red`
-        color_path=`mycolor white bold $ihost`
+        color_path=`mycolor red bold $ihost`
     else
         color_host=`mycolor $ihost bold white`
         color_user=`mycolor $iuser bold black`
@@ -1115,7 +1382,7 @@ myprompt() {
         color_user=`mycolor $foregroud bold $background`
         color_path=`mycolor $foregroud bold $background`
         color_host=`mycolor $foregroud bold $background`
-        color_reset=`mycolor $foregroud bold $background`
+        color_reset=$(tput -T xterm-256color sgr0)
         export PS1="\[${color_path}\]\w/\[${color_reset}\]\n\[${color_user}\][\u\[${color_reset}\]@\[${color_host}\]\H]\[${color_reset}\]> "
     elif [[ $# -eq 1 ]] ; then
         foregroud=$1
@@ -1124,7 +1391,7 @@ myprompt() {
         color_user=`mycolor $foregroud bold $background`
         color_path=`mycolor $foregroud bold $background`
         color_host=`mycolor $foregroud bold $background`
-        color_reset=`mycolor $foregroud bold $background`
+        color_reset=$(tput -T xterm-256color sgr0)
         export PS1="\[${color_path}\]\w/\[${color_reset}\]\n\[${color_user}\][\u\[${color_reset}\]@\[${color_host}\]\H]\[${color_reset}\]> "
     else
         echo "ERROR need two inputs: foreground color and background color"
@@ -1190,6 +1457,20 @@ rmtCheckMem() {
         ssh $dest 'ps aux --sort rss | tail -6 ; hostname -f ; free -m'
         #ssh $dest 'ps aux --sort rss | tail -6 ; hostname -f ; vmstat -s -S m'
     done
+}
+
+unalias sudocheck 2>/dev/null
+sudocheck() {
+    timeout -s 9 1 sudo echo 'sudo OK'
+    if [[ $? -ne 0 ]]; then echo 'ERROR'; fi
+}
+
+unalias clearcache 2>/dev/null
+clearcache() {
+    # Clear PageCache only.
+    # needs root perm
+    timeout -s 9 90 sudo -- bash -c 'sync; echo 1 > /proc/sys/vm/drop_caches'
+    # if [[ $? -ne 0 ]]; then echo 'ERROR during clearcache'; exit 9; fi
 }
 
 unalias rmtCheckJournal 2>/dev/null
@@ -1322,9 +1603,9 @@ rmtKillJava() {
 unalias snapCleanup 2>/dev/null
 snapCleanup() {
     echo "snapCleanup"
-    snap list --all | awk '/disabled/{print $1, $3}' |
+    sudo snap list --all | awk '/disabled/{print $1, $3}' |
         while read snapname revision; do
-            snap remove "$snapname" --revision="$revision"
+            sudo snap remove "$snapname" --revision="$revision"
         done
 }
 
@@ -1351,6 +1632,7 @@ snapDisable() {
 
 unalias btrfsCleanup 2>/dev/null
 btrfsCleanup() {
+    sudo btrfs subvolume list /
     sudo snapCleanup
     echo "btrfsCleanup"
     sudo apt-btrfs-snapshot delete-older-than 0d
@@ -1419,10 +1701,32 @@ virshstop() {
     for v in `virsh list --all | grep running | awk '{print $2}'` ;do virsh shutdown $v; done
 }
  
+unalias kernelpurge 2>/dev/null
+kernelpurge() {
+    uname -a
+    current_ver=$(uname -a | awk '{ print $3 }')
+    echo "Your in use kernel is $current_ver"
+
+    OLD_KERNELS=$(
+        dpkg --list |
+            grep -v "$current_ver" |
+            grep -Ei 'linux-image|linux-headers|linux-modules|nvidia' |
+            awk '{ print $2 }'
+               )
+    echo "Old Kernels to be removed WARNING double check nvidia !!!"
+    echo "$OLD_KERNELS"
+    
+    sudo apt-get autoremove --purge
+    # if [ "$1" == "exec" ]; then
+    #     for PACKAGE in $OLD_KERNELS; do
+    #         sudo apt purge -y "$PACKAGE"
+    #     done
+    # fi
+}
 
 #------------------------------------------------------------------------------
 ##echo "Source .kshrc"
-export tmpstr=tmp_$USER\_$(date '+%m%d%y')_$(date '+%H%M%S')
+export tmpstr=tmp_$USER\_$(date '+%y%m%d')_$(date '+%H%M%S')
 idir=$(pwd)
 
 ########
@@ -1507,6 +1811,8 @@ alias ka=kubeadm
 #------------------------------------------------------------------------------
 # Export
 #
+exporte KUBECONFIG=$KUBECONFIG:$HOME/.kube/config
+
 if [[ ! -z $(which sublime 2>/dev/null) ]] ; then
     export EDITOR=sublime
 elif [[ ! -z $(which emacs 2>/dev/null) ]] ; then
@@ -1527,11 +1833,15 @@ export ANT_OPTS="-Xmx5G"
 export TERM=xterm-color
 export scalaversion=`scala -version 2>&1 | awk -F 'version' '{print $2}' | awk  '{print $1}'`
 export scalaver=`echo $scalaversion | awk -F '.' '{print $1"."$2}'`
+export DOCKER_BUILDKIT=1
 
 # virsh 
 alias vmls="virsh list --all"
 alias vnet="virsh net-list"
 alias vnetls="virsh net-dhcp-leases default"
+
+# reset jack / headset detection
+alias headset='sudo alsactl restore'
 
 # modify environment variables only on specific machine
 # jlu local linux
@@ -1545,21 +1855,22 @@ if [[ $USER = "jlu" ]] ; then
     alias castmp="rm -rf /tmp/cassandra/* ; mkdir -p /tmp/cassandra/log"
     alias idea="idea.sh >/dev/null 2>&1 "
 
-    # exporte gdaldir=/opt/gdal-1.11.5
-    # if [[ -z $gdaldir ]] ; then 
-    #     exporte gdaldir=/opt/gdal-1.11.2
-    # fi
-    # exporte gdalnative=$gdaldir/build/lib
+    # exporte GDAL_DIR=/opt/gdal-3.4.1
+    # exporte gdalnative=$GDAL_DIR/build/lib
+    # exporte PDAL_DIR=/opt/PDAL-2.4.0-src/build
+    # exporte PDAL_LIBRARY_PATH=$PDAL_DIR/lib
+    # exporte PDAL_INCLUDE_DIRS=$PDAL_DIR/include
     
-    gover=1.15
-    exporte GOROOT=/usr/lib/go-$gover
-    exporte GOROOT=/usr/lib64/go/$gover
-    exporte GOROOT=/opt/go
-    exporte GOPATH=$HOME/gocode
-    exporte PATH=$PATH:$GOPATH/bin
-    exporte PATH=$PATH:$GOROOT/bin
+    gover=`go version 2>/dev/null | awk '{print $3}' | tr -d 'go'`
+    if [[ ! -z $gover ]]; then
+        exporte GOROOT=/usr/lib/go-$gover
+        exporte GOROOT=/usr/lib64/go/$gover
+        exporte GOROOT=/opt/go
+        exporte GOPATH=$HOME/gocode
+        exporte PATH=$PATH:$GOPATH/bin
+        exporte PATH=$PATH:$GOROOT/bin
+    fi
     exporte PATH=$PATH:/opt/cuda/bin
-    #exporte PATH=$PATH:/opt/azure-cli/bin
 fi
 
 export PIP_DEFAULT_TIMEOUT=60
@@ -1567,20 +1878,24 @@ export PIP_DEFAULT_TIMEOUT=60
 # modify environment variables for everyone
 exporte scriptsdir=/home/jlu/scripts
 exporte PATH=$PATH:.
+exporte PATH=$PATH:~/.local/bin
 exporte PATH=$PATH:~/bin
-exporte PATH=$PATH:$gdaldir/build/bin
-exporte PYTHONPATH=$PYTHONPATH:$gdaldir/swig/python
+exporte PATH=$PATH:~/.krew/bin
+exporte PATH=$PATH:$GDAL_DIR/build/bin
+export PYTHONDONTWRITEBYTECODE=1
+exporte PYTHONPATH=$PYTHONPATH:$GDAL_DIR/swig/python
 exporte PYTHONPATH=$PYTHONPATH:/opt/twsapi-9.79.01/IBJts/source/pythonclient
 exporte LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib64:/usr/local/lib:/opt/cuda/lib64:/opt/cuda/lib64/stubs:/opt/cuda/extras/CUPTI/lib64
-#exporte LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$gdaldir/build/lib64:$gdaldir/build/lib:/opt/lib64:/opt/lib
+#exporte LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$GDAL_DIR/build/lib64:$GDAL_DIR/build/lib:/opt/lib64:/opt/lib
 exporte PATH=$PATH:$scriptsdir
 #exporte PYTHONPATH=$PYTHONPATH:.
 exporte prefix=/usr
 exporte exec_prefix=/usr
 
 export GDAL_DATA=`gdal-config --datadir 2>/dev/null`
-exporte CLASSPATH=$CLASSPATH:$gdaldir/swig/java/gdal.jar
-#exporte CLASSPATH=$CLASSPATH:opt/depjars-cassandra-jdbc/apache-cassandra-clientutil-1.2.6.jar:/opt/depjars-cassandra-jdbc/apache-cassandra-thrift-1.2.6.jar:/opt/depjars-cassandra-jdbc/cassandra-all-1.2.9.jar:/opt/depjars-cassandra-jdbc/cassandra-jdbc-2.1.1.jar:/opt/depjars-cassandra-jdbc/guava-15.0.jar:/opt/depjars-cassandra-jdbc/jackson-core-asl-1.9.2.jar:/opt/depjars-cassandra-jdbc/jackson-mapper-asl-1.9.2.jar:/opt/depjars-cassandra-jdbc/libthrift-0.7.0.jar:/opt/depjars-cassandra-jdbc/log4j-1.2.15.jar:/opt/depjars-cassandra-jdbc/slf4j-api-1.5.2.jar:/opt/depjars-cassandra-jdbc/slf4j-log4j12-1.5.2.jar:/opt/depjars-cassandra-jdbc/slf4j-simple-1.5.2.jar
+exporte CLASSPATH=$CLASSPATH:$GDAL_DIR/swig/java/gdal.jar
+exporte CPLUS_INCLUDE_PATH=/usr/include/gdal
+exporte C_INCLUDE_PATH=/usr/include/gdal
 
 # Source azure env
 if [ -f ~/azure.completion.sh ]; then
@@ -1597,38 +1912,6 @@ if [[ ! -z $(which cqlsh 2>/dev/null) ]] ; then
     export CQLSH_HOST=$(myip)
 fi
 
-#export AZURE_STORAGE_ACCOUNT=myblob
-#export AZURE_STORAGE_ACCESS_KEY=
-#azure storage container create $container_name
-#azure storage blob upload $image_to_upload $container_name $blob_name
-#azure storage blob list $container_name
-#azure storage blob download $container_name $blob_name $destination_folder
-#azure hdinsight cluster create -g myarmgroup -l westus -y Linux --clusterType Hadoop --version 3.2 --defaultStorageAccountName mystorageaccount --defaultStorageAccountKey <defaultStorageAccountKey> --defaultStorageContainer mycontainer --userName admin --password <clusterPassword> --sshUserName sshuser --sshPassword <sshPassword> --workerNodeCount 1 –configurationPath "C:\myFiles\configFile.config" myNewCluster01
-# azure group deployment create --name $deploymentName --resource-group $resourceGroupName --template-file $templateFilePath --parameters-file $parametersFilePath --verbose
-#azure hdinsight config create "C:\myFiles\configFile.config"
-#azure hdinsight config add-script-action --configFilePath "C:\myFiles\configFile.config" --nodeType HeadNode --uri <scriptActionURI> --name myScriptAction --parameters "-param value"
-#azure hdinsight cluster enable-http-access [options] <clusterName> <userName> <password>
-#azure hdinsight cluster disable-http-access [options] <clusterName>
-#azure hdinsight cluster disable-rdp-access [options] <clusterName>
-#azure vm restart [options] <resource-group> <name>
-# az vm restart --name $vm --resource-group $rgname
-# az vm stop --name $vm --resource-group $rgname
-# az vm start --name $vm --resource-group $rgname
-# for res in $(az vm list --resource-group $rgname --query "[].name" -o tsv | grep 'marathon2-32736118' ); do az vm start --name $res --resource-group $rgname & sleep 1; done
-# az vm list --resource-group $rgname --query "[].name" -o tsv
-# for res in $(az resource list --resource-group $rgname --query "[].id" -o tsv | grep 'spark1' ); do az resource tag --tags ENV=DEV PROJECT=toto --id $res & sleep 1; done
-# az tag list
-# az tag list --query "[].tagName" -o tsv
-# az tag add-value --name ENV --value PROD
-# az tag add-value --name PROJECT --value toto
-# az vm list --resource-group $rgname | jpterm
-# az vm list-ip-addresses --resource-group $rgname --query "[].virtualMachine.network.privateIpAddresses" -o tsv 
-# az vm list-ip-addresses --resource-group $rgname --query "[].virtualMachine.name" -o tsv 
-# list=$(az resource list --resource-group $rgname --query "[].[name,type]" -o tsv | grep -v Standard_LRS) && echo $list
-# list=$(az resource list --resource-group $rgname --query "[].[name,type]" -o tsv | grep  -e 'marathon2-327361181' -e 'marathon2-327361181nic-2') && echo $list
-# count=$(echo $list | wc -w) && arr=($list) && i=0; while [[ $i -le $(($count/2-1)) ]]; do in=$((2*$i)); it=$((2*$i+1)); echo ${arr[$in]} ${arr[$it]} ; az resource delete --resource-group $rgname --name ${arr[$in]} --resource-type ${arr[$it]} --verbose & i=$(($i+1)); sleep 1 ; done
-
-# grep "Parquet file generation duration" Logs_for_container_1479831859331_0021_01_000001.html  | awk '{print $NF}' | tr -d ms | awk '{ SUM += $1} END { print SUM/218/1000 }'
 # git branch -d -r julien && git push origin --delete julien
 # git clone --bare toto.git # takes all branches and tags
 ###Git uses the ^ notation to mean "one commit prior."
@@ -1638,7 +1921,7 @@ fi
 # git diff BRANCHNAME -- ./lib
 # git diff HEAD -- ./lib
 # git diff stat
-# git merge BRANCHNAME --no-commit --squash
+# git merge --squash --no-commit -Xtheirs BRANCHNAME
 # git log --pretty=oneline --since="2 weeks ago"
 # git log --pretty=format:'%h : %s' --date-order --graph
 # git stash --keep-index
@@ -1655,35 +1938,21 @@ fi
 # yum install epel-release centos-extras
 # yum install make gcc kernel-headers kernel-devel perl dkms bzip2 curl wget jq nmon sysstat htop vim firewalld git
 
-# sudo apt install ant maven curl baobab ncdu gnuplot python-pip python3-pip jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev snapper vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects
-# sudo apt install dropwatch
-# sudo apt install prometheus-node-exporter prometheus prometheus-alertmanager netdata 
-# sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager libguestfs-tools
-
-# zypper rm -u ffmpeg-3
-# cp /var/log/zypp/history zypper.history
-# zypper lr -e zypper.repo
-# zypper rm -u libvdpau_nouveau xf86-video-nouveau Mesa-dri-nouveau
-# zypper al libvdpau_nouveau xf86-video-nouveau Mesa-dri-nouveau
-# zypper in --auto-agree-with-licenses sbt ant maven curl rpm-build npm baobab ncdu gnuplot libsnappy1 libffi-devel python-pip python3-pip jq gradle-open-api xeyes exfat-utils fuse-exfat libfsntfs-tools pidgin pidgin-sipe pidgin-plugin-skype git git-cvs gitg figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 shutter evolution-ews zypper-aptitude libogg0-32bit terminator tilix doxygen git git-credential-gnome-keyring fakeroot clementine bzr fossil git-daemon git-web mercurial apache2-utils hexchat dstat htop nmon sysstat exa gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex python2-yq python3-yq java-1_8_0-openjdk-devel lame aws-cli fbreader ecryptfs-utils
-# zypper rm -u ffmpeg-3
-# zypper install --allow-vendor-change -r packman gstreamer gstreamer-plugins-bad gstreamer-plugins-ugly gstreamer-plugins-ugly-orig-addon gstreamer-plugins-libav libavcodec57 libavfilter6 vlc vlc-codecs 
-# zypper install --allow-vendor-change -r dvd libdvdcss2
-# zypper in --auto-agree-with-licenses hdf hdf5 netcdf
-# zypper dup --allow-vendor-change --from packman
-# zypper in -y --auto-agree-with-licenses python3-numpy python3-scipy python3-matplotlib python3-pandas python3-Cython python3-openstackclient python3-Flask python-geojson python3-Shapely python3-graphviz python3-pydotplus python3-PyYAML python3-urllib3 python3-falcon python3-gunicorn python2-pika python3-pika
-# zypper install --type pattern devel_C_C++ devel_python pattern devel_python3
-# zypper in libopenssl-devel libffi48-devel bluez-devel sqlite2-devel tk-devel valgrind-devel libexpat-devel sqlite3-devel readline-devel readline-devel-32bit libbz2-devel libexpat-devel libbz2-devel readline-devel sqlite3-devel
-# zypper si zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel build-essential python
-# zypper in -y js go go-doc sbt-launcher-packaging grafana tomcat-webapps tomcat-admin-webapps tomcat-docs-webapp tomcat-embed kibana texlive-latex graphviz gdbgui httpie flash-player 
-# curl -L https://aka.ms/InstallAzureCli | bash
-# npm install -g azure-cli
-# rpm --import https://packages.microsoft.com/keys/microsoft.asc
-# zypper install https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-beta.6/powershell-6.0.0_beta.6-1.suse.42.1.x86_64.rpm
-# zypper install https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-beta.6/powershell-6.0.0_beta.6-1.suse.42.1.x86_64.rpm
-# pip install pipenv
-# pipenv install numba dask csvkit snappy yes xarray netcdf4 arrow cdo beautifulsoup4 uwsgi flask_cors fastparquet python-nmap thriftpy
-# pipenv install parquet
+# sudo add-apt-repository ppa:ubuntugis/ppa
+# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl 
+# sudo apt install cheese guvcview okular
+# sudo apt install clamav clamtk clamav-daemon inotify-tools
+# sudo apt install prometheus-node-exporter prometheus prometheus-alertmanager 
+# sudo apt install qemu qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager libguestfs-tools ebtables
+# sudo pip3 install bpytop gpustat --upgrade
+# sudo ubuntu-drivers autoinstall
+# sudo apt install nvidia-driver-470 
+# sudo apt install linux-tools-$(uname -r) linux-cloud-tools-$(uname -r)
+# sudo apt install dropwatch netdata
+# sudo apt install postgresql-12
+# sudo apt-mark hold postgresql-12
+# sudo apt install apt-btrfs-snapshot
+# sudo systemctl enable chronyd ; sudo systemctl start chronyd ; timedatectl; sudo timedatectl set-ntp true ; timedatectl
 
 # if [[ "$USER" = "root" ]]; then
 #     exportNoVoid PATH="$PATH:/opt/miniconda3/bin"
@@ -1720,3 +1989,9 @@ condaInit()
 # <<< conda initialize <<<
 
 
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[[ -e ~/.cargo/env ]] && . "$HOME/.cargo/env"
+
+[[ -e ~/.alteia.sh ]] && source ~/.alteia.sh

@@ -1,7 +1,0 @@
-[repo-source]
-name=Source Repository
-enabled=0
-autorefresh=1
-baseurl=http://download.opensuse.org/source/distribution/leap/$releasever/repo/oss/
-type=NONE
-keeppackages=0

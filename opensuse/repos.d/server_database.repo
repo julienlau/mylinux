@@ -1,9 +1,0 @@
-[server_database]
-name=Databases (openSUSE_Leap_15.1)
-enabled=1
-autorefresh=0
-baseurl=http://download.opensuse.org/repositories/server:/database/openSUSE_Leap_15.1/
-type=rpm-md
-priority=98
-gpgcheck=1
-gpgkey=http://download.opensuse.org/repositories/server:/database/openSUSE_Leap_15.1/repodata/repomd.xml.key

@@ -1,8 +1,0 @@
-[repo-update]
-name=Main Update Repository
-enabled=1
-autorefresh=1
-baseurl=http://download.opensuse.org/update/leap/$releasever/oss
-path=/
-type=rpm-md
-keeppackages=0

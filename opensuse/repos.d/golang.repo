@@ -1,8 +1,0 @@
-[golang]
-name=golang
-enabled=1
-autorefresh=1
-baseurl=http://download.opensuse.org/repositories/devel:/languages:/go/openSUSE_Leap_15.1/
-type=rpm-md
-priority=90
-keeppackages=0
