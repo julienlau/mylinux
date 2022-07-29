@@ -50,7 +50,8 @@ if [ -e ~/.xsh ]; then
     source ~/.xsh
 fi
 
-bind 'set enable-bracketed-paste off'
+# Ubuntu 22.04 desktop
+bind 'set enable-bracketed-paste off' 2>/dev/null
 
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
 # export SYSTEMD_PAGER=
@@ -1763,11 +1764,11 @@ else
     alias rgrep='find . 2>/dev/null | xargs grep -s'
 fi
 if [[ ! -z `which exa 2>/dev/null` ]] ; then
-    # alias l="exa -a1" # short for "1"line "A"ll
+    alias l="exa -a1" # short for "1"line "A"ll
     # alias ls="exa -F" # with suffixes (/ for dirs, ect.)
     # alias ll="exa -aFl --git" # full
-    alias ll="exa -algF --git" # full with hidden files
-    alias lt="exa -algF --git --sort modified" # full with hidden files
+    alias ll="exa -algF " # full with hidden files
+    alias lt="exa -algF --sort modified" # full with hidden files
     # alias lt="exa -a --tree" # tree
     # alias lt1="exa -a --tree -L1" # tree level 1
     # alias lt2="exa -a --tree -L2" # tree level 2
@@ -1842,6 +1843,7 @@ alias vnetls="virsh net-dhcp-leases default"
 
 # reset jack / headset detection
 alias headset='sudo alsactl restore'
+alias k=kubectl
 
 # modify environment variables only on specific machine
 # jlu local linux
@@ -1939,7 +1941,7 @@ fi
 # yum install make gcc kernel-headers kernel-devel perl dkms bzip2 curl wget jq nmon sysstat htop vim firewalld git
 
 # sudo add-apt-repository ppa:ubuntugis/ppa
-# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl 
+# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa
 # sudo apt install cheese guvcview okular
 # sudo apt install clamav clamtk clamav-daemon inotify-tools
 # sudo apt install prometheus-node-exporter prometheus prometheus-alertmanager 
