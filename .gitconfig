@@ -1,6 +1,5 @@
 [user]
-#email = julien.laurenceau@pepitedata.com
-email = julien.laurenceau-ext@alteia.com
+email = julien.laurenceau@pepitedata.com
 name = Julien Laurenceau
 
 [credential]
@@ -29,7 +28,8 @@ slog = log --graph --all --topo-order --pretty='format:%h %ai %s%d (%an)'
 st = status
 pfl = push --force-with-lease
 f = fetch --all --tags
-#restore_from_origin = reset --hard @{u}
+# restore_from_origin = reset --hard @{u}
+# compaction of recent history git reset --soft HEAD@{2}
 
 [cola]
 spellcheck = false
