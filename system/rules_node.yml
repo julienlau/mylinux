@@ -1,0 +1,228 @@
+# this file was adapted from the source code of gitlab
+groups:
+- name: CPU rules
+  rules:
+  - record: instance:node_cpus:count
+    expr: count(node_cpu{mode="idle"}) WITHOUT (cpu, mode)
+  - record: instance:node_cpus:count
+    expr: count(node_cpu_seconds_total{mode="idle"}) WITHOUT (cpu, mode)
+  - record: instance_cpu:node_cpu_wait:rate5m
+    expr: sum(rate(node_cpu{mode="wait"}[5m])) WITHOUT (mode)
+  - record: instance_cpu:node_cpu_not_idle:rate5m
+    expr: sum(rate(node_cpu{mode!="idle"}[5m])) WITHOUT (mode)
+  - record: instance_cpu:node_cpu_not_idle:rate5m
+    expr: sum(rate(node_cpu_seconds_total{mode!="idle"}[5m])) WITHOUT (mode)
+  - record: instance_mode:node_cpu:rate5m
+    expr: sum(rate(node_cpu[5m])) WITHOUT (cpu)
+  - record: instance_mode:node_cpu:rate5m
+    expr: sum(rate(node_cpu_seconds_total[5m])) WITHOUT (cpu)
+  - record: instance:node_cpu_in_use:ratio
+    expr: sum(instance_mode:node_cpu:rate5m{mode!="idle"}) WITHOUT (mode) / instance:node_cpus:count
+  - record: instance:node_cpu_in_use:5m
+    expr: avg_over_time(instance:node_cpu_in_use:ratio[5m])
+  - record: instance:node_cpu_in_use:1h
+    expr: avg_over_time(instance:node_cpu_in_use:ratio[1h])
+  - record: instance:node_cpu_in_use:stddev_over_time1h
+    expr: stddev_over_time(instance:node_cpu_in_use:ratio[1h])
+  
+  - alert: NodeDown
+    expr: sum(up * on (instance, job) group_left(environment) machine_env{environment="PROD"}) != 21
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      description: Node down {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }} for the past 2m.
+      title: CPU use percent is extremely high on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }} for the past 2m.
+
+  - alert: ExtremelyHighCPU
+    expr: instance:node_cpu_in_use:ratio * on (instance, job) group_left(environment) machine_env{environment="PROD"} > 0.95
+    for: 20m
+    labels:
+      severity: critical
+    annotations:
+      description: CPU use percent is extremely high on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }} for the past 20m.
+      title: CPU use percent is extremely high on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }} for the past 20m.
+
+  - alert: HighCPU
+    expr: instance:node_cpu_in_use:ratio * on (instance, job) group_left(environment) machine_env{environment="PROD"} > 0.5
+    for: 1h
+    labels:
+      severity: critical
+    annotations:
+      description: CPU use percent is high on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }} for the past 1 hour.
+      title: CPU use percent is high on {{ if $labels.fqdn }}{{ $labels.fqdn }}{{
+        else }}{{ $labels.instance }}{{ end }} for the past 1 hour.
+
+  - alert: CPUOutlierDetection
+    expr: instance:node_cpu_in_use:5m - (clamp_max(instance:node_cpu_in_use:1h*1.05 + 2
+      * instance:node_cpu_in_use:stddev_over_time1h, 1)) > 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      description: The CPU usage on {{ if $labels.fqdn }}{{ $labels.fqdn }}{{ else
+        }}{{ $labels.instance }}{{ end }} is outside normal values over a 1h period
+      title: CPU use percent is unusually high compared with the rate of the last
+        hour
+
+  - alert: HighCPUwait
+    expr: instance:node_cpu_wait:ratio * on (instance, job) group_left(environment) machine_env{environment="PROD"} > 0.0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      description: CPU wait percent is high on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }} for the past 1 hour.
+      title: CPU use percent is high on {{ if $labels.fqdn }}{{ $labels.fqdn }}{{
+        else }}{{ $labels.instance }}{{ end }} for the past 1 hour.
+
+  - alert: HostMemoryUnderMemoryPressure
+    expr: rate(node_vmstat_pgmajfault[1m]) > 1000
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      title: Host memory under memory pressure (instance {{ $labels.instance }})
+      description: The node is under heavy memory pressure. 
+        High rate of major page faults VALUE = {{ $value }} on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}
+
+- name: Node filesystem rules
+  rules:
+  - record: instance:node_filesystem_avail:ratio
+    expr: node_filesystem_free_bytes{device=~"/dev/.+"} / node_filesystem_size_bytes{device=~"/dev/.+"}
+  - record: instance:node_disk_writes_completed:irate1m
+    expr: sum(irate(node_disk_writes_completed{device=~"sd.*"}[1m])) WITHOUT (device)
+  - record: instance:node_disk_writes_completed:irate1m
+    expr: sum(irate(node_disk_writes_completed_total{device=~"sd.*"}[1m])) WITHOUT (device)
+  - record: instance:node_disk_reads_completed:irate1m
+    expr: sum(irate(node_disk_reads_completed{device=~"sd.*"}[1m])) WITHOUT (device)
+  - record: instance:node_disk_reads_completed:irate1m
+    expr: sum(irate(node_disk_reads_completed_total{device=~"sd.*"}[1m])) WITHOUT (device)
+  - record: instance:node_memory_available:ratio
+    expr: (node_memory_MemAvailable / node_memory_MemTotal) or ((node_memory_MemFree + node_memory_Buffers + node_memory_Cached) / node_memory_MemTotal)
+  - record: instance:node_memory_available:ratio
+    expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) or ((node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes) / node_memory_MemTotal_bytes)
+
+  - alert: HighDiskReadLatency
+    expr: rate(node_disk_read_time_seconds_total[5m]) / rate(node_disk_reads_completed_total[5m]) >= 0.10
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      title: 'High disk read latency {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      description: "High disk read latency 
+          on {{ if $labels.fqdn }}{{ $labels.fqdn
+         }}{{ else }}{{ $labels.instance }}{{ end }}"
+      value: '{{ $value | humanize }}%'
+      device: '{{ $labels.device }}%'
+      mount_point: '{{ $labels.mountpoint }}%'
+
+  - alert: LowDiskSpace
+    expr: instance:node_filesystem_avail:ratio{fstype=~"(ext.|xfs)"} * 100 <= 10
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      title: 'Less than 10% disk space left on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      description: "Consider sshing into the instance and removing old logs, clean
+        temp files on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}"
+      value: '{{ $value | humanize }}%'
+      device: '{{ $labels.device }}%'
+      mount_point: '{{ $labels.mountpoint }}%'
+      
+  - alert: NoDiskSpace
+    expr: instance:node_filesystem_avail:ratio{fstype=~"(ext.|xfs)"} * 100 <= 1
+    for: 15m
+    labels:
+      severity: critical
+    annotations:
+      title: '1% disk space left on on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      description: "There's only 1% disk space left on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}"
+      value: '{{ $value | humanize }}%'
+      device: '{{ $labels.device }}%'
+      mount_point: '{{ $labels.mountpoint }}%'
+      
+  - alert: HighInodeUsage
+    expr: node_filesystem_files_free{fstype=~"(ext.|xfs)"} / node_filesystem_files{fstype=~"(ext.|xfs)"}
+      * 100 <= 20
+    for: 15m
+    labels:
+      severity: critical
+    annotations:
+      title: "Low number of inode free on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}"
+      description: |
+        "Consider ssh'ing into the instance and removing files or clean
+        temp files"
+      value: '{{ $value | printf "%.2f" }}%'
+      device: '{{ $labels.device }}%'
+      mount_point: '{{ $labels.mountpoint }}%'
+
+- name: Misc rules
+  rules:
+  - record: instance:up:count
+    expr: count(up == 1) WITHOUT (instance)
+  - record: instance:up:count
+    expr: count(up * on (instance, job) group_left(environment) machine_env{environment="PROD"} == 1) WITHOUT (instance)
+    
+  - alert: FleetSizeChanged
+    expr: changes(instance:up:count[5m]) >= 1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      description: The {{ $labels.type }} fleet has changed, this can be due to having
+        more or less, if it's the latter it can be because nodes went down silently
+      title: The fleet size has changed in the last 5 minutes
+      
+  - alert: HighMemoryPressure
+    expr: instance:node_memory_available:ratio * 100 < 5 and rate(node_vmstat_pgmajfault[1m]) > 1000
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      description: The node is under heavy memory pressure.  The available memory is under 5% and
+        there is a high rate of major page faults.
+      value: 'Available memory {{ $value | printf "%.2f" }}%'
+      title: Node is under heavy memory pressure on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}
+
+  - alert: HostOomKillDetected
+    expr: increase(node_vmstat_oom_kill[5m]) > 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      title: Host OOM kill detected (instance {{ $labels.instance }})
+      description: OOM kill detected\n  VALUE = {{ $value }}\n  LABELS= {{ $labels }}
+
+  - alert: KernelVersionDeviations
+    expr: count(sum(label_replace(node_uname_info * on (instance, job) group_left(environment) machine_env{environment="PROD"}, "kernel", "$1", "release", "([0-9]+.[0-9]+.[0-9]+).*")) by (kernel)) > 1
+    for: 1d
+    labels:
+      severity: info
+    annotations:
+      description: Kernel versions are deviating across fleet
+      title: 'Different kernel versions are running in production for a day'
+      
+  - alert: CPUStalls
+    expr: rate(rcu_sched_stalls_total[1m]) > 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      description: The node is encountering RCU CPU stall warnings, which may cause the node to lock up occasionally.
+        Check `/var/log/kern.log` for more details. You may need to contact the cloud provider and possibly redeploy the VM.
+      title: CPU stall warnings have been detected on {{ if $labels.fqdn }}{{ $labels.fqdn }}
+        {{ else }}{{ $labels.instance }}{{ end }} for the past 10 minutes.

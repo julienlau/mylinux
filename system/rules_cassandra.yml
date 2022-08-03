@@ -1,0 +1,150 @@
+groups:
+- name: Cassandra rules
+  rules:
+  - record: instance:cassandra:rqps
+    expr: sum by (instance) (rate(cassandra_keyspace_readlatency_seconds_count{environment="STAGING",keyspace!~"system.*"}[5m]))
+  - record: instance:cassandra:wqps
+    expr: sum by (instance) (rate(cassandra_keyspace_writelatency_seconds_count{environment="STAGING",keyspace!~"system.*"}[5m]))
+  - record: instance:cassandra:tombstonescan
+    expr: sum by (instance) (rate(cassandra_keyspace_tombstonescannedhistogram_count{environment="STAGING",keyspace!~"system.*"}[5m]))
+  - record: instance:cassandra_filesystem_avail:ratio
+    expr: node_filesystem_free_bytes{mountpoint="/appli",job=~"cassandra_node.*"} / node_filesystem_size_bytes{mountpoint="/appli",job=~"cassandra_node.*"}
+  - record: instance:cassandra:qps:5m
+    expr: avg_over_time(instance:cassandra:wqps[5m])+avg_over_time(instance:cassandra:rqps[5m])
+  - record: instance:cassandra:qps:1h
+    expr: avg_over_time(instance:cassandra:wqps[1h])+avg_over_time(instance:cassandra:rqps[1h])
+  - record: instance:cassandra:qps:stddev_over_time1h
+    expr: stddev_over_time(instance:cassandra:wqps[1h])+stddev_over_time(instance:cassandra:rqps[1h])
+
+  - alert: LowDiskSpace DATA
+    expr: instance:cassandra_filesystem_avail:ratio * 100 <= 50
+    for: 4h
+    labels:
+      severity: warning
+    annotations:
+      title: 'Less than 50% disk space left on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      description: "Consider sshing into the instance and removing old logs, clean
+        temp files on {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}"
+      value: '{{ $value | humanize }}%'
+      device: '{{ $labels.device }}%'
+      mount_point: '{{ $labels.mountpoint }}%'
+      
+  - alert: CassandraClient
+    expr: sum(cassandra_client_connectednativeclients) > 200
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      title: 'Number of cassandra client unexpectedly large {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      description: "Consider checking healthchecks infinite loops or apigateway connection issues {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}"
+      value: '{{ $value | humanize }}%'
+      
+  - alert: CassandraDroppedMsg
+    expr: delta(cassandra_droppedmessage_dropped_count[5m]) > 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      title: 'Cassandra flooded, some transactions were dropped  {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      description: "Consider checking VM health, CPU or disk usage issues {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}"
+      value: '{{ $value | humanize }}%'
+      
+  - alert: CassandraHints
+    expr: delta(cassandra_storage_totalhints_count[5m]) > 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      title: 'Cassandra flooded, some transactions were dropped  {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      description: "Consider checking VM health, CPU or disk usage issues {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}"
+      value: '{{ $value | humanize }}%'
+      
+  - alert: CassandraConnectionTimeout
+    expr: count(rate(cassandra_connection_timeouts_count{connection=~".*"}[5m]) > 0)
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      title: 'Cassandra connection timeouts  {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      value: '{{ $value | humanize }}%'
+      
+  - alert: CassandraRequestTimeout
+    expr: count(rate(cassandra_clientrequest_timeouts_count{connection=~".*"}[5m]) > 0)
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      title: 'Cassandra client request timeouts  {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      value: '{{ $value | humanize }}%'
+      
+  - alert: CassandraLatencyRead
+    expr: cassandra_clientrequest_latency_seconds{clientrequest=~"Read.*",quantile="0.95"} > 0.010
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      title: 'Cassandra client request timeouts  {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      value: '{{ $value | humanize }}%'
+      
+  - alert: CassandraLatencyWrite
+    expr: cassandra_clientrequest_latency_seconds{clientrequest=~"Write.*",quantile="0.95"} > 0.005
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      title: 'Cassandra client request timeouts  {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      value: '{{ $value | humanize }}%'
+      
+  - alert: CassandraTombstone
+    expr: instance:cassandra:tombstonescan / instance:cassandra:rqps > 2
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      title: 'Cassandra tombstones purges not fast enough {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      value: '{{ $value | humanize }}%'
+      
+  - alert: CassandraRowCache
+    expr: cassandra_cache_hitrate{cache="RowCache"} < 0.8
+    for: 1h
+    labels:
+      severity: info
+    annotations:
+      title: 'Cassandra Row cache should be reconfigured or disabled {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      value: '{{ $value | humanize }}%'
+      
+  - alert: CassandraGc
+    expr: rate(jvm_gc_collection_seconds_sum{gc="ParNew",job=~"cassandra_jmx.*"}[5m]) / rate(jvm_gc_collection_seconds_count{gc="ParNew",job=~"cassandra_jmx.*"}[5m]) > 0.500
+    for: 1h
+    labels:
+      severity: info
+    annotations:
+      title: 'Cassandra GC duration too long {{ if $labels.fqdn }}{{ $labels.fqdn
+        }}{{ else }}{{ $labels.instance }}{{ end }}'
+      value: '{{ $value | humanize }}%'
+      
+  - alert: CassandraQueryOutlierDetection
+    expr: abs( instance:cassandra:qps:5m /(instance:cassandra:qps:1h * 1.05 + 2 * instance:cassandra:qps:stddev_over_time1h) -1) > 0.1
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      description: The Cassandra Query usage usage on {{ if $labels.fqdn }}{{ $labels.fqdn }}{{ else
+        }}{{ $labels.instance }}{{ end }} is outside normal values over a 1h period
+      title: Cassandra use percent is unusually high compared with the rate of the last
+        hour
+
