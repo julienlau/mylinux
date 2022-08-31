@@ -27,7 +27,7 @@
   "gnetId": 11074,
   "graphTooltip": 0,
   "id": 84,
-  "iteration": 1661936025293,
+  "iteration": 1661937315974,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -2468,7 +2468,6 @@
       "description": "The time spent on I/O in the natural time of each second.（wall-clock time）",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -2505,7 +2504,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.1",
+      "pluginVersion": "8.5.2",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2567,7 +2566,6 @@
       "description": "Time spent on each read/write operation",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -2605,7 +2603,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.1",
+      "pluginVersion": "8.5.2",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2684,7 +2682,6 @@
       "description": "TCP_alloc - Allocated sockets\n\nCurrEstab - TCP connections for which the current state is either ESTABLISHED or CLOSE- WAIT\n\nTCP_tw - Sockets wating close\n\nUDP_inuse - Udp sockets currently in use\n\nSockets_used - Sockets currently in use",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -2724,7 +2721,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.1",
+      "pluginVersion": "8.5.2",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2815,7 +2812,6 @@
       "description": "",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -2853,7 +2849,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.1",
+      "pluginVersion": "8.5.2",
       "pointradius": 0.5,
       "points": false,
       "renderer": "flot",
@@ -2911,7 +2907,7 @@
     "list": [
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "spk-ap27661-poc-1d59b874",
           "value": "spk-ap27661-poc-1d59b874"
         },
@@ -2959,12 +2955,12 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
-            "kube-cbhovo7b0err921ut160-spkap27661p-default-00000207"
+            "kube-cbhovo7b0err921ut160-spkap27661p-compute-00000619"
           ],
           "value": [
-            "kube-cbhovo7b0err921ut160-spkap27661p-default-00000207"
+            "kube-cbhovo7b0err921ut160-spkap27661p-compute-00000619"
           ]
         },
         "datasource": {
@@ -2973,7 +2969,7 @@
         },
         "definition": "label_values(node_uname_info{job=~\"$job\"}, nodename)",
         "hide": 0,
-        "includeAll": true,
+        "includeAll": false,
         "label": "Host",
         "multi": true,
         "name": "hostname",
@@ -3026,8 +3022,8 @@
       {
         "current": {
           "selected": false,
-          "text": "/var/data/kubelet/pods/e9310d4d-5733-451c-be40-8df14b46e2ed/volume-subpaths/pvc-42ca93ac-f012-41e4-b4b4-ae096efb6f5e/prometheus/2",
-          "value": "/var/data/kubelet/pods/e9310d4d-5733-451c-be40-8df14b46e2ed/volume-subpaths/pvc-42ca93ac-f012-41e4-b4b4-ae096efb6f5e/prometheus/2"
+          "text": "/",
+          "value": "/"
         },
         "datasource": {
           "type": "prometheus",
@@ -3056,6 +3052,7 @@
       {
         "allFormat": "glob",
         "current": {
+          "isNone": true,
           "selected": false,
           "text": "None",
           "value": ""
@@ -3089,7 +3086,7 @@
         "allFormat": "glob",
         "allValue": "",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "None"
           ],
@@ -3156,6 +3153,6 @@
   "timezone": "",
   "title": "Node Exporter",
   "uid": "hb7fSE0Zzx",
-  "version": 6,
+  "version": 7,
   "weekStart": ""
 }
