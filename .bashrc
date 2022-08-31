@@ -1,4 +1,3 @@
-# sudo journalctl --vacuum-time=14days --vacuum-size=500M
 # sudo usermod $UESR -a -G wheel
 #sudoers# %wheel ALL=(ALL) ALL
 #sudoers# Defaults    timestamp_timeout=-1
@@ -6,6 +5,8 @@
 # login=jlu password=windowsPassword
 # ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519
 # ssh-keygen -o -t rsa -b 4096 -f ~/.ssh/id_rsa
+# ## support xauth pour les applis X: 
+# echo "session  optional  pam_xauth.so" >> /etc/pam.d/su
 
 # sudo sysctl -w vm.swappiness=1
 # kernel boot options : nomodeset nouveau.modeset=0 pci=noaer pci=nomsi libata.noacpi=1 nvidia-drm.modeset=1
@@ -439,6 +440,24 @@ dockerjlog() {
         echo "journalctl -u docker --since=-5m $journalstr | grep -i -v -e Elasticsearch -e ']: $' -e '  No living connections' -e '  No living connections' -e 'GET /healthz' -e 'lib.request_handlers.authentication - info - No bearer token found on request'
 "
     fi
+}
+
+unalias dockerhist 2>/dev/null
+dockerhist() {
+    docker history --no-trunc "$1" | \
+        sed -n -e 's,.*/bin/sh -c #(nop) \(MAINTAINER .*[^ ]\) *0 B,\1,p' | \
+        head -1
+    docker inspect --format='{{range $e := .Config.Env}}
+ENV {{$e}}
+{{end}}{{range $e,$v := .Config.ExposedPorts}}
+EXPOSE {{$e}}
+{{end}}{{range $e,$v := .Config.Volumes}}
+VOLUME {{$e}}
+{{end}}{{with .Config.User}}USER {{.}}{{end}}
+{{with .Config.WorkingDir}}WORKDIR {{.}}{{end}}
+{{with .Config.Entrypoint}}ENTRYPOINT {{json .}}{{end}}
+{{with .Config.Cmd}}CMD {{json .}}{{end}}
+{{with .Config.OnBuild}}ONBUILD {{json .}}{{end}}' "$1"
 }
 
 # Function grepsrc
@@ -1112,6 +1131,18 @@ unalias cpuPerf 2>/dev/null
 cpuPerf()
 {
     for CPUFREQ in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do [ -f $CPUFREQ ] || continue; sudo sh -c "echo -n performance > $CPUFREQ"; done
+}
+
+unalias kgetport 2>/dev/null
+kgetport()
+{
+    kubectl get svc $1 -o=jsonpath="{.spec.ports[?(@.port==$2)].nodePort}"
+}
+
+unalias klsport 2>/dev/null
+klsport()
+{
+    kubectl get svc --all-namespaces -o go-template='{{range .items}}{{ $save := . }}{{range.spec.ports}}{{if .nodePort}}{{$save.metadata.namespace}}{{"/"}}{{$save.metadata.name}}{{" - "}}{{.name}}{{": "}}{{.targetPort}}{{" -> "}}{{.nodePort}}{{"\n"}}{{end}}{{end}}{{end}}'
 }
 
 # Modifies the configuration of a node in the CCM cluster.
@@ -1809,6 +1840,7 @@ alias hmv="hdfs dfs -mv"
 alias hschema="hadoop jar /opt/tools/latest/depjars/parquet-tools-1.9.0.jar schema"
 alias kc=kubectl
 alias ka=kubeadm
+alias k=kubectl
 #------------------------------------------------------------------------------
 # Export
 #
@@ -1843,7 +1875,6 @@ alias vnetls="virsh net-dhcp-leases default"
 
 # reset jack / headset detection
 alias headset='sudo alsactl restore'
-alias k=kubectl
 
 # modify environment variables only on specific machine
 # jlu local linux
@@ -1884,6 +1915,8 @@ exporte PATH=$PATH:~/.local/bin
 exporte PATH=$PATH:~/bin
 exporte PATH=$PATH:~/.krew/bin
 exporte PATH=$PATH:$GDAL_DIR/build/bin
+exporte SPARK_HOME=/opt/spark
+exporte HADOOP_HOME=/opt/hadoop
 export PYTHONDONTWRITEBYTECODE=1
 exporte PYTHONPATH=$PYTHONPATH:$GDAL_DIR/swig/python
 exporte PYTHONPATH=$PYTHONPATH:/opt/twsapi-9.79.01/IBJts/source/pythonclient
@@ -1941,7 +1974,7 @@ fi
 # yum install make gcc kernel-headers kernel-devel perl dkms bzip2 curl wget jq nmon sysstat htop vim firewalld git
 
 # sudo add-apt-repository ppa:ubuntugis/ppa
-# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa
+# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa skopeo
 # sudo apt install cheese guvcview okular
 # sudo apt install clamav clamtk clamav-daemon inotify-tools
 # sudo apt install prometheus-node-exporter prometheus prometheus-alertmanager 
