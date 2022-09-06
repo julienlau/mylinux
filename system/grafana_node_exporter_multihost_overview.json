@@ -28,7 +28,7 @@
   "gnetId": 15172,
   "graphTooltip": 0,
   "id": 83,
-  "iteration": 1662453922006,
+  "iteration": 1662453922036,
   "links": [
     {
       "$$hashKey": "object:2300",
@@ -551,6 +551,95 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
+      "description": "sum of report interval missed by a node:\n1 node missing 12 ticks = 12\n12 nodes missing 1 ticks = 12",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 1
+              },
+              {
+                "color": "dark-red",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 0,
+        "y": 15
+      },
+      "hideTimeOverride": true,
+      "id": 220,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "sOSsocd7k"
+          },
+          "editorMode": "code",
+          "expr": "max(sum_over_time(up{job=~\"$job\"}[$interval])) - min(sum_over_time(up{job=~\"$job\"}[$interval]))",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "intervalFactor": 1,
+          "range": true,
+          "refId": "A",
+          "step": 40
+        }
+      ],
+      "title": "Down nodes*tick ",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -573,16 +662,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "rgba(245, 54, 54, 0.9)",
+                "color": "dark-green",
                 "value": null
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 1
-              },
-              {
-                "color": "rgba(50, 172, 45, 0.97)",
-                "value": 2
               }
             ]
           },
@@ -593,7 +674,7 @@
       "gridPos": {
         "h": 3,
         "w": 2,
-        "x": 0,
+        "x": 2,
         "y": 15
       },
       "hideTimeOverride": true,
@@ -607,7 +688,7 @@
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "last"
           ],
           "fields": "",
           "values": false
@@ -621,103 +702,18 @@
             "type": "prometheus",
             "uid": "sOSsocd7k"
           },
-          "expr": "count(node_os_version)",
+          "editorMode": "code",
+          "expr": "count(up{job=~\"$job\"})",
           "format": "time_series",
           "hide": false,
-          "instant": true,
+          "instant": false,
           "intervalFactor": 1,
+          "range": true,
           "refId": "A",
           "step": 40
         }
       ],
       "title": "Nb nodes",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 1,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "rgba(245, 54, 54, 0.9)",
-                "value": null
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 1
-              },
-              {
-                "color": "rgba(50, 172, 45, 0.97)",
-                "value": 2
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 2,
-        "x": 2,
-        "y": 15
-      },
-      "hideTimeOverride": true,
-      "id": 203,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.5.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "sOSsocd7k"
-          },
-          "expr": "min(time() - node_boot_time_seconds)",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "intervalFactor": 1,
-          "refId": "A",
-          "step": 40
-        }
-      ],
-      "title": "Min System Uptime",
       "type": "stat"
     },
     {
@@ -796,7 +792,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "max(max by (instance) (node_load5))",
+          "expr": "max(max by (instance) (node_load5{job=~\"$job\"}))",
           "format": "time_series",
           "hide": false,
           "instant": true,
@@ -809,6 +805,335 @@
         }
       ],
       "title": "Load5m max",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 1
+              },
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": 2
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 6,
+        "y": 15
+      },
+      "hideTimeOverride": true,
+      "id": 203,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "sOSsocd7k"
+          },
+          "expr": "min(time() - node_boot_time_seconds{job=~\"$job\"})",
+          "format": "time_series",
+          "hide": false,
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "A",
+          "step": 40
+        }
+      ],
+      "title": "Min System Uptime",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 8,
+        "y": 15
+      },
+      "id": 210,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "sOSsocd7k"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(delta(node_network_receive_drop_total{job=~\"$job\"}[$interval]) + delta(node_network_transmit_drop_total{job=~\"$job\"}[$interval]))",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "range": true,
+          "refId": "A",
+          "step": 20
+        }
+      ],
+      "title": "Dropped Packets",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbits"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 10,
+        "y": 15
+      },
+      "id": 214,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "sOSsocd7k"
+          },
+          "expr": "sum( (abs(irate(node_network_receive_bytes_total{job=~\"$job\",device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[$interval])*8+abs(irate(node_network_transmit_bytes_total{job=~\"$job\",device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[$interval])*8))))",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A",
+          "step": 20
+        }
+      ],
+      "title": "Aggregated Network",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 12,
+        "y": 15
+      },
+      "id": 212,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "sOSsocd7k"
+          },
+          "expr": "sum(irate(node_disk_reads_completed_total{job=~\"$job\"}[$interval])+irate(node_disk_writes_completed_total{job=~\"$job\"}[$interval]))",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A",
+          "step": 20
+        }
+      ],
+      "title": "Aggregated IOPS",
       "type": "stat"
     },
     {
@@ -857,7 +1182,7 @@
       "gridPos": {
         "h": 3,
         "w": 2,
-        "x": 6,
+        "x": 14,
         "y": 15
       },
       "id": 217,
@@ -884,7 +1209,7 @@
             "type": "prometheus",
             "uid": "sOSsocd7k"
           },
-          "expr": "100 - (min(avg by (instance) (irate(node_cpu_seconds_total{instance=~\"$node\",mode=\"idle\"}[30m]))) * 100)",
+          "expr": "100 - (min(avg by (instance) (irate(node_cpu_seconds_total{job=~\"$job\",mode=\"idle\"}[$interval]))) * 100)",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -899,7 +1224,7 @@
             "type": "prometheus",
             "uid": "sOSsocd7k"
           },
-          "expr": "100 - (min(irate(node_cpu_seconds_total{instance=~\"$node\",mode=\"idle\"}[30m])) * 100)",
+          "expr": "100 - (min(irate(node_cpu_seconds_total{instance=~\"$node\",mode=\"idle\"}[$interval])) * 100)",
           "format": "time_series",
           "hide": true,
           "instant": false,
@@ -960,7 +1285,7 @@
       "gridPos": {
         "h": 3,
         "w": 2,
-        "x": 8,
+        "x": 16,
         "y": 15
       },
       "id": 219,
@@ -989,7 +1314,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "max(avg by (instance)(irate(node_cpu_seconds_total{mode=\"iowait\"}[30m]))) * 100",
+          "expr": "max(avg by (instance)(irate(node_cpu_seconds_total{job=~\"$job\",mode=\"iowait\"}[$interval]))) * 100",
           "format": "time_series",
           "hide": false,
           "instant": true,
@@ -1002,358 +1327,6 @@
         }
       ],
       "title": "CPUwait max",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#299c46",
-                "value": null
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 100
-              },
-              {
-                "color": "#d44a3a",
-                "value": 100000
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 2,
-        "x": 10,
-        "y": 15
-      },
-      "id": 210,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "delta"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.5.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "sOSsocd7k"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "sum(node_network_receive_drop_total{job=~\"$job\"}+node_network_transmit_drop_total{job=~\"$job\"})",
-          "format": "time_series",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "range": true,
-          "refId": "A",
-          "step": 20
-        }
-      ],
-      "title": "Dropped Packets",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 2,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#299c46",
-                "value": null
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 1000000000
-              },
-              {
-                "color": "#d44a3a",
-                "value": 10000000000
-              }
-            ]
-          },
-          "unit": "decbits"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 2,
-        "x": 12,
-        "y": 15
-      },
-      "id": 214,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "max"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.5.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "sOSsocd7k"
-          },
-          "expr": "sum(avg by (instance) (abs(irate(node_network_receive_bytes_total{instance=~'$node',device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[30m])*8+abs(irate(node_network_transmit_bytes_total{instance=~'$node',device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[30m])*8))))",
-          "format": "time_series",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "refId": "A",
-          "step": 20
-        }
-      ],
-      "title": "Aggregated Network",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 0,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#299c46",
-                "value": null
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 2,
-        "x": 14,
-        "y": 15
-      },
-      "id": 212,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "max"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.5.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "sOSsocd7k"
-          },
-          "expr": "sum(irate(node_disk_reads_completed_total{job=~\"$job\"}[30m])+irate(node_disk_writes_completed_total{job=~\"$job\"}[30m]))",
-          "format": "time_series",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "refId": "A",
-          "step": 20
-        }
-      ],
-      "title": "Aggregated IOPS",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#299c46",
-                "value": null
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 60
-              },
-              {
-                "color": "#d44a3a",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 2,
-        "x": 16,
-        "y": 15
-      },
-      "id": 216,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "max"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.5.2",
-      "targets": [
-        {
-          "expr": "100 - (min(avg by (instance) (irate(node_cpu_seconds_total{instance=~\"$node\",mode=\"idle\"}[30m]))) * 100)",
-          "format": "time_series",
-          "hide": true,
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "avearge over all core",
-          "refId": "A",
-          "step": 20
-        },
-        {
-          "expr": "100 - (min(irate(node_cpu_seconds_total{instance=~\"$node\",mode=\"idle\"}[30m])) * 100)",
-          "format": "time_series",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "single core",
-          "refId": "B",
-          "step": 20
-        }
-      ],
-      "title": "1-core CPU max ",
       "type": "stat"
     },
     {
@@ -1432,7 +1405,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "max(max by (instance)(irate(node_cpu_seconds_total{mode=\"iowait\"}[30m]))) * 100",
+          "expr": "max(max by (instance)(irate(node_cpu_seconds_total{job=~\"$job\",mode=\"iowait\"}[$interval]))) * 100",
           "format": "time_series",
           "hide": false,
           "instant": true,
@@ -1445,6 +1418,108 @@
         }
       ],
       "title": "1-core IOwait max",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 60
+              },
+              {
+                "color": "#d44a3a",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 20,
+        "y": 15
+      },
+      "id": 216,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "OKJTMkxnz"
+          },
+          "expr": "100 - (min(avg by (instance) (irate(node_cpu_seconds_total{job=~\"$job\",mode=\"idle\"}[$interval]))) * 100)",
+          "format": "time_series",
+          "hide": true,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "avearge over all core",
+          "refId": "A",
+          "step": 20
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "OKJTMkxnz"
+          },
+          "expr": "100 - (min(irate(node_cpu_seconds_total{job=~\"$job\",mode=\"idle\"}[$interval])) * 100)",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "single core",
+          "refId": "B",
+          "step": 20
+        }
+      ],
+      "title": "1-core CPU max ",
       "type": "stat"
     },
     {
@@ -4627,8 +4702,8 @@
       {
         "current": {
           "selected": true,
-          "text": "robin-prod",
-          "value": "robin-prod"
+          "text": "dmn-ap27046-prod-4bbc20e4",
+          "value": "dmn-ap27046-prod-4bbc20e4"
         },
         "hide": 0,
         "includeAll": false,
@@ -4738,8 +4813,8 @@
         "allFormat": "glob",
         "current": {
           "selected": false,
-          "text": "10.241.136.13:9100",
-          "value": "10.241.136.13:9100"
+          "text": "10.26.160.110:9100",
+          "value": "10.26.160.110:9100"
         },
         "datasource": {
           "type": "prometheus",
@@ -4803,9 +4878,9 @@
         "auto_count": 100,
         "auto_min": "10s",
         "current": {
-          "selected": false,
-          "text": "2m",
-          "value": "2m"
+          "selected": true,
+          "text": "1d",
+          "value": "1d"
         },
         "hide": 0,
         "label": "Interval",
@@ -4813,16 +4888,11 @@
         "options": [
           {
             "selected": false,
-            "text": "30s",
-            "value": "30s"
-          },
-          {
-            "selected": false,
             "text": "1m",
             "value": "1m"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "2m",
             "value": "2m"
           },
@@ -4845,9 +4915,34 @@
             "selected": false,
             "text": "30m",
             "value": "30m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          },
+          {
+            "selected": false,
+            "text": "3h",
+            "value": "3h"
+          },
+          {
+            "selected": false,
+            "text": "6h",
+            "value": "6h"
+          },
+          {
+            "selected": false,
+            "text": "12h",
+            "value": "12h"
+          },
+          {
+            "selected": true,
+            "text": "1d",
+            "value": "1d"
           }
         ],
-        "query": "30s,1m,2m,3m,5m,10m,30m",
+        "query": "1m,2m,3m,5m,10m,30m,1h,3h,6h,12h,1d",
         "queryValue": "",
         "refresh": 2,
         "skipUrlSync": false,
@@ -4856,8 +4951,8 @@
       {
         "current": {
           "selected": false,
-          "text": "/var/lib/docker",
-          "value": "/var/lib/docker"
+          "text": "/",
+          "value": "/"
         },
         "datasource": {
           "type": "prometheus",
@@ -4886,8 +4981,8 @@
       {
         "current": {
           "selected": false,
-          "text": "s01vl9953625",
-          "value": "s01vl9953625"
+          "text": "kube-c7l9cnmb04vm84b3l1og-dmnap27046p-compute-00002884",
+          "value": "kube-c7l9cnmb04vm84b3l1og-dmnap27046p-compute-00002884"
         },
         "datasource": {
           "type": "prometheus",
@@ -4916,8 +5011,8 @@
       {
         "current": {
           "selected": false,
-          "text": "16",
-          "value": "16"
+          "text": "17",
+          "value": "17"
         },
         "datasource": {
           "type": "prometheus",
@@ -4975,6 +5070,6 @@
   "timezone": "browser",
   "title": "Node Exporter - Multihost overview",
   "uid": "W5KDrdKnx",
-  "version": 8,
+  "version": 9,
   "weekStart": ""
 }
