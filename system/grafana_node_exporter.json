@@ -27,7 +27,7 @@
   "gnetId": 11074,
   "graphTooltip": 0,
   "id": 84,
-  "iteration": 1661937315974,
+  "iteration": 1663254025933,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -1080,6 +1080,7 @@
               "type": "special"
             }
           ],
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1127,7 +1128,11 @@
       "pluginVersion": "8.5.2",
       "targets": [
         {
-          "expr": "sum(node_network_receive_drop_total{instance=~\"$node\",job=~\"$job\"}+node_network_transmit_drop_total{instance=~\"$node\",job=~\"$job\"})",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "EeadOSzVk"
+          },
+          "expr": "sum(node_network_receive_drop_total{job=~\"$job\",device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'})+sum(node_network_transmit_drop_total{job=~\"$job\",device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'})",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -1211,7 +1216,11 @@
       "pluginVersion": "8.5.2",
       "targets": [
         {
-          "expr": "max(avg by (instance) (abs(irate(node_network_receive_bytes_total{instance=~'$node',device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[30m])*8+abs(irate(node_network_transmit_bytes_total{instance=~'$node',device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[30m])*8))))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "gjJPocd7z"
+          },
+          "expr": "max(avg by (instance) (abs(irate(node_network_receive_bytes_total{job=~\"$job\",device!~'cali.*|tunl.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[30m])*8+abs(irate(node_network_transmit_bytes_total{job=~\"$job\",device!~'cali.*|tunl.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[30m])*8))))",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -2021,7 +2030,7 @@
       "id": 157,
       "legend": {
         "alignAsTable": true,
-        "avg": false,
+        "avg": true,
         "current": true,
         "hideEmpty": true,
         "hideZero": true,
@@ -2029,7 +2038,7 @@
         "min": false,
         "rightSide": false,
         "show": true,
-        "sort": "current",
+        "sort": "avg",
         "sortDesc": true,
         "total": false,
         "values": true
@@ -2057,7 +2066,11 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(node_network_receive_bytes_total{instance=~'$node',device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[30m])*8",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "EeadOSzVk"
+          },
+          "expr": "irate(node_network_receive_bytes_total{instance=~'$node',job=~'$job',device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])*8",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{instance}}_{{device}}_receive",
@@ -2065,7 +2078,11 @@
           "step": 4
         },
         {
-          "expr": "irate(node_network_transmit_bytes_total{instance=~'$node',device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[30m])*8",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "EeadOSzVk"
+          },
+          "expr": "irate(node_network_transmit_bytes_total{instance=~'$node',job=~'$job',device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])*8",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{instance}}_{{device}}_transmit",
@@ -2089,12 +2106,14 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:261",
           "format": "bps",
           "label": "transmit（-）/receive（+）",
           "logBase": 1,
           "show": true
         },
         {
+          "$$hashKey": "object:262",
           "format": "short",
           "logBase": 1,
           "show": false
@@ -2283,7 +2302,11 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(node_network_receive_drop_total{instance=~\"$node\",job=~\"$job\",device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "EeadOSzVk"
+          },
+          "expr": "irate(node_network_receive_drop_total{instance=~\"$node\",job=~\"$job\",device!~'cali.*|tunl.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -2293,7 +2316,11 @@
           "step": 4
         },
         {
-          "expr": "irate(node_network_transmit_drop_total{instance=~\"$node\",job=~\"$job\",device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "EeadOSzVk"
+          },
+          "expr": "irate(node_network_transmit_drop_total{instance=~\"$node\",job=~\"$job\",device!~'cali.*|tunl.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -2319,12 +2346,14 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:1458",
           "format": "pps",
           "label": "Packets out (-) / in (+)",
           "logBase": 1,
           "show": true
         },
         {
+          "$$hashKey": "object:1459",
           "format": "short",
           "logBase": 1,
           "show": false
@@ -2669,6 +2698,141 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 2,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 34
+      },
+      "hiddenSeries": false,
+      "id": 192,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "8.5.2",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "/.*Variation*./",
+          "color": "#890F02"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "EeadOSzVk"
+          },
+          "expr": "node_timex_estimated_error_seconds{instance=\"$node\",job=\"$job\"}",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "Estimated error in seconds",
+          "refId": "A",
+          "step": 240
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "EeadOSzVk"
+          },
+          "expr": "node_timex_offset_seconds{instance=\"$node\",job=\"$job\"}",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "Time offset in between local system and reference clock",
+          "refId": "B",
+          "step": 240
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "EeadOSzVk"
+          },
+          "expr": "node_timex_maxerror_seconds{instance=\"$node\",job=\"$job\"}",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "Maximum error in seconds",
+          "refId": "C",
+          "step": 240
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Time Syncronized Drift",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:882",
+          "format": "s",
+          "label": "seconds",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:883",
+          "format": "short",
+          "label": "counter",
+          "logBase": 1,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
       "aliasColors": {
         "TCP": "#6ED0E0"
       },
@@ -2690,7 +2854,7 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 12,
-        "w": 12,
+        "w": 8,
         "x": 0,
         "y": 43
       },
@@ -2820,12 +2984,12 @@
       "fillGradient": 1,
       "gridPos": {
         "h": 12,
-        "w": 12,
-        "x": 12,
+        "w": 8,
+        "x": 8,
         "y": 43
       },
       "hiddenSeries": false,
-      "id": 169,
+      "id": 190,
       "legend": {
         "alignAsTable": true,
         "avg": true,
@@ -2897,7 +3061,7 @@
       }
     }
   ],
-  "refresh": "1m",
+  "refresh": "30s",
   "schemaVersion": 36,
   "style": "dark",
   "tags": [
@@ -2957,10 +3121,20 @@
         "current": {
           "selected": true,
           "text": [
-            "kube-cbhovo7b0err921ut160-spkap27661p-compute-00000619"
+            "kube-cbhovo7b0err921ut160-spkap27661p-default-00000207",
+            "kube-cbhovo7b0err921ut160-spkap27661p-compute-00000619",
+            "kube-cbhovo7b0err921ut160-spkap27661p-compute-000004f3",
+            "kube-cbhovo7b0err921ut160-spkap27661p-default-0000071d",
+            "kube-cbhovo7b0err921ut160-spkap27661p-default-000001b9",
+            "kube-cbhovo7b0err921ut160-spkap27661p-compute-00000512"
           ],
           "value": [
-            "kube-cbhovo7b0err921ut160-spkap27661p-compute-00000619"
+            "kube-cbhovo7b0err921ut160-spkap27661p-default-00000207",
+            "kube-cbhovo7b0err921ut160-spkap27661p-compute-00000619",
+            "kube-cbhovo7b0err921ut160-spkap27661p-compute-000004f3",
+            "kube-cbhovo7b0err921ut160-spkap27661p-default-0000071d",
+            "kube-cbhovo7b0err921ut160-spkap27661p-default-000001b9",
+            "kube-cbhovo7b0err921ut160-spkap27661p-compute-00000512"
           ]
         },
         "datasource": {
@@ -3022,8 +3196,8 @@
       {
         "current": {
           "selected": false,
-          "text": "/",
-          "value": "/"
+          "text": "/var/data/kubelet/pods/e9310d4d-5733-451c-be40-8df14b46e2ed/volume-subpaths/pvc-42ca93ac-f012-41e4-b4b4-ae096efb6f5e/prometheus/2",
+          "value": "/var/data/kubelet/pods/e9310d4d-5733-451c-be40-8df14b46e2ed/volume-subpaths/pvc-42ca93ac-f012-41e4-b4b4-ae096efb6f5e/prometheus/2"
         },
         "datasource": {
           "type": "prometheus",
@@ -3153,6 +3327,6 @@
   "timezone": "",
   "title": "Node Exporter",
   "uid": "hb7fSE0Zzx",
-  "version": 7,
+  "version": 13,
   "weekStart": ""
 }
