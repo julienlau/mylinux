@@ -27,7 +27,7 @@
   "gnetId": 11074,
   "graphTooltip": 0,
   "id": 84,
-  "iteration": 1664973116845,
+  "iteration": 1664982359260,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -767,6 +767,10 @@
       "pluginVersion": "8.5.10",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "avg(count by (instance) (node_cpu_seconds_total{instance=~\"$node\", mode='system'}))",
           "format": "time_series",
           "instant": true,
@@ -1123,7 +1127,11 @@
       "pluginVersion": "8.5.10",
       "targets": [
         {
-          "expr": "sum(node_network_receive_drop_total{job=~\"$job\",device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'})+sum(node_network_transmit_drop_total{job=~\"$job\",device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'})",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(node_network_receive_drop_total{instance=~\"$node\",job=~\"$job\",device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'})+sum(node_network_transmit_drop_total{instance=~\"$node\",job=~\"$job\",device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'})",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -1207,7 +1215,11 @@
       "pluginVersion": "8.5.10",
       "targets": [
         {
-          "expr": "max(avg by (instance) (abs(irate(node_network_receive_bytes_total{job=~\"$job\",device!~'cali.*|tunl.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[30m])*8+abs(irate(node_network_transmit_bytes_total{job=~\"$job\",device!~'cali.*|tunl.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[30m])*8))))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "max(avg by (instance) (abs(irate(node_network_receive_bytes_total{instance=~\"$node\",job=~\"$job\",device!~'cali.*|tunl.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[30m])*8+abs(irate(node_network_transmit_bytes_total{instance=~\"$node\",job=~\"$job\",device!~'cali.*|tunl.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[30m])*8))))",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -3475,9 +3487,9 @@
     "list": [
       {
         "current": {
-          "selected": true,
-          "text": "min-ap24182-poc-351b6a76",
-          "value": "min-ap24182-poc-351b6a76"
+          "selected": false,
+          "text": "Prometheus",
+          "value": "Prometheus"
         },
         "hide": 0,
         "includeAll": false,
@@ -3524,23 +3536,9 @@
       {
         "allFormat": "glob",
         "current": {
-          "selected": true,
-          "text": [
-            "10.26.194.90:9100",
-            "10.26.194.94:9100",
-            "10.26.195.4:9100",
-            "10.26.195.5:9100",
-            "10.26.196.4:9100",
-            "10.26.196.63:9100"
-          ],
-          "value": [
-            "10.26.194.90:9100",
-            "10.26.194.94:9100",
-            "10.26.195.4:9100",
-            "10.26.195.5:9100",
-            "10.26.196.4:9100",
-            "10.26.196.63:9100"
-          ]
+          "selected": false,
+          "text": "10.241.136.10:9100",
+          "value": "10.241.136.10:9100"
         },
         "datasource": {
           "type": "prometheus",
@@ -3548,7 +3546,7 @@
         },
         "definition": "label_values(node_uname_info{job=~\"$job\"},instance)",
         "hide": 0,
-        "includeAll": false,
+        "includeAll": true,
         "label": "node",
         "multi": true,
         "multiFormat": "regex values",
@@ -3570,8 +3568,8 @@
       {
         "current": {
           "selected": false,
-          "text": "/var/data/kubelet/pods/1d49a236-70aa-4ca4-9500-d739a26d9dbc/volumes/kubernetes.io~csi/pvc-231f9c7a-fc18-4c77-9c63-45da94ea16b6/mount",
-          "value": "/var/data/kubelet/pods/1d49a236-70aa-4ca4-9500-d739a26d9dbc/volumes/kubernetes.io~csi/pvc-231f9c7a-fc18-4c77-9c63-45da94ea16b6/mount"
+          "text": "/home",
+          "value": "/home"
         },
         "datasource": {
           "type": "prometheus",
@@ -3670,14 +3668,14 @@
         "allFormat": "glob",
         "current": {
           "selected": false,
-          "text": "kube-c97vd5fb0gsuo32p7li0-minap24182p-compute-0000078b",
-          "value": "kube-c97vd5fb0gsuo32p7li0-minap24182p-compute-0000078b"
+          "text": "s01vl9953621",
+          "value": "s01vl9953621"
         },
         "datasource": {
           "type": "prometheus",
           "uid": "${datasource}"
         },
-        "definition": "label_values(node_uname_info{job=~\"$job\"},nodename)",
+        "definition": "label_values(node_uname_info{instance=~\"$node\"},nodename)",
         "description": "only for information, not for selection",
         "hide": 0,
         "includeAll": false,
@@ -3687,7 +3685,7 @@
         "name": "hostname",
         "options": [],
         "query": {
-          "query": "label_values(node_uname_info{job=~\"$job\"},nodename)",
+          "query": "label_values(node_uname_info{instance=~\"$node\"},nodename)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -3702,8 +3700,8 @@
     ]
   },
   "time": {
-    "from": "2022-10-04T16:21:55.867Z",
-    "to": "2022-10-04T16:34:02.741Z"
+    "from": "now-1h",
+    "to": "now"
   },
   "timepicker": {
     "now": true,
@@ -3734,6 +3732,6 @@
   "timezone": "",
   "title": "Node Exporter",
   "uid": "hb7fSE0Zzx",
-  "version": 27,
+  "version": 29,
   "weekStart": ""
 }
