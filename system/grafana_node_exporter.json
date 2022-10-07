@@ -27,21 +27,395 @@
   "gnetId": 11074,
   "graphTooltip": 0,
   "id": 84,
-  "iteration": 1664982359260,
+  "iteration": 1665139147529,
   "links": [],
   "liveNow": false,
   "panels": [
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 0
       },
+      "id": 197,
+      "panels": [
+        {
+          "aliasColors": {
+            "192.168.200.241:9100_Total": "dark-red",
+            "Idle - Waiting for something to happen": "#052B51",
+            "guest": "#9AC48A",
+            "idle": "#052B51",
+            "iowait": "#EAB839",
+            "irq": "#BF1B00",
+            "nice": "#C15C17",
+            "sdb_每秒I/O操作%": "#d683ce",
+            "softirq": "#E24D42",
+            "steal": "#FCE2DE",
+            "system": "#508642",
+            "user": "#5195CE",
+            "磁盘花费在I/O操作占比": "#ba43a9"
+          },
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "decimals": 2,
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 16,
+            "w": 8,
+            "x": 0,
+            "y": 1
+          },
+          "hiddenSeries": false,
+          "id": 200,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
+            "min": false,
+            "rightSide": false,
+            "show": true,
+            "sort": "avg",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "maxPerRow": 6,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "8.5.10",
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "/.*_Iowait/",
+              "color": "#FADE2A",
+              "dashes": true
+            }
+          ],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "1 - avg(irate(node_cpu_seconds_total{mode=\"idle\"}[30m])) by (instance)",
+              "format": "time_series",
+              "hide": false,
+              "intervalFactor": 1,
+              "legendFormat": "{{instance}}_Total",
+              "refId": "F",
+              "step": 240
+            }
+          ],
+          "thresholds": [],
+          "timeRegions": [],
+          "title": "CPU Basic",
+          "tooltip": {
+            "shared": true,
+            "sort": 2,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:805",
+              "decimals": 2,
+              "format": "percentunit",
+              "label": "",
+              "logBase": 1,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:806",
+              "format": "short",
+              "logBase": 1,
+              "show": false
+            }
+          ],
+          "yaxis": {
+            "align": false
+          }
+        },
+        {
+          "aliasColors": {
+            "192.168.200.241:9100_Total": "dark-red",
+            "Idle - Waiting for something to happen": "#052B51",
+            "guest": "#9AC48A",
+            "idle": "#052B51",
+            "iowait": "#EAB839",
+            "irq": "#BF1B00",
+            "nice": "#C15C17",
+            "sdb_每秒I/O操作%": "#d683ce",
+            "softirq": "#E24D42",
+            "steal": "#FCE2DE",
+            "system": "#508642",
+            "user": "#5195CE",
+            "磁盘花费在I/O操作占比": "#ba43a9"
+          },
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "decimals": 2,
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 16,
+            "w": 8,
+            "x": 8,
+            "y": 1
+          },
+          "hiddenSeries": false,
+          "id": 201,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
+            "min": false,
+            "rightSide": false,
+            "show": true,
+            "sort": "avg",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "maxPerRow": 6,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "8.5.10",
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "/.*_Iowait/",
+              "color": "#FADE2A",
+              "dashes": true
+            }
+          ],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "avg(irate(node_cpu_seconds_total{mode=\"iowait\"}[30m])) by (instance)",
+              "format": "time_series",
+              "hide": false,
+              "intervalFactor": 1,
+              "legendFormat": "{{instance}}_Total",
+              "refId": "F",
+              "step": 240
+            }
+          ],
+          "thresholds": [],
+          "timeRegions": [],
+          "title": "CPU iowait",
+          "tooltip": {
+            "shared": true,
+            "sort": 2,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:805",
+              "decimals": 2,
+              "format": "percentunit",
+              "label": "",
+              "logBase": 1,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:806",
+              "format": "short",
+              "logBase": 1,
+              "show": false
+            }
+          ],
+          "yaxis": {
+            "align": false
+          }
+        },
+        {
+          "aliasColors": {
+            "192.168.10.227:9100_em1_in下载": "super-light-green",
+            "192.168.10.227:9100_em1_out上传": "dark-blue"
+          },
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 3,
+          "gridPos": {
+            "h": 16,
+            "w": 8,
+            "x": 16,
+            "y": 1
+          },
+          "height": "300",
+          "hiddenSeries": false,
+          "id": 193,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
+            "min": false,
+            "rightSide": false,
+            "show": true,
+            "sort": "avg",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "8.5.10",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "$$hashKey": "object:1576",
+              "alias": "/.*_transmit$/",
+              "transform": "negative-Y"
+            }
+          ],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "irate(node_network_receive_bytes_total{job=~'$job',device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])*8+irate(node_network_transmit_bytes_total{job=~'$job',device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])*8",
+              "format": "time_series",
+              "hide": false,
+              "intervalFactor": 1,
+              "legendFormat": "{{instance}}_{{device}}",
+              "range": true,
+              "refId": "A",
+              "step": 4
+            }
+          ],
+          "thresholds": [],
+          "timeRegions": [],
+          "title": "Network Traffic Agg",
+          "tooltip": {
+            "shared": true,
+            "sort": 2,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:261",
+              "format": "bps",
+              "label": "",
+              "logBase": 1,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:262",
+              "format": "short",
+              "logBase": 1,
+              "show": false
+            }
+          ],
+          "yaxis": {
+            "align": false
+          }
+        }
+      ],
+      "title": "Overview on all nodes",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
       "id": 204,
       "panels": [],
-      "title": "Summary",
+      "title": "Summary of Selected Node",
       "type": "row"
     },
     {
@@ -82,7 +456,7 @@
         "h": 6,
         "w": 8,
         "x": 0,
-        "y": 1
+        "y": 2
       },
       "id": 177,
       "options": {
@@ -156,7 +530,7 @@
         "h": 6,
         "w": 10,
         "x": 8,
-        "y": 1
+        "y": 2
       },
       "id": 164,
       "links": [],
@@ -354,7 +728,7 @@
         "h": 6,
         "w": 6,
         "x": 18,
-        "y": 1
+        "y": 2
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -500,7 +874,7 @@
         "h": 3,
         "w": 2,
         "x": 0,
-        "y": 7
+        "y": 8
       },
       "hideTimeOverride": true,
       "id": 15,
@@ -583,7 +957,7 @@
         "h": 3,
         "w": 2,
         "x": 2,
-        "y": 7
+        "y": 8
       },
       "id": 75,
       "links": [],
@@ -664,7 +1038,7 @@
         "h": 3,
         "w": 2,
         "x": 4,
-        "y": 7
+        "y": 8
       },
       "id": 187,
       "links": [],
@@ -745,7 +1119,7 @@
         "h": 3,
         "w": 2,
         "x": 6,
-        "y": 7
+        "y": 8
       },
       "id": 14,
       "links": [],
@@ -831,7 +1205,7 @@
         "h": 3,
         "w": 2,
         "x": 8,
-        "y": 7
+        "y": 8
       },
       "id": 183,
       "links": [],
@@ -915,7 +1289,7 @@
         "h": 3,
         "w": 2,
         "x": 10,
-        "y": 7
+        "y": 8
       },
       "id": 185,
       "links": [],
@@ -1010,7 +1384,7 @@
         "h": 3,
         "w": 2,
         "x": 12,
-        "y": 7
+        "y": 8
       },
       "id": 186,
       "links": [],
@@ -1105,7 +1479,7 @@
         "h": 3,
         "w": 2,
         "x": 14,
-        "y": 7
+        "y": 8
       },
       "id": 188,
       "links": [],
@@ -1193,7 +1567,7 @@
         "h": 3,
         "w": 2,
         "x": 16,
-        "y": 7
+        "y": 8
       },
       "id": 178,
       "links": [],
@@ -1281,7 +1655,7 @@
         "h": 3,
         "w": 2,
         "x": 18,
-        "y": 7
+        "y": 8
       },
       "id": 181,
       "links": [],
@@ -1365,7 +1739,7 @@
         "h": 3,
         "w": 2,
         "x": 20,
-        "y": 7
+        "y": 8
       },
       "id": 182,
       "links": [],
@@ -1449,7 +1823,7 @@
         "h": 3,
         "w": 2,
         "x": 22,
-        "y": 7
+        "y": 8
       },
       "id": 184,
       "links": [],
@@ -1486,380 +1860,6 @@
       "type": "stat"
     },
     {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 10
-      },
-      "id": 197,
-      "panels": [
-        {
-          "aliasColors": {
-            "192.168.200.241:9100_Total": "dark-red",
-            "Idle - Waiting for something to happen": "#052B51",
-            "guest": "#9AC48A",
-            "idle": "#052B51",
-            "iowait": "#EAB839",
-            "irq": "#BF1B00",
-            "nice": "#C15C17",
-            "sdb_每秒I/O操作%": "#d683ce",
-            "softirq": "#E24D42",
-            "steal": "#FCE2DE",
-            "system": "#508642",
-            "user": "#5195CE",
-            "磁盘花费在I/O操作占比": "#ba43a9"
-          },
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "decimals": 2,
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "links": []
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 16,
-            "w": 8,
-            "x": 0,
-            "y": 11
-          },
-          "hiddenSeries": false,
-          "id": 200,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "hideEmpty": true,
-            "hideZero": true,
-            "max": true,
-            "min": false,
-            "rightSide": false,
-            "show": true,
-            "sort": "avg",
-            "sortDesc": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [],
-          "maxPerRow": 6,
-          "nullPointMode": "null",
-          "options": {
-            "alertThreshold": true
-          },
-          "percentage": false,
-          "pluginVersion": "8.5.10",
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [
-            {
-              "alias": "/.*_Iowait/",
-              "color": "#FADE2A",
-              "dashes": true
-            }
-          ],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "1 - avg(irate(node_cpu_seconds_total{mode=\"idle\"}[30m])) by (instance)",
-              "format": "time_series",
-              "hide": false,
-              "intervalFactor": 1,
-              "legendFormat": "{{instance}}_Total",
-              "refId": "F",
-              "step": 240
-            }
-          ],
-          "thresholds": [],
-          "timeRegions": [],
-          "title": "CPU Basic",
-          "tooltip": {
-            "shared": true,
-            "sort": 2,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "mode": "time",
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "$$hashKey": "object:805",
-              "decimals": 2,
-              "format": "percentunit",
-              "label": "",
-              "logBase": 1,
-              "show": true
-            },
-            {
-              "$$hashKey": "object:806",
-              "format": "short",
-              "logBase": 1,
-              "show": false
-            }
-          ],
-          "yaxis": {
-            "align": false
-          }
-        },
-        {
-          "aliasColors": {
-            "192.168.200.241:9100_Total": "dark-red",
-            "Idle - Waiting for something to happen": "#052B51",
-            "guest": "#9AC48A",
-            "idle": "#052B51",
-            "iowait": "#EAB839",
-            "irq": "#BF1B00",
-            "nice": "#C15C17",
-            "sdb_每秒I/O操作%": "#d683ce",
-            "softirq": "#E24D42",
-            "steal": "#FCE2DE",
-            "system": "#508642",
-            "user": "#5195CE",
-            "磁盘花费在I/O操作占比": "#ba43a9"
-          },
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "decimals": 2,
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "links": []
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 16,
-            "w": 8,
-            "x": 8,
-            "y": 11
-          },
-          "hiddenSeries": false,
-          "id": 201,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "hideEmpty": true,
-            "hideZero": true,
-            "max": true,
-            "min": false,
-            "rightSide": false,
-            "show": true,
-            "sort": "avg",
-            "sortDesc": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [],
-          "maxPerRow": 6,
-          "nullPointMode": "null",
-          "options": {
-            "alertThreshold": true
-          },
-          "percentage": false,
-          "pluginVersion": "8.5.10",
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [
-            {
-              "alias": "/.*_Iowait/",
-              "color": "#FADE2A",
-              "dashes": true
-            }
-          ],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "avg(irate(node_cpu_seconds_total{mode=\"iowait\"}[30m])) by (instance)",
-              "format": "time_series",
-              "hide": false,
-              "intervalFactor": 1,
-              "legendFormat": "{{instance}}_Total",
-              "refId": "F",
-              "step": 240
-            }
-          ],
-          "thresholds": [],
-          "timeRegions": [],
-          "title": "CPU iowait",
-          "tooltip": {
-            "shared": true,
-            "sort": 2,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "mode": "time",
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "$$hashKey": "object:805",
-              "decimals": 2,
-              "format": "percentunit",
-              "label": "",
-              "logBase": 1,
-              "show": true
-            },
-            {
-              "$$hashKey": "object:806",
-              "format": "short",
-              "logBase": 1,
-              "show": false
-            }
-          ],
-          "yaxis": {
-            "align": false
-          }
-        },
-        {
-          "aliasColors": {
-            "192.168.10.227:9100_em1_in下载": "super-light-green",
-            "192.168.10.227:9100_em1_out上传": "dark-blue"
-          },
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "links": []
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 3,
-          "gridPos": {
-            "h": 16,
-            "w": 8,
-            "x": 16,
-            "y": 11
-          },
-          "height": "300",
-          "hiddenSeries": false,
-          "id": 193,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "hideEmpty": true,
-            "hideZero": true,
-            "max": true,
-            "min": false,
-            "rightSide": false,
-            "show": true,
-            "sort": "avg",
-            "sortDesc": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [],
-          "nullPointMode": "null",
-          "options": {
-            "alertThreshold": true
-          },
-          "percentage": false,
-          "pluginVersion": "8.5.10",
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [
-            {
-              "$$hashKey": "object:1576",
-              "alias": "/.*_transmit$/",
-              "transform": "negative-Y"
-            }
-          ],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "irate(node_network_receive_bytes_total{job=~'$job',device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])*8+irate(node_network_transmit_bytes_total{job=~'$job',device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])*8",
-              "format": "time_series",
-              "hide": false,
-              "intervalFactor": 1,
-              "legendFormat": "{{instance}}_{{device}}",
-              "range": true,
-              "refId": "A",
-              "step": 4
-            }
-          ],
-          "thresholds": [],
-          "timeRegions": [],
-          "title": "Network Traffic Agg",
-          "tooltip": {
-            "shared": true,
-            "sort": 2,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "mode": "time",
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "$$hashKey": "object:261",
-              "format": "bps",
-              "label": "",
-              "logBase": 1,
-              "show": true
-            },
-            {
-              "$$hashKey": "object:262",
-              "format": "short",
-              "logBase": 1,
-              "show": false
-            }
-          ],
-          "yaxis": {
-            "align": false
-          }
-        }
-      ],
-      "title": "Overview on all nodes",
-      "type": "row"
-    },
-    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
@@ -1869,7 +1869,7 @@
       },
       "id": 195,
       "panels": [],
-      "title": "Node details",
+      "title": "Details of Selected Node",
       "type": "row"
     },
     {
@@ -3487,7 +3487,7 @@
     "list": [
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "Prometheus",
           "value": "Prometheus"
         },
@@ -3537,8 +3537,8 @@
         "allFormat": "glob",
         "current": {
           "selected": false,
-          "text": "10.241.136.10:9100",
-          "value": "10.241.136.10:9100"
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": {
           "type": "prometheus",
@@ -3668,8 +3668,8 @@
         "allFormat": "glob",
         "current": {
           "selected": false,
-          "text": "s01vl9953621",
-          "value": "s01vl9953621"
+          "text": "localhost",
+          "value": "localhost"
         },
         "datasource": {
           "type": "prometheus",
@@ -3732,6 +3732,6 @@
   "timezone": "",
   "title": "Node Exporter",
   "uid": "hb7fSE0Zzx",
-  "version": 29,
+  "version": 1,
   "weekStart": ""
 }
