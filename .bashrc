@@ -1284,6 +1284,38 @@ bash_prompt_shortener() {
     fi
 }
 
+function kusage() {
+    # Function returning resources usage on current kubernetes cluster
+        local node_count=0
+        local total_percent_cpu=0
+        local total_percent_mem=0
+
+    echo "NODE\t\t CPU_allocatable\t Memory_allocatable\t CPU_requests%\t Memory_requests%\t CPU_limits%\t Memory_limits%\t"
+        for n in $(kubectl get nodes --no-headers -o custom-columns=NAME:.metadata.name); do
+        local desc=$(kubectl describe node $n)
+        local abs_cpu=$(echo $desc | grep -A5 -E "Resource" | grep -E "cpu" | tr -d '(%)'| awk '{print $2}')
+                local percent_cpu=$(echo $desc | grep -A5 -E "Resource" | grep -E "cpu" | tr -d '(%)'| awk '{print $3}')
+        local node_cpu=$(echo $desc | grep -A5 -E "Allocatable:" | grep -E "cpu" | tr -d '(%)'| awk '{print $2}')
+        local allocatable_cpu=$(echo $node_cpu $abs_cpu | tr -d 'mKi' | awk '{print int($1 - $2)}')
+        local percent_cpu_lim=$(echo $desc | grep -A5 -E "Resource" | grep -E "cpu" | tr -d '(%)'| awk '{print $5}')
+        local abs_mem=$(echo $desc | grep -A5 -E "Resource" | grep -E "memory" | tr -d '(%)'| awk '{print $2}')
+                local percent_mem=$(echo $desc | grep -A5 -E "Resource" | grep -E "memory" | tr -d '(%)'| awk '{print $3}')
+        local node_mem=$(echo $desc | grep -A5 -E "Capacity:" | grep -E "memory" | tr -d '(%)'| awk '{print $2}')
+        local allocatable_mem=$(echo $node_mem $abs_mem | tr -d 'mKi' | awk '{print int($1 - $2)}')
+        local percent_mem_lim=$(echo $desc | grep -A5 -E "Resource" | grep -E "memory" | tr -d '(%)'| awk '{print $5}')
+                echo "$n\t $((${allocatable_cpu}/1000))\t\t\t $((${allocatable_mem}/1024/1024))Gi\t\t\t ${percent_cpu}%\t\t ${percent_mem}%\t\t\t ${percent_cpu_lim}%\t\t ${percent_mem_lim}%\t"
+
+                node_count=$((node_count + 1))
+                total_percent_cpu=$((total_percent_cpu + percent_cpu))
+                total_percent_mem=$((total_percent_mem + percent_mem))
+        done
+
+        local avg_percent_cpu=$((total_percent_cpu / node_count))
+        local avg_percent_mem=$((total_percent_mem / node_count))
+
+        echo "Average usage (requests) : ${avg_percent_cpu}% CPU, ${avg_percent_mem}% memory."
+}                                                                                                                                                                                                                                                                                
+
 unalias mycolor 2>/dev/null
 mycolor () {
     if [ -z "$1" -a -z "$2" -a -z "$3" ]; then
@@ -1842,6 +1874,16 @@ alias hschema="hadoop jar /opt/tools/latest/depjars/parquet-tools-1.9.0.jar sche
 alias kc=kubectl
 alias ka=kubeadm
 alias k=kubectl
+alias kk="kubectl -n \$SPARK_KUBE_NS"
+alias kdesc="kubectl describe nodes | grep --color=never -e '  cpu ' -e '  memory ' -e 'Name: ' -e 'worker-pool-name' -e 'node.kubernetes.io/instance-type' -e 'topology.kubernetes.io/zone'"
+alias kallocated='kubectl get nodes --no-headers | awk '\''{print $1}'\'' | xargs -I {} sh -c '\''echo   {} ; kubectl describe node {} | grep Allocated -A 5 | grep -ve Event -ve Allocated -ve percent -ve -- ; echo '\'''
+alias kcpualloc='kallocated | grep cpu | awk '\''{print $2}'\'' | tr -d "(%)" | awk '\''{ sum += $1 } END { if (NR > 0) { print sum/(NR*2000), "%\n" } }'\'''
+alias kmemalloc='kallocated | grep memory | awk '\''{print $2}'\'' | tr -d "(%)" | awk '\''{ sum += $1 } END { if (NR > 0) { print sum/(NR*75*1024*1024), "%\n" } }'\'''
+alias knodes='kubectl get nodes -o custom-columns=IP:.metadata.name,ZONE:".metadata.labels.ibm-cloud\.kubernetes\.io/zone",FLAVOR:".metadata.labels.ibm-cloud\.kubernetes\.io/machine-type,POOL:.metadata.labels.ibm-cloud\.kubernetes\.io/worker-pool-name"'
+alias kevents="kubectl get events --field-selector involvedObject.kind=Node --sort-by='.lastTimestamp'"
+alias kpods="kubectl get pod -o=custom-columns=NAME:.metadata.name,STATUS:.status.phase,NODE:.spec.nodeName --all-namespaces"
+alias kpvcs="kubectl get pods --all-namespaces -o=json | jq -c '.items[] | {pod: .metadata.name, namespace: .metadata.namespace, status: .status.phase, node: .spec.nodeName, pvc: .spec |  select( has (\"volumes\") ).volumes[] | select( has (\"persistentVolumeClaim\") ).persistentVolumeClaim.claimName }'"
+
 alias alarm="vlc ~/alarm.mp3"
 #------------------------------------------------------------------------------
 # Export
