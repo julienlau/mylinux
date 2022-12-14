@@ -1875,6 +1875,17 @@ alias kc=kubectl
 alias ka=kubeadm
 alias k=kubectl
 alias kk="kubectl -n \$SPARK_KUBE_NS"
+# for spark-submit vanilla
+alias sparkclean="kk get pods --field-selector=status.phase!=Running | awk '{print \$1}' | grep -v '^NAME$' | xargs kubectl delete pods -n \${SPARK_KUBE_NS}"
+alias sparklogs="kk logs"
+alias sparkls="kk get pods -l=spark-app-name"
+alias sparkll="kk get pods -l=spark-app-name -o 'custom-columns=NAMESPACE:.metadata.namespace,Name:.metadata.name,PHASE:.status.phase,RESTARTS:RESTART:.status.containerStatuses[0].restartCount,CREATED:.metadata.creationTimestamp,IPS:status.podIPs,NODE:.spec.nodeName,IMAGE:.spec.containers[0].image,LABELS:.metadata.labels'"
+# for spark-operator
+alias sls="kk get sparkapp"
+alias sw="watch -c -n 5 kubectl get sparkapp -n \${SPARK_KUBE_NS}"
+alias srm="kk delete sparkapp"
+alias sclean="kk get sparkapp | grep -e ' COMPLETED ' -e ' FAILED ' | awk '{print \$1}' | grep -v '^NAME$' | xargs kubectl delete sparkapp -n \${SPARK_KUBE_NS}"
+
 alias kdesc="kubectl describe nodes | grep --color=never -e '  cpu ' -e '  memory ' -e 'Name: ' -e 'worker-pool-name' -e 'node.kubernetes.io/instance-type' -e 'topology.kubernetes.io/zone'"
 alias kallocated='kubectl get nodes --no-headers | awk '\''{print $1}'\'' | xargs -I {} sh -c '\''echo   {} ; kubectl describe node {} | grep Allocated -A 5 | grep -ve Event -ve Allocated -ve percent -ve -- ; echo '\'''
 alias kcpualloc='kallocated | grep cpu | awk '\''{print $2}'\'' | tr -d "(%)" | awk '\''{ sum += $1 } END { if (NR > 0) { print sum/(NR*2000), "%\n" } }'\'''
