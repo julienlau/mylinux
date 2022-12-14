@@ -37,6 +37,7 @@
 # tar compress parallel
 # tar -I "xz -T0" -cf archive.tar.xz ./file.csv
 # XZ_OPT='-T0 -9' tar -cJf archive.tar.xz ./file.csv
+export XZ_OPT='-T0'
 
 # docker run -d --name=netdata   -p 19999:19999   -v netdataconfig:/etc/netdata   -v netdatalib:/var/lib/netdata   -v netdatacache:/var/cache/netdata   -v /etc/passwd:/host/etc/passwd:ro   -v /etc/group:/host/etc/group:ro   -v /proc:/host/proc:ro   -v /sys:/host/sys:ro   -v /etc/os-release:/host/etc/os-release:ro   --restart unless-stopped   --cap-add SYS_PTRACE   --security-opt apparmor=unconfined   netdata/netdata
 
@@ -1841,6 +1842,7 @@ alias hschema="hadoop jar /opt/tools/latest/depjars/parquet-tools-1.9.0.jar sche
 alias kc=kubectl
 alias ka=kubeadm
 alias k=kubectl
+alias alarm="vlc ~/alarm.mp3"
 #------------------------------------------------------------------------------
 # Export
 #
@@ -1875,6 +1877,8 @@ alias vnetls="virsh net-dhcp-leases default"
 
 # reset jack / headset detection
 alias headset='sudo alsactl restore'
+
+alias topsocketused="ps -ef | pgrep -lf `lsof +c 0 -i tcp -i udp | awk '{print $1}' | sort | uniq -c | sort -n | tail -1 | awk '{print $2}'`"
 
 # modify environment variables only on specific machine
 # jlu local linux
@@ -1974,7 +1978,7 @@ fi
 # yum install make gcc kernel-headers kernel-devel perl dkms bzip2 curl wget jq nmon sysstat htop vim firewalld git
 
 # sudo add-apt-repository ppa:ubuntugis/ppa
-# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa skopeo
+# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa skopeo alsa-tools
 # sudo apt install cheese guvcview okular
 # sudo apt install clamav clamtk clamav-daemon inotify-tools
 # sudo apt install prometheus-node-exporter prometheus prometheus-alertmanager 
