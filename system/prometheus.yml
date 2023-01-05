@@ -6,6 +6,9 @@ global:
   scrape_interval:     15s
   evaluation_interval: 15s
   # scrape_timeout is set to the global default (10s).
+  external_labels:
+    region: fr1
+    environment: dev
 
 # Alertmanager configuration
 # alerting:
