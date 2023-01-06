@@ -1,0 +1,79 @@
+global:
+  resolve_timeout: 3m
+
+route:
+  group_by: ['alertname', 'env', 'role', 'region', 'severity']
+  group_wait: 65s
+  group_interval: 1m
+  repeat_interval: 1h
+  routes:
+   - match:
+       send_resolved: false
+       severity: critical
+     receiver: slack_alerts_no_resolved
+   - match:
+       severity: critical
+     receiver: slack_alerts
+   - match:
+       send_resolved: false
+       severity: warning
+     receiver: slack_warn_no_resolved
+   - match:
+       severity: warning
+     receiver: slack_warn_no_resolved
+   - match:
+       severity: info
+     repeat_interval: 1d
+     receiver: slack_warn
+  receiver: slack_alerts
+
+# NB : the 'channel' entry in 'slack_configs' does not work with a name. It needs a channel Id for mattermost.
+receivers:
+- name: slack_alerts
+  slack_configs:
+  - api_url: 'https://mattermost.io/hooks/wkp'
+    icon_url: 'https://avatars3.githubusercontent.com/u/3380462'
+    send_resolved: true
+    title: '{{ template "custom_title" . }}'
+    text: '{{ template "custom_slack_message" . }}'
+- name: slack_alerts_no_resolved
+  slack_configs:
+  - api_url: 'https://mattermost.io/hooks/wkp'
+    icon_url: 'https://avatars3.githubusercontent.com/u/3380462'
+    send_resolved: false
+    title: '{{ template "custom_title" . }}'
+    text: '{{ template "custom_slack_message" . }}'
+- name: slack_warn
+  slack_configs:
+  - api_url: 'https://mattermost.io/hooks/up6'
+    icon_url: 'https://avatars3.githubusercontent.com/u/3380462'
+    send_resolved: true
+    title: '{{ template "custom_title" . }}'
+    text: '{{ template "custom_slack_message" . }}'
+- name: slack_warn_no_resolved
+  slack_configs:
+  - api_url: 'https://mattermost.io/hooks/up6'
+    icon_url: 'https://avatars3.githubusercontent.com/u/3380462'
+    send_resolved: false
+    title: '{{ template "custom_title" . }}'
+    text: '{{ template "custom_slack_message" . }}'
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['job', 'instance']
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'info'
+    equal: ['job', 'instance']
+  - source_match:
+      severity: 'warning'
+    target_match:
+      severity: 'info'
+    equal: ['job', 'instance']
+
+templates:
+  - 'slack_notifications.tmpl'
