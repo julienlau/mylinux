@@ -19,23 +19,578 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 7249,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1674554194609,
+  "id": 124,
+  "iteration": 1674560647929,
   "links": [],
   "liveNow": false,
   "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${Datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "blue",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 0,
+        "y": 0
+      },
+      "id": 45,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.10",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${Datasource}"
+          },
+          "expr": "count(kube_node_info)",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Nodes",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${Datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "dark-red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 3,
+        "y": 0
+      },
+      "id": 43,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.10",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${Datasource}"
+          },
+          "expr": "count((kube_node_status_condition{condition=\"Ready\", status!=\"true\"} == 1) OR ON(node) (kube_node_status_condition{condition!=\"Ready\", status=\"true\"} == 1)) OR vector(0)",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Abnormal Nodes",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${Datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 8,
+        "y": 0
+      },
+      "id": 47,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.10",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${Datasource}"
+          },
+          "expr": "count(node_cpu_seconds_total{job=~\"node-exporter\", mode='system'})",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Total cores",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${Datasource}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "N/A": {
+                  "color": "rgba(50, 172, 45, 0.97)",
+                  "text": "0"
+                }
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "color": "rgba(50, 172, 45, 0.97)",
+                  "text": "0"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "rgba(248, 112, 0, 0.89)",
+                "value": 100
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 16,
+        "y": 0
+      },
+      "id": 29,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.10",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${Datasource}"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "sum(abs(delta(apiserver_request_total{resource!=\"\", verb!~\"CONNECT|WATCH|WATCHLIST\", code=~\"(4)\\\\d{2}\"}[$step])))",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{pod}}",
+          "metric": "node_memory_MemTotal",
+          "range": true,
+          "refId": "A",
+          "step": 40
+        }
+      ],
+      "title": "api-server 4xx errors",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${Datasource}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "N/A": {
+                  "color": "rgba(50, 172, 45, 0.97)",
+                  "text": "0"
+                }
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "color": "rgba(50, 172, 45, 0.97)",
+                  "text": "0"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "rgba(248, 112, 0, 0.89)",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 18,
+        "y": 0
+      },
+      "id": 39,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.10",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${Datasource}"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "sum(abs(delta(apiserver_request_total{resource!=\"\", verb!~\"CONNECT|WATCH|WATCHLIST\", code=~\"429\"}[$step])))",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{pod}}",
+          "metric": "node_memory_MemTotal",
+          "range": true,
+          "refId": "A",
+          "step": 40
+        }
+      ],
+      "title": "api-server 429 errors",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${Datasource}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "N/A": {
+                  "color": "rgba(50, 172, 45, 0.97)",
+                  "text": "0"
+                }
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "color": "rgba(50, 172, 45, 0.97)",
+                  "text": "0"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 20
+              },
+              {
+                "color": "dark-red",
+                "value": 100
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 20,
+        "y": 0
+      },
+      "id": 30,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.10",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${Datasource}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(abs(delta(apiserver_request_total{resource!=\"\", verb!~\"CONNECT|WATCH|WATCHLIST\", code=~\"(5)\\\\d{2}\"}[$step])))",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{pod}}",
+          "metric": "node_memory_MemTotal",
+          "range": true,
+          "refId": "A",
+          "step": 40
+        }
+      ],
+      "title": "api-server 5xx errors",
+      "type": "stat"
+    },
     {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 3
       },
       "id": 23,
       "panels": [],
       "title": "Summary",
       "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${Datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 2,
+        "x": 0,
+        "y": 4
+      },
+      "id": 46,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "min"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
+      },
+      "pluginVersion": "8.5.10",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${Datasource}"
+          },
+          "exemplar": true,
+          "expr": "avg(1 - avg(rate(node_cpu_seconds_total{job=~\"node-exporter\",mode=\"idle\"}[$step])) by (instance))",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "refId": "A",
+          "step": 40
+        }
+      ],
+      "title": "Average CPU usage",
+      "type": "gauge"
     },
     {
       "datasource": {
@@ -84,8 +639,8 @@
       "gridPos": {
         "h": 7,
         "w": 2,
-        "x": 0,
-        "y": 1
+        "x": 2,
+        "y": 4
       },
       "id": 4,
       "links": [],
@@ -107,7 +662,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sort_desc(min(avg(rate(node_cpu_seconds_total{mode=\"idle\", service!=\"prometheus-federation\"}[2m])) by (instance)))",
+          "expr": "sort_desc(min(avg(rate(node_cpu_seconds_total{mode=\"idle\", service!=\"prometheus-federation\"}[$step])) by (instance)))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -166,8 +721,8 @@
       "gridPos": {
         "h": 7,
         "w": 2,
-        "x": 2,
-        "y": 1
+        "x": 4,
+        "y": 4
       },
       "id": 2,
       "links": [],
@@ -247,8 +802,8 @@
       "gridPos": {
         "h": 7,
         "w": 2,
-        "x": 4,
-        "y": 1
+        "x": 6,
+        "y": 4
       },
       "id": 9,
       "links": [],
@@ -342,8 +897,8 @@
       "gridPos": {
         "h": 7,
         "w": 6,
-        "x": 6,
-        "y": 1
+        "x": 8,
+        "y": 4
       },
       "id": 5,
       "links": [],
@@ -401,108 +956,6 @@
       ],
       "title": "Pods Running Count",
       "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${Datasource}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "options": {
-                "N/A": {
-                  "color": "rgba(50, 172, 45, 0.97)",
-                  "text": "0"
-                }
-              },
-              "type": "value"
-            },
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "color": "rgba(50, 172, 45, 0.97)",
-                  "text": "0"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "rgba(50, 172, 45, 0.97)",
-                "value": null
-              },
-              {
-                "color": "rgba(248, 112, 0, 0.89)",
-                "value": 1
-              },
-              {
-                "color": "rgba(245, 54, 54, 0.9)",
-                "value": 10
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 2,
-        "x": 12,
-        "y": 1
-      },
-      "id": 30,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "max"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.5.10",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${Datasource}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "sum(abs(delta(apiserver_request_total{resource!=\"\", verb!~\"CONNECT|WATCH|WATCHLIST\", code=~\"(5)\\\\d{2}\"}[$step])))",
-          "format": "time_series",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{pod}}",
-          "metric": "node_memory_MemTotal",
-          "range": true,
-          "refId": "A",
-          "step": 40
-        }
-      ],
-      "title": "api-server 5xx errors",
-      "type": "stat"
     },
     {
       "datasource": {
@@ -570,7 +1023,7 @@
         "h": 7,
         "w": 10,
         "x": 14,
-        "y": 1
+        "y": 4
       },
       "id": 32,
       "links": [],
@@ -600,7 +1053,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "histogram_quantile(0.99, sum(rate(apiserver_request_duration_seconds_bucket{verb!~\"CONNECT|WATCH\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(apiserver_request_duration_seconds_bucket{verb!~\"CONNECT|WATCH\"}[$step])) by (le))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -618,7 +1071,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "histogram_quantile(0.99, sum(rate(apiserver_request_duration_seconds_bucket{verb!~\"CONNECT|WATCH\"}[2m])) by (group, instance, resource, le))",
+          "expr": "histogram_quantile(0.99, sum(rate(apiserver_request_duration_seconds_bucket{verb!~\"CONNECT|WATCH\"}[$step])) by (group, instance, resource, le))",
           "format": "time_series",
           "hide": true,
           "interval": "",
@@ -636,7 +1089,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "histogram_quantile(0.99, sum(rate(apiserver_request_duration_seconds_bucket{verb!~\"CONNECT|WATCH\"}[2m])) by (resource, le))",
+          "expr": "histogram_quantile(0.99, sum(rate(apiserver_request_duration_seconds_bucket{verb!~\"CONNECT|WATCH\"}[$step])) by (resource, le))",
           "format": "time_series",
           "hide": true,
           "interval": "",
@@ -650,102 +1103,6 @@
       ],
       "title": "Api-Server latency p99",
       "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${Datasource}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "options": {
-                "N/A": {
-                  "color": "rgba(50, 172, 45, 0.97)",
-                  "text": "0"
-                }
-              },
-              "type": "value"
-            },
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "color": "rgba(50, 172, 45, 0.97)",
-                  "text": "0"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "rgba(50, 172, 45, 0.97)",
-                "value": null
-              },
-              {
-                "color": "rgba(248, 112, 0, 0.89)",
-                "value": 10
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 2,
-        "x": 12,
-        "y": 4
-      },
-      "id": 29,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "max"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.5.10",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${Datasource}"
-          },
-          "editorMode": "code",
-          "exemplar": true,
-          "expr": "sum(abs(delta(apiserver_request_total{resource!=\"\", verb!~\"CONNECT|WATCH|WATCHLIST\", code=~\"(4)\\\\d{2}\"}[$step])))",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{pod}}",
-          "metric": "node_memory_MemTotal",
-          "range": true,
-          "refId": "A",
-          "step": 40
-        }
-      ],
-      "title": "api-server 4xx errors",
-      "type": "stat"
     },
     {
       "datasource": {
@@ -805,7 +1162,7 @@
         "h": 14,
         "w": 6,
         "x": 0,
-        "y": 8
+        "y": 11
       },
       "id": 34,
       "links": [],
@@ -837,7 +1194,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(rate(kubelet_runtime_operations_errors_total[2m])) by (operation_type)",
+          "expr": "sum(rate(kubelet_runtime_operations_errors_total[$step])) by (operation_type)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -909,7 +1266,7 @@
         "h": 7,
         "w": 2,
         "x": 6,
-        "y": 8
+        "y": 11
       },
       "id": 14,
       "links": [],
@@ -1024,7 +1381,7 @@
         "h": 7,
         "w": 6,
         "x": 8,
-        "y": 8
+        "y": 11
       },
       "id": 16,
       "links": [],
@@ -1051,7 +1408,7 @@
             "uid": "${Datasource}"
           },
           "exemplar": true,
-          "expr": "sum by (pod)(delta(kube_pod_container_status_restarts_total{service!=\"prometheus-federation\"}[2m]) > 0)",
+          "expr": "sum by (pod)(delta(kube_pod_container_status_restarts_total{service!=\"prometheus-federation\"}[$step]) > 0)",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1126,7 +1483,7 @@
         "h": 7,
         "w": 10,
         "x": 14,
-        "y": 8
+        "y": 11
       },
       "id": 35,
       "links": [],
@@ -1158,7 +1515,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(rate(apiserver_request_total{resource!=\"\", code=~\"(5)\\\\d{2}\"}[2m])) by (code, verb, resource)",
+          "expr": "sum(rate(apiserver_request_total{resource!=\"\", code=~\"(5)\\\\d{2}\"}[$step])) by (code, verb, resource)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1230,7 +1587,7 @@
         "h": 7,
         "w": 2,
         "x": 6,
-        "y": 15
+        "y": 18
       },
       "id": 18,
       "links": [],
@@ -1346,7 +1703,7 @@
         "h": 7,
         "w": 6,
         "x": 8,
-        "y": 15
+        "y": 18
       },
       "id": 19,
       "links": [],
@@ -1370,7 +1727,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (pod)(delta(node_vmstat_oom_kill[2m]) > 0)",
+          "expr": "sum by (pod)(delta(node_vmstat_oom_kill[$step]) > 0)",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -1446,7 +1803,7 @@
         "h": 7,
         "w": 10,
         "x": 14,
-        "y": 15
+        "y": 18
       },
       "id": 38,
       "links": [],
@@ -1478,7 +1835,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(rate(apiserver_request_total{resource!=\"\", code=~\"(4)\\\\d{2}\"}[2m])) by (code, verb, resource)",
+          "expr": "sum(rate(apiserver_request_total{resource!=\"\", code=~\"(4)\\\\d{2}\"}[$step])) by (code, verb, resource)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1492,102 +1849,6 @@
       ],
       "title": "Api-Server 4XX errors",
       "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${Datasource}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "options": {
-                "N/A": {
-                  "color": "rgba(50, 172, 45, 0.97)",
-                  "text": "0"
-                }
-              },
-              "type": "value"
-            },
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "color": "rgba(50, 172, 45, 0.97)",
-                  "text": "0"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "rgba(50, 172, 45, 0.97)",
-                "value": null
-              },
-              {
-                "color": "rgba(248, 112, 0, 0.89)",
-                "value": 10
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 2,
-        "x": 12,
-        "y": 22
-      },
-      "id": 39,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "max"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.5.10",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${Datasource}"
-          },
-          "editorMode": "code",
-          "exemplar": true,
-          "expr": "sum(abs(delta(apiserver_request_total{resource!=\"\", verb!~\"CONNECT|WATCH|WATCHLIST\", code=~\"429\"}[$step])))",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{pod}}",
-          "metric": "node_memory_MemTotal",
-          "range": true,
-          "refId": "A",
-          "step": 40
-        }
-      ],
-      "title": "api-server 429 errors",
-      "type": "stat"
     },
     {
       "datasource": {
@@ -1651,7 +1912,7 @@
         "h": 7,
         "w": 10,
         "x": 14,
-        "y": 22
+        "y": 25
       },
       "id": 37,
       "options": {
@@ -1678,7 +1939,7 @@
             "uid": "${Datasource}"
           },
           "editorMode": "code",
-          "expr": "rate(apiserver_request_total{resource!=\"\", group!=\"\", verb!~\"CONNECT|WATCH|WATCHLIST\"}[2m])",
+          "expr": "rate(apiserver_request_total{resource!=\"\", group!=\"\", verb!~\"CONNECT|WATCH|WATCHLIST\"}[$step])",
           "interval": "",
           "legendFormat": "{{verb}} {{resource}}.{{group}}",
           "range": true,
@@ -1694,7 +1955,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 29
+        "y": 32
       },
       "id": 25,
       "panels": [],
@@ -1707,7 +1968,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 33
       },
       "id": 21,
       "panels": [
@@ -1854,7 +2115,7 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "avg(rate(node_cpu_seconds_total{mode=\"idle\", service!=\"prometheus-federation\"}[2m])) by (instance)",
+              "expr": "avg(rate(node_cpu_seconds_total{mode=\"idle\", service!=\"prometheus-federation\"}[$step])) by (instance)",
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
@@ -2073,7 +2334,7 @@
                 "uid": "$Datasource"
               },
               "exemplar": true,
-              "expr": "rate(node_disk_io_time_seconds_total{service!=\"prometheus-federation\",device=~\".d.*\"}[2m])",
+              "expr": "rate(node_disk_io_time_seconds_total{service!=\"prometheus-federation\",device=~\".d.*\"}[$step])",
               "format": "time_series",
               "hide": false,
               "interval": "",
@@ -2277,7 +2538,7 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "topk(5, sum(rate(container_cpu_usage_seconds_total{image!=\"\",container_name!=\"POD\", service!=\"prometheus-federation\"}[2m])) by (pod, container))",
+              "expr": "topk(5, sum(rate(container_cpu_usage_seconds_total{image!=\"\",container_name!=\"POD\", service!=\"prometheus-federation\"}[$step])) by (pod, container))",
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
@@ -2400,9 +2661,9 @@
     "list": [
       {
         "current": {
-          "selected": false,
-          "text": "Prometheus",
-          "value": "Prometheus"
+          "selected": true,
+          "text": "prometheus",
+          "value": "prometheus"
         },
         "hide": 0,
         "includeAll": false,
@@ -2421,9 +2682,9 @@
         "auto_count": 30,
         "auto_min": "10s",
         "current": {
-          "selected": false,
-          "text": "15m",
-          "value": "15m"
+          "selected": true,
+          "text": "5m",
+          "value": "5m"
         },
         "description": "step used to compute counters",
         "hide": 0,
@@ -2446,7 +2707,7 @@
             "value": "3m"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "5m",
             "value": "5m"
           },
@@ -2456,7 +2717,7 @@
             "value": "10m"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "15m",
             "value": "15m"
           },
@@ -2510,7 +2771,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {
