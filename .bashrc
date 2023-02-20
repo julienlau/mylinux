@@ -88,6 +88,53 @@ export allip=($(grep -v -e "^#" -e "localhost" /etc/hosts | sed '/^$/d' | grep "
 #============================================================
 # Functions (1)
 #
+##
+# serialize_array
+# Serializes a bash array to a string, with a configurable seperator.
+#
+# $1 = source varname ( contains array to be serialized )
+# $2 = target varname ( will contian the serialized string )
+# $3 = seperator ( optional, defaults to $'\x01' )
+#
+# example:
+#
+#    my_arry=( one "two three" four )
+#    serialize_array my_array my_string '|'
+#    declare -p my_string
+#
+# result:
+#
+#    declare -- my_string="one|two three|four"
+#
+function serialize_array() {
+    declare -n _array="${1}" _str="${2}" # _array, _str => local reference vars
+    local IFS="${3:-$'\x01'}"
+    # shellcheck disable=SC2034 # Reference vars assumed used by caller
+    _str="${_array[*]}" # * => join on IFS
+}
+
+##
+# deserialize_array
+# Deserializes a string into a bash array, with a configurable seperator.
+#
+# $1 = source varname ( contains string to be deserialized )
+# $2 = target varname ( will contain the deserialized array )
+# $3 = seperator ( optional, defaults to $'\x01' )
+#
+# example:
+#
+#    my_string="one|two three|four"
+#    deserialize_array my_string my_array '|'
+#    declare -p my_array
+#
+# result:
+#
+#    declare -a my_array=([0]="one" [1]="two three" [2]="four")
+#
+function deserialize_array() {
+    IFS="${3:-$'\x01'}" read -r -a "${2}" <<<"${!1}" # -a => split on IFS
+}
+
 unalias sudisp 2>/dev/null
 sudisp()
 {
@@ -1874,6 +1921,7 @@ alias hschema="hadoop jar /opt/tools/latest/depjars/parquet-tools-1.9.0.jar sche
 alias kc=kubectl
 alias ka=kubeadm
 alias k=kubectl
+alias kubectx="kubectl ctx"
 alias kk="kubectl -n \$SPARK_KUBE_NS"
 # for spark-submit vanilla
 alias sparkclean="kk get pods --field-selector=status.phase!=Running | awk '{print \$1}' | grep -v '^NAME$' | xargs kubectl delete pods -n \${SPARK_KUBE_NS}"
@@ -2031,7 +2079,7 @@ fi
 # yum install make gcc kernel-headers kernel-devel perl dkms bzip2 curl wget jq nmon sysstat htop vim firewalld git
 
 # sudo add-apt-repository ppa:ubuntugis/ppa
-# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa skopeo alsa-tools
+# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa skopeo alsa-tools tcpick
 # sudo apt install cheese guvcview okular
 # sudo apt install clamav clamtk clamav-daemon inotify-tools
 # sudo apt install prometheus-node-exporter prometheus prometheus-alertmanager 
