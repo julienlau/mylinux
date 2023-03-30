@@ -528,7 +528,7 @@ grepsrc()
     else
         expression=$1
     fi
-    find $searchpath ! \( -path '*/node_modules/*' -o -path '*/vendor/*' \) \( -name '*.for' -o -name '*.f' -o -name '*.F' -o -name '*.h' -o -name '*.F90' -o -name '*.f90' -o -name '*.m' -o -name '*.M' -o -name '*.py' -o -name '*.c' -o -name '*.C' -o -name '*.cpp' -o -name '*.CPP' -o -name '*.c++' -o -name '*.C++' -o -name '*.H' -o -name '*.inc' -o -name '*.?sh' -o -name '*.??sh' -o -name '*.sh' -o -name '*.java' -o -name '*.scala' -o -name '*.julia' -o -name '*.js' -o -name '*.go' -o -name '*.php' -o -name '*.perl' -o -name '*.sbt' -o -name 'pom.xml' -o -name '*.t' \) -print 2>/dev/null | xargs grep --color -s $opt -- $expression
+    find $searchpath ! \( -path '*/node_modules/*' -o -path '*/vendor/*' \) \( -name '.*.yaml' -o -name '.*.yml' -o -name '*.yaml' -o -name '*.yml' -o -name '*.go' -name '*.for' -o -name '*.f' -o -name '*.F' -o -name '*.h' -o -name '*.F90' -o -name '*.f90' -o -name '*.m' -o -name '*.M' -o -name '*.py' -o -name '*.c' -o -name '*.C' -o -name '*.cpp' -o -name '*.CPP' -o -name '*.c++' -o -name '*.C++' -o -name '*.H' -o -name '*.inc' -o -name '*.?sh' -o -name '*.??sh' -o -name '*.sh' -o -name '*.java' -o -name '*.scala' -o -name '*.julia' -o -name '*.js' -o -name '*.go' -o -name '*.php' -o -name '*.perl' -o -name '*.sbt' -o -name 'pom.xml' -o -name '*.t' \) -print 2>/dev/null | xargs grep --color -s $opt -- $expression
 }
 # end Function grepsrc
 
