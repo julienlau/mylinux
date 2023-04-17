@@ -52,6 +52,10 @@ if [ -e ~/.xsh ]; then
     source ~/.xsh
 fi
 
+if [[ -e ~/.secret ]]; then
+    source ~/.secret
+fi
+
 # Ubuntu 22.04 desktop
 bind 'set enable-bracketed-paste off' 2>/dev/null
 
@@ -2090,7 +2094,7 @@ fi
 # yum install make gcc kernel-headers kernel-devel perl dkms bzip2 curl wget jq nmon sysstat htop vim firewalld git
 
 # sudo add-apt-repository ppa:ubuntugis/ppa
-# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa skopeo alsa-tools tcpick
+# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa skopeo alsa-tools tcpick fzf ripgrep
 # sudo apt install cheese guvcview okular
 # sudo apt install clamav clamtk clamav-daemon inotify-tools
 # sudo apt install prometheus-node-exporter prometheus prometheus-alertmanager 
