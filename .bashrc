@@ -194,6 +194,17 @@ END {
 }' ${javaproperties})
 }
 
+# =======================
+# only export variable if it is undefined
+exportProtected()
+{
+    key=`echo $1 | awk -F '=' '{print $1}'`
+    if [[ -z ${!key} ]]; then
+        declare -g "$1"
+    fi
+}
+# =======================
+
 unalias exporte 2>/dev/null
 # avoid to export keys (like PATH or LD_LIBRARYPATH) to value pointing to non existing path or including duplicates
 exporte()
