@@ -199,10 +199,17 @@ END {
 }
 
 # =======================
+check-init() {
+    local key=$(echo $1)
+    if [[ -z ${!key} ]]; then
+        echo "ERROR ! $key empty"
+        exit 999
+    fi
+}
 # only export variable if it is undefined
 exportProtected()
 {
-    key=`echo $1 | awk -F '=' '{print $1}'`
+    local key=`echo $1 | awk -F '=' '{print $1}'`
     if [[ -z ${!key} ]]; then
         declare -g "$1"
     fi
