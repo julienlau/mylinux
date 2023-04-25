@@ -211,7 +211,8 @@ exportProtected()
 {
     local key=`echo $1 | awk -F '=' '{print $1}'`
     if [[ -z ${!key} ]]; then
-        declare -g "$1"
+	#declare -x "$1"
+        export $1
     fi
 }
 # =======================
