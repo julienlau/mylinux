@@ -22,12 +22,16 @@ rebase = true
 followTags = true
 
 [alias]
+c = commit
+co = checkout
 unstage = reset HEAD --
 last = log -1 HEAD
 slog = log --graph --all --topo-order --pretty='format:%h %ai %s%d (%an)'
-st = status
+st = status -sb
+p = push
 pfl = push --force-with-lease
-f = fetch --all --tags
+f = fetch -v --all -t -f -p -P
+m = merge --squash --no-commit -Xtheirs
 # restore_from_origin = reset --hard @{u}
 # compaction of recent history git reset --soft HEAD@{2}
 
