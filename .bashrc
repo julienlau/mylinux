@@ -199,7 +199,7 @@ END {
 }
 
 # =======================
-check-init() {
+check_init() {
     local key=$(echo $1)
     if [[ -z ${!key} ]]; then
         echo "ERROR ! $key empty"
@@ -207,7 +207,7 @@ check-init() {
     fi
 }
 # only export variable if it is undefined
-exportProtected()
+export_protected()
 {
     local key=`echo $1 | awk -F '=' '{print $1}'`
     if [[ -z ${!key} ]]; then
@@ -246,9 +246,9 @@ exporte()
     fi
 }
 
-unalias exportNoVoid 2>/dev/null
+unalias export_no_void 2>/dev/null
 # avoid to export keys (like PATH or LD_LIBRARYPATH) to value pointing to non existing path or including duplicates
-exportNoVoid()
+export_no_void()
 {
     # usage: 
     # exporte titi=/usr/bin:/opt/bin ; echo $titi ;  exporte titi=$titi:~/bin ; echo $titi;  exporte titi=$titi:/trou/duc 
@@ -2118,10 +2118,10 @@ fi
 # sudo systemctl enable chronyd ; sudo systemctl start chronyd ; timedatectl; sudo timedatectl set-ntp true ; timedatectl
 
 # if [[ "$USER" = "root" ]]; then
-#     exportNoVoid PATH="$PATH:/opt/miniconda3/bin"
+#     export_no_void PATH="$PATH:/opt/miniconda3/bin"
 # else
-#     exportNoVoid PATH="/opt/miniconda3/bin:$PATH"
-#     exportNoVoid PATH="$HOME/miniconda3/bin:$PATH"
+#     export_no_void PATH="/opt/miniconda3/bin:$PATH"
+#     export_no_void PATH="$HOME/miniconda3/bin:$PATH"
 # fi
 
 if [[ ! -z $idir ]]; then
