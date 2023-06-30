@@ -432,11 +432,14 @@ dockercleanv()
         for id in $parent; do 
             docker inspect $id | jq '.[] | .Name, .Id '
         done
-    docker stop $parent
-    docker rm $parent
-    docker volume rm $*
+        docker stop $parent
+        docker rm $parent
+        docker volume rm $*
     fi
+    echo "clean all with : dockercleanv \$(docker volume ls | awk '{print $2}' | grep -v VOLUME)"
 }
+
+alias dockerips="docker inspect -f '{{.Name}} : {{.NetworkSettings.IPAddress }} {{range .NetworkSettings.Networks}} - {{.IPAddress}}{{end}}' \$(docker ps -aq)"
 
 # Function dockercleani
 unalias dockercleani 2>/dev/null
@@ -453,9 +456,9 @@ dockerclean()
 {
     docker rm $(docker ps -qa --filter status=exited)
     docker volume prune -f
-    docker image prune -a -f
-    docker images | awk '$2 !~ /^[[:digit:]]*$|^[0-9.]*$|latest|master|base/' 
-    docker images | awk '$2 !~ /^[[:digit:]]*$|^[0-9.]*$latest|master|base/' | awk '{print $3}' | grep -v IMAGE | xargs docker rmi -f
+    #docker image prune -a -f
+    #docker images | awk '$2 !~ /^[[:digit:]]*$|^[0-9.]*$|latest|master|base/' 
+    #docker images | awk '$2 !~ /^[[:digit:]]*$|^[0-9.]*$latest|master|base/' | awk '{print $3}' | grep -v IMAGE | xargs docker rmi -f
 }
 
 unalias dockerbuild 2>/dev/null
@@ -480,15 +483,37 @@ dockerbuild()
     fi
 }
 
-unalias dockerlogs 2>/dev/null
-dockerlogs() {
+unalias dockerlog 2>/dev/null
+dockerlog() {
+    local opt=""
+    local arg=10
+    local str=.
+    if [[ $# -ge 1 ]]; then
+        arg=$1
+    fi
+    if [[ $# -ge 2 ]]; then
+        str=$2
+    fi
+    if [[ ! -z $(echo $arg | grep "[[:alpha:]]") ]]; then
+        opt="--since $arg"
+    else
+        opt="-n $arg"
+    fi
+    for did in `docker ps | awk '{print $NF}'| grep -v NAMES | grep -i $str`; do
+        echo "================== $did =================" ;
+        echo "docker logs $opt $did 2>&1"
+        docker logs $opt $did 2>&1
+    done
+}
+
+unalias dockerlogsOLD 2>/dev/null
+dockerlogsOLD() {
     if [[ $# -eq 0 ]]; then
         echo "ERROR : please providing a query string to grep !"
     else
-        journalctl -u docker CONTAINER_ID=$1 | grep -i -v -e Elasticsearch -v -e ']: $' -v -e '  No living connections' -e '  No living connections' -e 'GET /healthz' -e 'lib.request_handlers.authentication - info - No bearer token found on request'
-
-        echo "journalctl -u docker --since=-5m CONTAINER_ID=$1 | grep -i -v -e Elasticsearch -e ']: $' -e '  No living connections' -e '  No living connections' -e 'GET /healthz' -e 'lib.request_handlers.authentication - info - No bearer token found on request'
-"
+        #journalctl -u docker CONTAINER_ID=$1 | grep -i -v -e Elasticsearch -v -e ']: $' -v -e '  No living connections' -e '  No living connections' -e 'GET /healthz' -e 'lib.request_handlers.authentication - info - No bearer token found on request'        
+        journalctl -u docker CONTAINER_ID=$1
+        echo "journalctl -u docker --since=-5m CONTAINER_ID=$1"
     fi
 }
 
@@ -499,17 +524,17 @@ dockerjlog() {
     else
         journalstr=""
         for str in $* ; do
-            ids=`docker ps | grep $str | awk '{print $1}'`
+            ids=`docker ps | grep $str | awk '{print $1}'| grep -v CONTAINER`
             if [[ ! -z $ids ]]; then
                 for id in $ids; do 
                     journalstr="CONTAINER_ID=$id $journalstr"
                 done
             fi
         done
-        journalctl -u docker --since=-5m $journalstr | grep -i -v -e Elasticsearch -v -e ']: $' -v -e '  No living connections' -e '  No living connections' -e 'GET /healthz' -e 'lib.request_handlers.authentication - info - No bearer token found on request'
+        #journalctl -u docker --since=-5m $journalstr | grep -i -v -e Elasticsearch -v -e ']: $' -v -e '  No living connections' -e '  No living connections' -e 'GET /healthz' -e 'lib.request_handlers.authentication - info - No bearer token found on request'
+        journalctl -u docker --since=-5m $journalstr
 
-        echo "journalctl -u docker --since=-5m $journalstr | grep -i -v -e Elasticsearch -e ']: $' -e '  No living connections' -e '  No living connections' -e 'GET /healthz' -e 'lib.request_handlers.authentication - info - No bearer token found on request'
-"
+        echo "journalctl -u docker --since=-5m $journalstr"
     fi
 }
 
@@ -1966,6 +1991,7 @@ alias kevents="kubectl get events --field-selector involvedObject.kind=Node --so
 alias kpods="kubectl get pod -o=custom-columns=NAME:.metadata.name,STATUS:.status.phase,NODE:.spec.nodeName --all-namespaces"
 alias kpvcs="kubectl get pods --all-namespaces -o=json | jq -c '.items[] | {pod: .metadata.name, namespace: .metadata.namespace, status: .status.phase, node: .spec.nodeName, pvc: .spec |  select( has (\"volumes\") ).volumes[] | select( has (\"persistentVolumeClaim\") ).persistentVolumeClaim.claimName }'"
 
+alias gitlog="git slog | head ; git log -n 10"
 alias alarm="vlc ~/alarm.mp3"
 #------------------------------------------------------------------------------
 # Export
@@ -2034,6 +2060,8 @@ if [[ $USER = "jlu" ]] ; then
     exporte PATH=$PATH:/opt/cuda/bin
 fi
 
+alias dockerstop='docker stop $(docker ps -q)'
+
 export PIP_DEFAULT_TIMEOUT=60
 
 # modify environment variables for everyone
@@ -2059,6 +2087,8 @@ export GDAL_DATA=`gdal-config --datadir 2>/dev/null`
 exporte CLASSPATH=$CLASSPATH:$GDAL_DIR/swig/java/gdal.jar
 exporte CPLUS_INCLUDE_PATH=/usr/include/gdal
 exporte C_INCLUDE_PATH=/usr/include/gdal
+export DOCKER_CONFIG=${DOCKER_CONFIG:-~/.docker}
+
 
 # Source azure env
 if [ -f ~/azure.completion.sh ]; then
