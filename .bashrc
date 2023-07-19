@@ -15,6 +15,10 @@
 # lspci -nnk | grep -i vga -A3 | grep 'in use'
 # hwinfo --gfxcard
 
+# fix sound ubuntu
+# pulseaudio -k # kill the process to force restart by systemd
+# sudo alsa force-reload
+
 # blkid -c /dev/null -o list
 # lsblk -o name,label,partlabel,size,uuid,mountpoint
 # listsmb="//prc-01-eu/DATAS //pp-prd-01-scus/logs //pp-prc-01-scus/logs //ppeu-prc-01/logs //ppeu-prd-01/logs //172.31.1.2/public"
@@ -278,6 +282,8 @@ myip()
     ip route get 8.8.8.8 2>/dev/null | awk '{ for(i=1; i<NF; i++) { if($i == "src") {print $(i+1); exit} } }'
     # ip addr show dev eth1 primary | awk '/(inet .*\/)/ { print $2 }' | cut -d'/' -f1
 }
+
+alias ippub="curl i-p.show"
 
 unalias spfy 2>/dev/null
 spfy()
@@ -1970,7 +1976,7 @@ alias kc=kubectl
 alias ka=kubeadm
 alias k=kubectl
 alias kubectx="kubectl ctx"
-alias kk="kubectl -n \$SPARK_KUBE_NS"
+alias kk="kubectl -n \$ns"
 # for spark-submit vanilla
 alias sparkclean="kk get pods --field-selector=status.phase!=Running | awk '{print \$1}' | grep -v '^NAME$' | xargs kubectl delete pods -n \${SPARK_KUBE_NS}"
 alias sparklogs="kk logs"
