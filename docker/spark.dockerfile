@@ -1,15 +1,19 @@
-# docker build --progress=plain -t pepitedata/spark-hadoop:3.3.0-3.3.4 -f Dockerfile .
+# docker build --progress=plain -t pepitedata/spark-hadoop:3.4.1-3.3.6 -f spark.dockerfile .
 FROM eclipse-temurin:11-jdk-focal
 
-ARG spark_uid=185
-RUN groupadd -g 186 spark && useradd spark -u 185 -g 186 -m -s /bin/bash
+ARG spark_uid=10000
+RUN groupadd -g 10001 spark && useradd spark -u 10000 -g 10001 -m -s /bin/bash
 
 ENV SPARK_HOME /opt/spark
 
-RUN set -ex && \
-    apt-get update && \
+RUN dpkg --configure -a && \
+    apt-get install -fy --no-install-recommends && \
+    apt-get autoclean && \
+    apt-get autoremove --purge -y && \
+    apt-get update -y --fix-missing --no-install-recommends && \
+    set -ex && \
     ln -s /lib /lib64 && \
-    apt install -y bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools curl python3 atop nmon && \
+    apt-get install -y --no-install-recommends --allow-downgrades bash tini libc6 libpam-modules krb5-user libnss3 procps && \
     rm /bin/sh && \
     ln -sv /bin/bash /bin/sh && \
     echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
@@ -18,7 +22,7 @@ RUN set -ex && \
 
 #######################
 # HADOOP
-ENV HADOOP_VERSION 3.3.4
+ENV HADOOP_VERSION 3.3.6
 #----------------------- version to adjust
 ENV HADOOP_HOME /opt/hadoop
 RUN curl -sL --retry 3 \
@@ -38,7 +42,7 @@ ENV HADOOP_OPTIONAL_TOOLS "hadoop-aws"
 
 #######################
 # SPARK
-ENV SPARK_VERSION 3.3.1
+ENV SPARK_VERSION 3.4.1
 ENV SCALA_VER 2.12
 #----------------------- version to adjust
 ENV SPARK_PACKAGE spark-${SPARK_VERSION}-bin-without-hadoop
@@ -49,8 +53,7 @@ RUN curl -sL --retry 3 \
   | tar x -C /opt/ && \
  mv /opt/${SPARK_PACKAGE} ${SPARK_HOME} && \
  mkdir -p ${SPARK_HOME}/examples && \
- mkdir -p ${SPARK_HOME}/work-dir && \
- curl -sL --retry 3 \
+  curl -sL --retry 3 \
     https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_${SCALA_VER}/${SPARK_VERSION}/spark-hadoop-cloud_${SCALA_VER}-${SPARK_VERSION}.jar -o ${SPARK_HOME}/jars/spark-hadoop-cloud_${SCALA_VER}-${SPARK_VERSION}.jar && \
  cp ${HADOOP_HOME}/etc/hadoop/hadoop-metrics2.properties ${SPARK_HOME}/conf/ && \
  touch ${SPARK_HOME}/RELEASE && \
@@ -95,15 +98,32 @@ echo "spark.hadoop.mapreduce.outputcommitter.factory.scheme.s3a org.apache.hadoo
 # echo "spark.hadoop.fs.s3a.buffer.dir ${hadoop.tmp.dir}/s3a" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
 # echo "#spark.hadoop.fs.s3a.impl org.apache.hadoop.spark.hadoop.fs.s3a.S3AFileSystem" >> ${SPARK_HOME}/conf/spark-defaults.conf
 
-ENV PYTHONHASHSEED 0
-ENV PYTHONIOENCODING UTF-8
-ENV PIP_DISABLE_PIP_VERSION_CHECK 1
 ENV SPARK_PRINT_LAUNCH_COMMAND 1
 WORKDIR ${SPARK_HOME}
 RUN cp kubernetes/dockerfiles/spark/entrypoint.sh /opt/. \
  && cp kubernetes/dockerfiles/spark/decom.sh /opt/.
 RUN echo "networkaddress.cache.ttl=30" >> ${JAVA_HOME}/conf/security/java.security
 
+#######################
+# OPTIONAL : python
+ENV PYV 3.9
+ENV PYTHONHASHSEED 0
+ENV PYTHONIOENCODING UTF-8
+ENV PIP_DISABLE_PIP_VERSION_CHECK 1
+
+RUN set -ex && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends --allow-downgrades -y python$PYV atop nmon net-tools curl && \
+    rm -rf /var/cache/apt/*
+
+RUN ln -s /usr/bin/python$PYV /usr/bin/python3 && \
+    ln -s /usr/bin/python3 /usr/bin/python && \
+    ls -la /usr/bin/python* && \
+    readlink -f /usr/bin/python*
+########
+
+#######################
+# OPTIONAL : example jars
 WORKDIR ${SPARK_HOME}/examples/jars
 RUN curl -sL --retry 3 \
   https://github.com/julienlau/tpcx-hs/releases/download/v2.2.0/v2.2.0.tgz \
@@ -111,16 +131,21 @@ RUN curl -sL --retry 3 \
   | tar x -C ${SPARK_HOME}/examples/jars --strip-components=3 --wildcards --no-anchored '*TPCx-HS-master_Spark*.jar'
 RUN curl -sL --retry 3 \
     https://github.com/julienlau/spark-data-generator/releases/download/1.0/parquet-data-generator_2.12-3.3.0_1.0.jar -o ./parquet-data-generator_2.12-3.3.0_1.0.jar
+########
 
 # this script should be launched after having copied your ssl certs in /usr/local/share/ca-certificates/
 #COPY spark-env-ssl.sh /opt/.
-RUN   chown -R spark:spark . && \
-      chmod -R go+rX .
+RUN   mkdir -p /tmp/spark-events /tmp/staging /tmp/s3a ${SPARK_HOME}/workdir && \
+      chmod -R go+rwX /tmp && \
+      chmod g+wX ${SPARK_HOME}/workdir && \
+      chmod a+x /opt/decom.sh && \
+      chown -R spark:spark ${SPARK_HOME} && \
+      chmod -R go+rX ${SPARK_HOME}
 
-WORKDIR ${SPARK_HOME}/work-dir
-RUN mkdir -p /tmp/spark-events /tmp/staging /tmp/s3a && chmod -R go+rwX /tmp && chmod g+wX ${SPARK_HOME}/work-dir && chmod a+x /opt/decom.sh
+WORKDIR ${SPARK_HOME}/workdir
 
 ENTRYPOINT [ "/opt/entrypoint.sh" ]
 
 # Specify the User that the actual main process will run as
 USER ${spark_uid}
+SHELL ["/bin/bash", "-c"]
