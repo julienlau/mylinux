@@ -1,8 +1,7 @@
 # docker build --progress=plain -t pepitedata/tools:focal -f tools.dockerfile .
 FROM ubuntu:focal
 
-ARG me_uid=185
-RUN groupadd -g 186 me && useradd me -m -u 185 -g 186 -s /bin/bash
+RUN groupadd -g 10001 me && useradd me -m -u 10000 -g 10001 -s /bin/bash
 
 RUN set -ex && \
     apt-get update && \
@@ -15,5 +14,10 @@ RUN set -ex && \
 
 RUN usermod -aG sudo me && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
+WORKDIR /home/me
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    chmod +x kubectl && \
+    mv ./kubectl /usr/local/bin/kubectl
+
 # Specify the User that the actual main process will run as
-USER ${me_uid}
+USER me

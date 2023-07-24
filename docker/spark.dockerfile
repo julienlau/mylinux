@@ -113,13 +113,23 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK 1
 
 RUN set -ex && \
     apt-get update && \
-    apt-get install -y --no-install-recommends --allow-downgrades -y python$PYV atop nmon net-tools curl && \
+    apt-get install -y --no-install-recommends --allow-downgrades -y python$PYV atop nmon net-tools curl vim && \
     rm -rf /var/cache/apt/*
 
 RUN ln -s /usr/bin/python$PYV /usr/bin/python3 && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     ls -la /usr/bin/python* && \
     readlink -f /usr/bin/python*
+
+#######################
+# OPTIONAL : debug only
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends --allow-downgrades -y atop bash binutils curl dnsutils dstat fio gawk htop iftop inetutils-traceroute ioping iotop iperf iptraf iputils-tracepath iputils-ping libc6 lsof netcat nethogs net-tools nmap nmon openssl procps python3 qperf rclone strace sudo sysbench sysstat tini vim && \
+    rm -rf /var/cache/apt/* && \
+    curl -LO "https://dl.k8s.io/release/v1.24.13/bin/linux/amd64/kubectl" && \
+    mv ./kubectl /usr/local/bin/kubectl && \
+    chmod ugo+rx /usr/local/bin/kubectl
+RUN usermod -aG sudo spark && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 ########
 
 #######################
