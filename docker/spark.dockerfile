@@ -1,5 +1,11 @@
 # docker build --progress=plain -t pepitedata/spark-hadoop:3.4.1-3.3.6 -f spark.dockerfile .
-FROM eclipse-temurin:11-jdk-focal
+
+#######################
+# pre : to enable exacaster lighter if needed
+FROM pepitedata/lighter-spark:0.0.49 as server
+WORKDIR /home/app/
+
+FROM eclipse-temurin:11-jdk-focal as base
 
 ARG spark_uid=10000
 RUN groupadd -g 10001 spark && useradd spark -u 10000 -g 10001 -m -s /bin/bash
@@ -13,7 +19,7 @@ RUN dpkg --configure -a && \
     apt-get update -y --fix-missing --no-install-recommends && \
     set -ex && \
     ln -s /lib /lib64 && \
-    apt-get install -y --no-install-recommends --allow-downgrades bash tini libc6 libpam-modules krb5-user libnss3 procps && \
+    apt-get install -y --no-install-recommends --allow-downgrades bash tini libc6 libpam-modules krb5-user libnss3 procps curl unzip gzip && \
     rm /bin/sh && \
     ln -sv /bin/bash /bin/sh && \
     echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
@@ -43,6 +49,7 @@ ENV HADOOP_OPTIONAL_TOOLS "hadoop-aws"
 #######################
 # SPARK
 ENV SPARK_VERSION 3.4.1
+ENV SPARK_MINOR 3.4
 ENV SCALA_VER 2.12
 #----------------------- version to adjust
 ENV SPARK_PACKAGE spark-${SPARK_VERSION}-bin-without-hadoop
@@ -53,8 +60,7 @@ RUN curl -sL --retry 3 \
   | tar x -C /opt/ && \
  mv /opt/${SPARK_PACKAGE} ${SPARK_HOME} && \
  mkdir -p ${SPARK_HOME}/examples && \
-  curl -sL --retry 3 \
-    https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_${SCALA_VER}/${SPARK_VERSION}/spark-hadoop-cloud_${SCALA_VER}-${SPARK_VERSION}.jar -o ${SPARK_HOME}/jars/spark-hadoop-cloud_${SCALA_VER}-${SPARK_VERSION}.jar && \
+  curl -sL --retry 3 https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_${SCALA_VER}/${SPARK_VERSION}/spark-hadoop-cloud_${SCALA_VER}-${SPARK_VERSION}.jar -o ${SPARK_HOME}/jars/spark-hadoop-cloud_${SCALA_VER}-${SPARK_VERSION}.jar && \
  cp ${HADOOP_HOME}/etc/hadoop/hadoop-metrics2.properties ${SPARK_HOME}/conf/ && \
  touch ${SPARK_HOME}/RELEASE && \
  chown -R spark:spark ${SPARK_HOME} && \
@@ -113,7 +119,7 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK 1
 
 RUN set -ex && \
     apt-get update && \
-    apt-get install -y --no-install-recommends --allow-downgrades -y python$PYV atop nmon net-tools curl vim && \
+    apt-get install -y --no-install-recommends --allow-downgrades -y python$PYV atop nmon vim && \
     rm -rf /var/cache/apt/*
 
 RUN ln -s /usr/bin/python$PYV /usr/bin/python3 && \
@@ -122,15 +128,35 @@ RUN ln -s /usr/bin/python$PYV /usr/bin/python3 && \
     readlink -f /usr/bin/python*
 
 #######################
-# OPTIONAL : debug only
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends --allow-downgrades -y atop bash binutils curl dnsutils dstat fio gawk htop iftop inetutils-traceroute ioping iotop iperf iptraf iputils-tracepath iputils-ping libc6 lsof netcat nethogs net-tools nmap nmon openssl procps python3 qperf rclone strace sudo sysbench sysstat tini vim && \
-    rm -rf /var/cache/apt/* && \
-    curl -LO "https://dl.k8s.io/release/v1.24.13/bin/linux/amd64/kubectl" && \
-    mv ./kubectl /usr/local/bin/kubectl && \
-    chmod ugo+rx /usr/local/bin/kubectl
-RUN usermod -aG sudo spark && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+# OPTIONAL : apache Livy
+# ENV LIVYVERSION 0.7.1-incubating
+# WORKDIR /opt
+# RUN curl -sL --retry 3 \
+#   https://dlcdn.apache.org/incubator/livy/${LIVYVERSION}/apache-livy-${LIVYVERSION}-bin.zip -o livy-${LIVYVERSION}.zip && \
+#   unzip livy-${LIVYVERSION}.zip && \
+#   rm -f livy-${LIVYVERSION}.zip && \
+#   ln -s apache-livy-${LIVYVERSION}-bin livy
+# ENV LIVY_CONF_DIR /opt/livy/conf
 ########
+
+#######################
+# OPTIONAL : exacaster lighter
+# RUN mkdir -p /home/app/
+# WORKDIR /home/app/
+# ENV FRONTEND_PATH /home/app/frontend/
+# COPY --from=server /home/app/libs ./
+# COPY --from=server /home/app/resources ./
+# COPY --from=server /home/app/application.jar ./
+# COPY --from=server /home/app/frontend ./
+########
+
+#######################
+# OPTIONAL : additional jars
+ENV ICEBERG_VER 1.3.1
+ENV NESSIE_VER 0.66.0
+WORKDIR ${SPARK_HOME}/examples/jars
+RUN curl -sL --retry 3 https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-${SPARK_MINOR}_${SCALA_VER}/${ICEBERG_VERSION}/iceberg-spark-runtime-${SPARK_MINOR}_${SCALA_VER}-${ICEBERG_VERSION}.jar -o ./iceberg-spark-runtime-${SPARK_MINOR}_${SCALA_VER}-${ICEBERG_VERSION}.jar && \
+    curl -sL --retry 3 https://repo1.maven.org/maven2/org/projectnessie/nessie-integrations/nessie-spark-extensions-${SPARK_MINOR}_${SCALA_VER}/${NESSIE_VERSION}/nessie-spark-extensions-${SPARK_MINOR}_${SCALA_VER}-${NESSIE_VERSION}.jar -o ./nessie-spark-extensions-${SPARK_MINOR}_${SCALA_VER}-${NESSIE_VERSION}.jar
 
 #######################
 # OPTIONAL : example jars
@@ -143,10 +169,28 @@ RUN curl -sL --retry 3 \
     https://github.com/julienlau/spark-data-generator/releases/download/1.0/parquet-data-generator_2.12-3.3.0_1.0.jar -o ./parquet-data-generator_2.12-3.3.0_1.0.jar
 ########
 
+#######################
+# Clean package
+#RUN apt remove -y vim curl unzip dnsutils fio gawk inetutils-traceroute ioping iperf iptraf iputils-tracepath iputils-ping lsof netcat nethogs net-tools nmap qperf rclone strace sudo sysbench sysstat
+########
+
+#######################
+# OPTIONAL : debug only
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends --allow-downgrades -y atop bash binutils curl dnsutils dstat fio gawk htop iftop inetutils-traceroute ioping iotop iperf iptraf iputils-tracepath iputils-ping lsof netcat nethogs net-tools nmap nmon openssl qperf rclone strace sudo sysbench sysstat vim && \
+    rm -rf /var/cache/apt/* && \
+    curl -LO "https://dl.k8s.io/release/v1.24.13/bin/linux/amd64/kubectl" && \
+    mv ./kubectl /usr/local/bin/kubectl && \
+    chmod ugo+rx /usr/local/bin/kubectl
+RUN usermod -aG sudo spark && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+# COPY spark-repl_2.12-3.4.1.jar ${SPARK_HOME}/jars/.
+########
+
 # this script should be launched after having copied your ssl certs in /usr/local/share/ca-certificates/
 #COPY spark-env-ssl.sh /opt/.
 RUN   mkdir -p /tmp/spark-events /tmp/staging /tmp/s3a ${SPARK_HOME}/workdir && \
       chmod -R go+rwX /tmp && \
+      chmod -R go+rX /opt /home && \
       chmod g+wX ${SPARK_HOME}/workdir && \
       chmod a+x /opt/decom.sh && \
       chown -R spark:spark ${SPARK_HOME} && \

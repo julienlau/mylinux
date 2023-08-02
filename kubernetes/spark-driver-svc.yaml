@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    spark-app-selector: spark-05839f4f83bb42d7a2e4e103c5160410
+  name: python-pi-590d078988dc46b8-driver-svc
+spec:
+  internalTrafficPolicy: Cluster
+  ports:
+  - name: driver-rpc-port
+    port: 7078
+    protocol: TCP
+    targetPort: 7078
+  - name: blockmanager
+    port: 7079
+    protocol: TCP
+    targetPort: 7079
+  - name: spark-ui
+    port: 4040
+    protocol: TCP
+    targetPort: 4040
+  selector:
+    spark-app-name: python-pi
+    spark-app-selector: spark-05839f4f83bb42d7a2e4e103c5160410
+    spark-role: driver
+  sessionAffinity: None
+  type: ClusterIP
