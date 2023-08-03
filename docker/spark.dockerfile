@@ -75,27 +75,17 @@ ENV LD_LIBRARY_PATH $HADOOP_HOME/lib/native
 
 RUN echo "tuning ${SPARK_HOME}/conf/spark-defaults.conf" && \
 echo "spark.serializer org.apache.spark.serializer.KryoSerializer" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
+echo "spark.kubernetes.file.upload.path /tmp" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
 echo "spark.hadoop.fs.s3a.path.style.access true" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.block.size 512M" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.committer.magic.enabled false" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
+echo "spark.hadoop.fs.s3a.committer.magic.enabled true" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
 echo "spark.hadoop.fs.s3a.committer.name directory" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.committer.staging.abort.pending.uploads true" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.committer.staging.conflict-mode append" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.committer.staging.unique-filenames true" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.committer.threads 2048 # number of threads writing to MinIO" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
 echo "spark.hadoop.fs.s3a.connection.establish.timeout 5000" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.connection.maximum 8192 # maximum number of concurrent conns" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
 echo "spark.hadoop.fs.s3a.connection.ssl.enabled false" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
 echo "spark.hadoop.fs.s3a.connection.timeout 200000" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.fast.upload.active.blocks 2048 # number of parallel uploads" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.fast.upload.buffer disk # use disk as the buffer for uploads" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.fast.upload true # turn on fast upload mode" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.max.total.tasks 2048 # maximum number of parallel tasks" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.multipart.size 512M # size of each multipart chunk" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.multipart.threshold 512M # size before using multipart uploads" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.socket.recv.buffer 65536 # read socket buffer hint" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.socket.send.buffer 65536 # write socket buffer hint" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
-echo "spark.hadoop.fs.s3a.threads.max 2048 # maximum number of threads for S3A" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
+echo "spark.hadoop.fs.s3a.fast.upload.buffer disk" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
+echo "spark.hadoop.fs.s3a.multipart.size 512M" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
+echo "spark.hadoop.fs.s3a.multipart.threshold 512M" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
+echo "spark.hadoop.fs.s3a.threads.max 2048" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
 echo "spark.hadoop.fs.s3a.buffer.dir /tmp/s3a" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
 echo "spark.hadoop.fs.s3a.committer.staging.tmp.path /tmp/staging" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
 echo "spark.sql.parquet.output.committer.class org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
@@ -171,18 +161,20 @@ RUN curl -sL --retry 3 \
 
 #######################
 # Clean package
-#RUN apt remove -y vim curl unzip dnsutils fio gawk inetutils-traceroute ioping iperf iptraf iputils-tracepath iputils-ping lsof netcat nethogs net-tools nmap qperf rclone strace sudo sysbench sysstat
+RUN apt remove -y vim curl unzip dnsutils fio gawk inetutils-traceroute ioping iperf iptraf iputils-tracepath iputils-ping lsof netcat nethogs net-tools nmap qperf rclone strace sudo sysbench sysstat && \
+    apt autoremove -y &&\
+    rm -rf /var/cache/apt/*
 ########
 
 #######################
 # OPTIONAL : debug only
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends --allow-downgrades -y atop bash binutils curl dnsutils dstat fio gawk htop iftop inetutils-traceroute ioping iotop iperf iptraf iputils-tracepath iputils-ping lsof netcat nethogs net-tools nmap nmon openssl qperf rclone strace sudo sysbench sysstat vim && \
-    rm -rf /var/cache/apt/* && \
-    curl -LO "https://dl.k8s.io/release/v1.24.13/bin/linux/amd64/kubectl" && \
-    mv ./kubectl /usr/local/bin/kubectl && \
-    chmod ugo+rx /usr/local/bin/kubectl
-RUN usermod -aG sudo spark && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+# RUN apt-get update && \
+#     apt-get install -y --no-install-recommends --allow-downgrades -y atop bash binutils curl dnsutils dstat fio gawk htop iftop inetutils-traceroute ioping iotop iperf iptraf iputils-tracepath iputils-ping lsof netcat nethogs net-tools nmap nmon openssl qperf rclone strace sudo sysbench sysstat vim && \
+#     rm -rf /var/cache/apt/* && \
+#     curl -LO "https://dl.k8s.io/release/v1.24.13/bin/linux/amd64/kubectl" && \
+#     mv ./kubectl /usr/local/bin/kubectl && \
+#     chmod ugo+rx /usr/local/bin/kubectl
+# RUN usermod -aG sudo spark && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 # COPY spark-repl_2.12-3.4.1.jar ${SPARK_HOME}/jars/.
 ########
 

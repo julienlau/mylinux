@@ -361,11 +361,7 @@ dateEpoch()
     date +%s
 }
 
-unalias dateEpochMs 2>/dev/null
-dateEpochMs()
-{
-    echo $(($(date +%s%N)/1000000))
-}
+alias dateEpochMs="date +%s%3N"
 
 unalias dateEpochUsToH 2>/dev/null
 dateEpochUsToH()
@@ -1221,6 +1217,12 @@ sparkInit()
     exporte SPARK_HOME=/opt/apache-spark
     exporte SPARK_HOME=/opt/spark
     exporte PATH=$PATH:${SPARK_HOME}/bin
+    exporte HADOOP_HOME=/opt/hadoop
+    exporte SPARK_DIST_CLASSPATH=${HADOOP_HOME}/etc/hadoop:${HADOOP_HOME}/share/hadoop/common/lib/*:${HADOOP_HOME}/share/hadoop/common/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/hdfs/lib/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/mapreduce/lib/*:${HADOOP_HOME}/share/hadoop/mapreduce/*:${HADOOP_HOME}/share/hadoop/tools/lib/*
+    exporte LD_LIBRARY_PATH=$HADOOP_HOME/lib/native
+    #export JAVA_TOOL_OPTIONS='-Dcom.amazonaws.sdk.disableCertChecking=true'
+    echo $HADOOP_HOME
+    echo $SPARK_HOME
 }
 
 unalias cpuPower 2>/dev/null
@@ -2077,6 +2079,7 @@ exporte PATH=$PATH:~/.local/bin
 exporte PATH=$PATH:~/bin
 exporte PATH=$PATH:~/.krew/bin
 exporte PATH=$PATH:$GDAL_DIR/build/bin
+exporte PATH=$PATH:/opt/apache-maven/bin
 exporte SPARK_HOME=/opt/spark
 exporte HADOOP_HOME=/opt/hadoop
 export PYTHONDONTWRITEBYTECODE=1
@@ -2153,12 +2156,12 @@ fi
 # sudo apt install apt-btrfs-snapshot
 # sudo systemctl enable chronyd ; sudo systemctl start chronyd ; timedatectl; sudo timedatectl set-ntp true ; timedatectl
 
-# if [[ "$USER" = "root" ]]; then
-#     export_no_void PATH="$PATH:/opt/miniconda3/bin"
-# else
-#     export_no_void PATH="/opt/miniconda3/bin:$PATH"
-#     export_no_void PATH="$HOME/miniconda3/bin:$PATH"
-# fi
+if [[ "$USER" = "root" ]]; then
+    export_no_void PATH="$PATH:/opt/miniconda3/bin"
+else
+    export_no_void PATH="/opt/miniconda3/bin:$PATH"
+    export_no_void PATH="$HOME/miniconda3/bin:$PATH"
+fi
 
 if [[ ! -z $idir ]]; then
     cd $idir
@@ -2194,3 +2197,16 @@ export NVM_DIR="$HOME/.nvm"
 [[ -e ~/.cargo/env ]] && . "$HOME/.cargo/env"
 
 [[ -e ~/.alteia.sh ]] && source ~/.alteia.sh
+
+# >>> mamba initialize >>>
+# !! Contents within this block are managed by 'mamba init' !!
+export MAMBA_EXE='/home/opt/micromamba/micromamba';
+export MAMBA_ROOT_PREFIX='/home/jlu/micromamba';
+__mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__mamba_setup"
+else
+    alias micromamba="$MAMBA_EXE"  # Fallback on help from mamba activate
+fi
+unset __mamba_setup
+# <<< mamba initialize <<<
