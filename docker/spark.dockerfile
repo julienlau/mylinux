@@ -1,14 +1,11 @@
 # docker build --progress=plain -t pepitedata/spark-hadoop:3.4.1-3.3.6 -f spark.dockerfile .
 
 #######################
-# pre : to enable exacaster lighter if needed
-FROM pepitedata/lighter-spark:0.0.49 as server
-WORKDIR /home/app/
-
 FROM eclipse-temurin:11-jdk-focal as base
 
 ARG spark_uid=10000
-RUN groupadd -g 10001 spark && useradd spark -u 10000 -g 10001 -m -s /bin/bash
+ARG spark_gid=10001
+RUN groupadd -g ${spark_gid} spark && useradd spark -u  ${spark_uid} -g ${spark_gid} -m -s /bin/bash
 
 ENV SPARK_HOME /opt/spark
 

@@ -1,4 +1,4 @@
-# kind create cluster --config kind-example-config.yaml
+# kind create cluster --name myTestCluster --config kind-example-config.yaml --image kindest/node:v1.24.13
 # kubectl cluster-info --context kind-kind
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
@@ -23,7 +23,7 @@ kubeadmConfigPatches:
 # patch it further using a JSON 6902 patch
 kubeadmConfigPatchesJSON6902:
 - group: kubeadm.k8s.io
-  version: v1beta2
+  version: v1beta3
   kind: ClusterConfiguration
   patch: |
     - op: add
@@ -41,7 +41,7 @@ nodes:
     hostPort: 9443
     listenAddress: "0.0.0.0" # Optional, defaults to "0.0.0.0"
     protocol: tcp # Optional, defaults to tcp
-# the three workers
+# the workers
 - role: worker
   extraPortMappings:
   - containerPort: 80
