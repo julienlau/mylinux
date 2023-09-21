@@ -115,29 +115,6 @@ RUN ln -s /usr/bin/python$PYV /usr/bin/python3 && \
     readlink -f /usr/bin/python*
 
 #######################
-# OPTIONAL : apache Livy
-# ENV LIVYVERSION 0.7.1-incubating
-# WORKDIR /opt
-# RUN curl -sL --retry 3 \
-#   https://dlcdn.apache.org/incubator/livy/${LIVYVERSION}/apache-livy-${LIVYVERSION}-bin.zip -o livy-${LIVYVERSION}.zip && \
-#   unzip livy-${LIVYVERSION}.zip && \
-#   rm -f livy-${LIVYVERSION}.zip && \
-#   ln -s apache-livy-${LIVYVERSION}-bin livy
-# ENV LIVY_CONF_DIR /opt/livy/conf
-########
-
-#######################
-# OPTIONAL : exacaster lighter
-# RUN mkdir -p /home/app/
-# WORKDIR /home/app/
-# ENV FRONTEND_PATH /home/app/frontend/
-# COPY --from=server /home/app/libs ./
-# COPY --from=server /home/app/resources ./
-# COPY --from=server /home/app/application.jar ./
-# COPY --from=server /home/app/frontend ./
-########
-
-#######################
 # OPTIONAL : additional jars
 ENV ICEBERG_VER 1.3.1
 ENV NESSIE_VER 0.66.0

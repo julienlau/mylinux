@@ -578,7 +578,7 @@ grepsrc()
     else
         expression=$1
     fi
-    find $searchpath ! \( -path '*/node_modules/*' -o -path '*/vendor/*' \) \( -name '.*.yaml' -o -name '.*.yml' -o -name '*.yaml' -o -name '*.yml' -o -name '*.go' -name '*.for' -o -name '*.f' -o -name '*.F' -o -name '*.h' -o -name '*.F90' -o -name '*.f90' -o -name '*.m' -o -name '*.M' -o -name '*.py' -o -name '*.c' -o -name '*.C' -o -name '*.cpp' -o -name '*.CPP' -o -name '*.c++' -o -name '*.C++' -o -name '*.H' -o -name '*.inc' -o -name '*.?sh' -o -name '*.??sh' -o -name '*.sh' -o -name '*.java' -o -name '*.scala' -o -name '*.julia' -o -name '*.js' -o -name '*.go' -o -name '*.php' -o -name '*.perl' -o -name '*.sbt' -o -name 'pom.xml' -o -name '*.t' \) -print 2>/dev/null | xargs grep --color -s $opt -- $expression
+    find $searchpath ! \( -path '*/node_modules/*' -o -path '*/vendor/*' \) \( -name '.*.yaml' -o -name '.*.yml' -o -name '*.kt' -o -name '*.yml' -o -name '*.go' -name '*.for' -o -name '*.f' -o -name '*.F' -o -name '*.h' -o -name '*.F90' -o -name '*.f90' -o -name '*.m' -o -name '*.M' -o -name '*.py' -o -name '*.c' -o -name '*.C' -o -name '*.cpp' -o -name '*.CPP' -o -name '*.c++' -o -name '*.C++' -o -name '*.H' -o -name '*.inc' -o -name '*.?sh' -o -name '*.??sh' -o -name '*.sh' -o -name '*.java' -o -name '*.scala' -o -name '*.julia' -o -name '*.js' -o -name '*.go' -o -name '*.php' -o -name '*.perl' -o -name '*.sbt' -o -name 'pom.xml' -o -name '*.t' \) -print 2>/dev/null | xargs grep --color -s $opt -- $expression
 }
 # end Function grepsrc
 
@@ -2028,6 +2028,7 @@ export scalaversion=`scala -version 2>&1 | awk -F 'version' '{print $2}' | awk  
 export scalaver=`echo $scalaversion | awk -F '.' '{print $1"."$2}'`
 export DOCKER_BUILDKIT=1
 
+alias mamba=micromamba
 # virsh 
 alias vmls="virsh list --all"
 alias vnet="virsh net-list"
@@ -2141,7 +2142,7 @@ fi
 # yum install make gcc kernel-headers kernel-devel perl dkms bzip2 curl wget jq nmon sysstat htop vim firewalld git
 
 # sudo add-apt-repository ppa:ubuntugis/ppa
-# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap docker docker-compose meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa skopeo alsa-tools tcpick fzf ripgrep
+# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa skopeo alsa-tools tcpick fzf ripgrep
 # sudo apt install cheese guvcview okular
 # sudo apt install clamav clamtk clamav-daemon inotify-tools
 # sudo apt install prometheus-node-exporter prometheus prometheus-alertmanager 
