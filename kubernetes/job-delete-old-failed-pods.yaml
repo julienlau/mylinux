@@ -1,0 +1,22 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: delete-old-failed-pods
+spec:
+  schedule: "42 1 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: delete-old-failed-pods
+            image: python:3.10
+            command: ["python", "-c", "kube-delete-old-failed-pods.py"]
+            volumeMounts:
+            - name: script-volume
+              mountPath: /scripts
+          volumes:
+          - name: script-volume
+            configMap:
+              name: script-config
+          restartPolicy: Never
