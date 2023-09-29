@@ -201,6 +201,11 @@ sourceprop()
 END {
 }' ${javaproperties})
 }
+# =======================
+sedblank() {
+    sed '/^[[:space:]]*$/d' $1 | sed 's/[[:blank:]]*$//'
+}
+# =======================
 
 # =======================
 check_init() {
