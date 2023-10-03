@@ -4,8 +4,8 @@
 FROM eclipse-temurin:11-jdk-focal as base
 
 ARG spark_uid=10000
-ARG spark_gid=10001
-RUN groupadd -g ${spark_gid} spark && useradd spark -u  ${spark_uid} -g ${spark_gid} -m -s /bin/bash
+ARG spark_gid=10000
+RUN groupadd -g ${spark_gid} spark && useradd spark -u ${spark_uid} -g ${spark_gid} -m -s /bin/bash
 
 ENV SPARK_HOME /opt/spark
 
