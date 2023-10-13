@@ -2004,7 +2004,9 @@ alias kevents="kubectl get events --field-selector involvedObject.kind=Node --so
 alias kpods="kubectl get pod -o=custom-columns=NAME:.metadata.name,STATUS:.status.phase,NODE:.spec.nodeName --all-namespaces"
 alias kpvcs="kubectl get pods --all-namespaces -o=json | jq -c '.items[] | {pod: .metadata.name, namespace: .metadata.namespace, status: .status.phase, node: .spec.nodeName, pvc: .spec |  select( has (\"volumes\") ).volumes[] | select( has (\"persistentVolumeClaim\") ).persistentVolumeClaim.claimName }'"
 
-alias gitlog="git slog | head ; git log -n 10"
+alias gitlog="git log | head -30; git slog | head"
+alias gitfp="git fetch --all ; git pull"
+alias gitfps='list=$(find . -type d -name ".git" | sed "s/.git//g"); cwd=$(pwd); for d in $list ; do cd $cwd/$d && pwd && git fetch -t && git pull && cd $cwd; done'
 alias alarm="vlc ~/alarm.mp3"
 #------------------------------------------------------------------------------
 # Export
@@ -2046,7 +2048,7 @@ alias topsocketused="ps -ef | pgrep -lf `lsof +c 0 -i tcp -i udp | awk '{print $
 
 # modify environment variables only on specific machine
 # jlu local linux
-if [[ $USER = "jlu" ]] ; then
+if [[ $USER = "jlu" || $USER = "julien" ]] ; then
     exporte CATALINA_HOME=/usr/lib/tomcat/apache-tomcat-8.5.23
     alias mntwin="sudo mount -t ntfs-3g /dev/sda2 /mnt/win -o rw,gid=users,umask=0002,sync"
     #alias mntwin="sudo mount -t ntfs-3g /dev/sda2 /mnt/win -o ro"    
