@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: tools-imagepull
+  labels:
+    k8s-app: tools-imagepull
+spec:
+  selector:
+    matchLabels:
+      name: tools-imagepull
+  template:
+    metadata:
+      labels:
+        name: tools-imagepull
+    spec:
+      imagePullSecrets:
+        - name: all
+        - name: registry-gitlab
+      containers:
+        - name: my-tools
+          imagePullPolicy: Always
+          #image: pepitedata/tools:focal
+          image: registry.gitlab.com/cleyrop-org/apps/cleyrop/backend/core/dataflow/dev:lighter-flow-poc
+          command: ["tail", "-f", "/dev/null"]
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "200M"
+            # limits:
+            #   cpu: "500m"
+            #   memory: "1G"
