@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-logfile=/tmp/spark-submit-tmp-$(date '+%y%m%d')-$(date '+%H%M%S')-$$.log
-if [[ -e ${logfile} ]]; then
-    rm -f ${logfile}
-fi
+logdest=spark-submit-tmp-$(date '+%y%m%d')-$(date '+%H%M%S')-$$
+mkfifo $logdest
 
-echo "apache spark-submit overloaded $0 with logfile ${logfile}"
+echo "apache spark-submit overloaded by datahub $0"
 if [ -z "${SPARK_HOME}" ]; then
   echo "SPARK_HOME variable must be set"
   exit 9
@@ -14,27 +12,29 @@ fi
 
 # disable randomized hash for string in Python 3.3+
 export PYTHONHASHSEED=0
-exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@" > ${logfile} 2>&1 &
-zpid=$!
+exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@" > ${logdest} 2>&1 &
 
-# periodically check the log file for some specific errors as long as the spark-submit process is running
-while [[ $(ps --pid ${zpid} 2>&1 >/dev/null; echo $?) -eq 0 && ! -z ${zpid} ]]; do
-   sleep 10
-   if [[ $(grep -c "pending reason: ImagePullBackOff" ${logfile}) -ge 6 ]]; then
-      echo "Force exit due to too many ImagePullBackOff"
-      cat ${logfile}
-      exit 2
-   elif [[ $(grep -c "termination reason: Error" ${logfile}) -ge 1 ]]; then
-      echo "Force exit due to Error"
-      cat ${logfile}
-      exit 2
-   fi
+errcount=0
+ok=0
+while IFS= read -r line < ${logdest}
+do   
+    echo "$line"    
+    if [[ $line == *"pending reason: ImagePullBackOff"* ]]; then
+        errcount=$(($errcount+1))
+    elif [[ $line == *"termination reason: Error"* ]]; then
+        errcount=$(($errcount+10))
+    elif [[ $line == *"termination reason: Completed"* ]]; then
+        ok=1
+    fi
+    if [[ $errcount -ge 5 ]]; then
+        echo "Force exit"
+        exit 2
+    fi
 done
 
-if [[ $(grep -c "termination reason: Completed" ${logfile}) -eq 0 ]]; then
-   echo "Force exit due to not Completed"
-   cat ${logfile}
-   exit 2
-fi
+wait
 
-cat ${logfile}
+if [[ $ok -eq 0 ]]; then
+    echo "Force exit due to not Completed"
+    exit 3
+fi
