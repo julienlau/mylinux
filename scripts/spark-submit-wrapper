@@ -1,0 +1,42 @@
+#/bin/bash
+set -e
+
+# manage quotes of extraJavaOptions without escape characters
+declare -a args
+count=$#
+for ((index=0; index<count; ++index)); do
+   arg="$(printf "%q" "$1")"
+   args[index]="$(printf "%q" "$arg")"
+   shift
+done
+
+logfile=/tmp/spark-submit-tmp-$(date '+%y%m%d')-$(date '+%H%M%S')-$$.log
+if [[ -e ${logfile} ]]; then
+   rm -f ${logfile}
+fi
+
+echo "spark-submit wrapper with logfile ${logfile}"
+$SPARK_HOME/bin/spark-submit "${args[@]}" > ${logfile} 2>&1 &
+zpid=$!
+
+# periodically check the log file for some specific errors as long as the spark-submit process is running
+while [[ $(ps --pid ${zpid} 2>&1 >/dev/null; echo $?) -eq 0 && ! -z ${zpid} ]]; do
+   sleep 10
+   if [[ $(grep -c "pending reason: ImagePullBackOff" ${logfile}) -ge 6 ]]; then
+      echo "Force exit due to too many ImagePullBackOff"
+      cat ${logfile}
+      exit 2
+   elif [[ $(grep -c "termination reason: Error" ${logfile}) -ge 1 ]]; then
+      echo "Force exit due to Error"
+      cat ${logfile}
+      exit 2
+   fi
+done
+
+if [[ $(grep -c "termination reason: Completed" ${logfile}) -eq 0 ]]; then
+   echo "Force exit due to not Completed"
+   cat ${logfile}
+   exit 2
+fi
+
+cat ${logfile}

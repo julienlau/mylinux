@@ -2006,7 +2006,7 @@ alias kpvcs="kubectl get pods --all-namespaces -o=json | jq -c '.items[] | {pod:
 
 alias gitlog="git log | head -30; git slog | head"
 alias gitfp="git fetch --all ; git pull"
-alias gitfps='list=$(find . -type d -name ".git" | sed "s/.git//g"); cwd=$(pwd); for d in $list ; do cd $cwd/$d && pwd && git fetch -t && git pull && cd $cwd; done'
+alias gitfps='list=$(find . -type d -name ".git" | sed "s/.git//g"); cwd=$(pwd); for d in $(echo $list) ; do cd $cwd/$d && pwd && git fetch -t && git pull && cd $cwd; done'
 alias alarm="vlc ~/alarm.mp3"
 #------------------------------------------------------------------------------
 # Export
