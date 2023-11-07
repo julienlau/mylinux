@@ -1,22 +1,20 @@
 #!/usr/bin/env bash
 set -e
 
-# may be done in a single command with : ${args[*]@Q}
-declare -a args
-count=$#
-for ((index=0; index<count; ++index)); do
-   arg="$(printf "%q" "$1")"
-   args[index]="$(printf "%q" "$arg")"
-   shift
-done
-
 logfile=/tmp/spark-submit-tmp-$(date '+%y%m%d')-$(date '+%H%M%S')-$$.log
 if [[ -e ${logfile} ]]; then
-   rm -f ${logfile}
+    rm -f ${logfile}
 fi
 
-echo "spark-submit wrapper with logfile ${logfile} (be aware does not handle extraJavaOptions)"
-$SPARK_HOME/bin/spark-submit "${args[@]}" > ${logfile} 2>&1 &
+echo "apache spark-submit overloaded $0 with logfile ${logfile}"
+if [ -z "${SPARK_HOME}" ]; then
+  echo "SPARK_HOME variable must be set"
+  exit 9
+fi
+
+# disable randomized hash for string in Python 3.3+
+export PYTHONHASHSEED=0
+exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@" > ${logfile} 2>&1 &
 zpid=$!
 
 # periodically check the log file for some specific errors as long as the spark-submit process is running
