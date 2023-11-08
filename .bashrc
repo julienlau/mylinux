@@ -40,8 +40,10 @@
 
 # tar compress parallel
 # tar -I "xz -T0" -cf archive.tar.xz ./file.csv
-# XZ_OPT='-T0 -9' tar -cJf archive.tar.xz ./file.csv
+# XZ_OPT='-T0 -9' tar -cvJf archive.tar.xz ./file.csv
 export XZ_OPT='-T0'
+
+# echo "set zoom level on an anker webcam" ; v4l2-ctl --list-devices ; v4l2-ctl --device /dev/video4 --list-ctrls ; v4l2-ctl --device /dev/video4 --set-ctrl=zoom_absolute=400
 
 # docker run -d --name=netdata   -p 19999:19999   -v netdataconfig:/etc/netdata   -v netdatalib:/var/lib/netdata   -v netdatacache:/var/cache/netdata   -v /etc/passwd:/host/etc/passwd:ro   -v /etc/group:/host/etc/group:ro   -v /proc:/host/proc:ro   -v /sys:/host/sys:ro   -v /etc/os-release:/host/etc/os-release:ro   --restart unless-stopped   --cap-add SYS_PTRACE   --security-opt apparmor=unconfined   netdata/netdata
 
@@ -2150,7 +2152,7 @@ fi
 # yum install make gcc kernel-headers kernel-devel perl dkms bzip2 curl wget jq nmon sysstat htop vim firewalld git
 
 # sudo add-apt-repository ppa:ubuntugis/ppa
-# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa skopeo alsa-tools tcpick fzf ripgrep v4l-utils
+# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa skopeo alsa-tools tcpick fzf ripgrep v4l-utils libcairo2-dev pkg-config python3-dev libgirepository1.0-dev
 # sudo apt install cheese guvcview okular
 # sudo apt install clamav clamtk clamav-daemon inotify-tools
 # sudo apt install prometheus-node-exporter prometheus prometheus-alertmanager 
@@ -2176,23 +2178,24 @@ if [[ ! -z $idir ]]; then
     cd $idir
     unset idir
 fi
-#----------------------------------   E O F   ----------------------------------
-
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 conda_init() {
-__conda_setup="$('/opt/mambaforge/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/opt/mambaforge/etc/profile.d/conda.sh" ]; then
-        . "/opt/mambaforge/etc/profile.d/conda.sh"
+    __conda_setup="$('/opt/mambaforge/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+        eval "$__conda_setup"
     else
-        export PATH="/opt/mambaforge/bin:$PATH"
+        if [ -f "/opt/mambaforge/etc/profile.d/conda.sh" ]; then
+            . "/opt/mambaforge/etc/profile.d/conda.sh"
+        else
+            export PATH="/opt/mambaforge/bin:$PATH"
+        fi
     fi
-fi
-unset __conda_setup
+    unset __conda_setup
+    if [ -f "/opt/mambaforge/etc/profile.d/mamba.sh" ]; then
+        . "/opt/mambaforge/etc/profile.d/mamba.sh"
+    fi
 }
 # <<< conda initialize <<<
 
@@ -2201,13 +2204,13 @@ unset __conda_setup
 export MAMBA_EXE='/opt/mambaforge/bin/mamba'
 export MAMBA_ROOT_PREFIX='/home/$USER/mamba';
 mamba_init() {
-__mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__mamba_setup"
-else
-    alias micromamba="$MAMBA_EXE"  # Fallback on help from mamba activate
-fi
-unset __mamba_setup
+    __mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+        eval "$__mamba_setup"
+    else
+        alias micromamba="$MAMBA_EXE"  # Fallback on help from mamba activate
+    fi
+    unset __mamba_setup
 }
 # <<< mamba initialize <<<
 
@@ -2217,3 +2220,4 @@ export NVM_DIR="$HOME/.nvm"
 [[ -e ~/.cargo/env ]] && . "$HOME/.cargo/env"
 
 [[ -e ~/.alteia.sh ]] && source ~/.alteia.sh
+#----------------------------------   E O F   ----------------------------------
