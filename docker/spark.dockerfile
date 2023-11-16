@@ -1,4 +1,4 @@
-# docker build --progress=plain -t pepitedata/spark-hadoop:3.4.1-3.3.6 -f spark.dockerfile .
+# docker build --progress=plain -t pepitedata/spark-hadoop:3.5.0-3.3.6 -f spark.dockerfile .
 
 #######################
 FROM eclipse-temurin:11-jdk-focal as base
@@ -7,7 +7,7 @@ ARG spark_uid=10000
 ARG spark_gid=10000
 RUN groupadd -g ${spark_gid} spark && useradd spark -u ${spark_uid} -g ${spark_gid} -m -s /bin/bash
 
-ENV SPARK_HOME /opt/spark
+ENV SPARK_HOME=/opt/spark
 
 RUN dpkg --configure -a && \
     apt-get install -fy --no-install-recommends && \
@@ -25,9 +25,9 @@ RUN dpkg --configure -a && \
 
 #######################
 # HADOOP
-ENV HADOOP_VERSION 3.3.6
+ENV HADOOP_VERSION=3.3.6
 #----------------------- version to adjust
-ENV HADOOP_HOME /opt/hadoop
+ENV HADOOP_HOME=/opt/hadoop
 RUN curl -sL --retry 3 \
   "http://archive.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz" \
   | gunzip \
@@ -37,38 +37,38 @@ RUN curl -sL --retry 3 \
  && chown -R spark:spark ${HADOOP_HOME} \
  && chmod -R go+rX ${HADOOP_HOME}
 
-ENV HADOOP_CONF_DIR ${HADOOP_HOME}/etc/hadoop
-ENV PATH $PATH:${HADOOP_HOME}/bin
-ENV HADOOP_YARN_HOME ${HADOOP_HOME}
-ENV HADOOP_MAPRED_HOME ${HADOOP_HOME}
-ENV HADOOP_OPTIONAL_TOOLS "hadoop-aws"
+ENV HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
+ENV PATH=$PATH:${HADOOP_HOME}/bin
+ENV HADOOP_YARN_HOME=${HADOOP_HOME}
+ENV HADOOP_MAPRED_HOME=${HADOOP_HOME}
+ENV HADOOP_OPTIONAL_TOOLS="hadoop-aws"
 
 #######################
 # SPARK
-ENV SPARK_VERSION 3.4.1
-ENV SPARK_MINOR 3.4
-ENV SCALA_VER 2.12
+ENV SPARK_VERSION=3.5.0
+ENV SPARK_MINOR=3.5
+ENV SCALA_VERSION=2.12
 #----------------------- version to adjust
-ENV SPARK_PACKAGE spark-${SPARK_VERSION}-bin-without-hadoop
-ENV SPARK_HOME /opt/spark
+ENV SPARK_PACKAGE=spark-${SPARK_VERSION}-bin-without-hadoop
+ENV SPARK_HOME=/opt/spark
 RUN curl -sL --retry 3 \
   https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/${SPARK_PACKAGE}.tgz \
   | gunzip \
   | tar x -C /opt/ && \
  mv /opt/${SPARK_PACKAGE} ${SPARK_HOME} && \
  mkdir -p ${SPARK_HOME}/examples && \
-  curl -sL --retry 3 https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_${SCALA_VER}/${SPARK_VERSION}/spark-hadoop-cloud_${SCALA_VER}-${SPARK_VERSION}.jar -o ${SPARK_HOME}/jars/spark-hadoop-cloud_${SCALA_VER}-${SPARK_VERSION}.jar && \
+  curl -sL --retry 3 https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_${SCALA_VERSION}/${SPARK_VERSION}/spark-hadoop-cloud_${SCALA_VERSION}-${SPARK_VERSION}.jar -o ${SPARK_HOME}/jars/spark-hadoop-cloud_${SCALA_VERSION}-${SPARK_VERSION}.jar && \
  cp ${HADOOP_HOME}/etc/hadoop/hadoop-metrics2.properties ${SPARK_HOME}/conf/ && \
  touch ${SPARK_HOME}/RELEASE && \
  chown -R spark:spark ${SPARK_HOME} && \
  chmod -R go+rX ${SPARK_HOME}
-ENV PATH $PATH:${SPARK_HOME}/bin
+ENV PATH=$PATH:${SPARK_HOME}/bin
 # entrypoint.sh will use env var to set properly the classpath : SPARK_HOME HADOOP_HOME HADOOP_CONF_DIR
 # initial classpath given by: ${HADOOP_HOME}/bin/hadoop classpath
 # hadoop classpath -> /opt/hadoop/etc/hadoop:/opt/hadoop/share/hadoop/common/lib/*:/opt/hadoop/share/hadoop/common/*:/opt/hadoop/share/hadoop/hdfs:/opt/hadoop/share/hadoop/hdfs/lib/*:/opt/hadoop/share/hadoop/hdfs/*
 # should work but does not : ENV SPARK_EXTRA_CLASSPATH ${HADOOP_HOME}/share/hadoop/tools/lib/*
-ENV SPARK_DIST_CLASSPATH ${HADOOP_HOME}/etc/hadoop:${HADOOP_HOME}/share/hadoop/common/lib/*:${HADOOP_HOME}/share/hadoop/common/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/hdfs/lib/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/mapreduce/lib/*:${HADOOP_HOME}/share/hadoop/mapreduce/*:${HADOOP_HOME}/share/hadoop/tools/lib/*
-ENV LD_LIBRARY_PATH $HADOOP_HOME/lib/native
+ENV SPARK_DIST_CLASSPATH=${HADOOP_HOME}/etc/hadoop:${HADOOP_HOME}/share/hadoop/common/lib/*:${HADOOP_HOME}/share/hadoop/common/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/hdfs/lib/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/mapreduce/lib/*:${HADOOP_HOME}/share/hadoop/mapreduce/*:${HADOOP_HOME}/share/hadoop/tools/lib/*
+ENV LD_LIBRARY_PATH=$HADOOP_HOME/lib/native
 
 RUN echo "tuning ${SPARK_HOME}/conf/spark-defaults.conf" && \
 echo "spark.serializer org.apache.spark.serializer.KryoSerializer" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
@@ -91,7 +91,7 @@ echo "spark.hadoop.mapreduce.outputcommitter.factory.scheme.s3a org.apache.hadoo
 # echo "spark.hadoop.fs.s3a.buffer.dir ${hadoop.tmp.dir}/s3a" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
 # echo "#spark.hadoop.fs.s3a.impl org.apache.hadoop.spark.hadoop.fs.s3a.S3AFileSystem" >> ${SPARK_HOME}/conf/spark-defaults.conf
 
-ENV SPARK_PRINT_LAUNCH_COMMAND 1
+ENV SPARK_PRINT_LAUNCH_COMMAND=1
 WORKDIR ${SPARK_HOME}
 RUN cp kubernetes/dockerfiles/spark/entrypoint.sh /opt/. \
  && cp kubernetes/dockerfiles/spark/decom.sh /opt/.
@@ -99,10 +99,10 @@ RUN echo "networkaddress.cache.ttl=30" >> ${JAVA_HOME}/conf/security/java.securi
 
 #######################
 # OPTIONAL : python
-ENV PYV 3.9
-ENV PYTHONHASHSEED 0
-ENV PYTHONIOENCODING UTF-8
-ENV PIP_DISABLE_PIP_VERSION_CHECK 1
+ENV PYV=3.9
+ENV PYTHONHASHSEED=0
+ENV PYTHONIOENCODING=UTF-8
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 
 RUN set -ex && \
     apt-get update && \
@@ -116,11 +116,21 @@ RUN ln -s /usr/bin/python$PYV /usr/bin/python3 && \
 
 #######################
 # OPTIONAL : additional jars
-ENV ICEBERG_VER 1.3.1
-ENV NESSIE_VER 0.66.0
+ENV ICEBERG_VERSION=1.4.2
+ENV NESSIE_VERSION=0.73.0
+ENV AWS_VERSION=1.12.589
 WORKDIR ${SPARK_HOME}/examples/jars
-RUN curl -sL --retry 3 https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-${SPARK_MINOR}_${SCALA_VER}/${ICEBERG_VERSION}/iceberg-spark-runtime-${SPARK_MINOR}_${SCALA_VER}-${ICEBERG_VERSION}.jar -o ./iceberg-spark-runtime-${SPARK_MINOR}_${SCALA_VER}-${ICEBERG_VERSION}.jar && \
-    curl -sL --retry 3 https://repo1.maven.org/maven2/org/projectnessie/nessie-integrations/nessie-spark-extensions-${SPARK_MINOR}_${SCALA_VER}/${NESSIE_VERSION}/nessie-spark-extensions-${SPARK_MINOR}_${SCALA_VER}-${NESSIE_VERSION}.jar -o ./nessie-spark-extensions-${SPARK_MINOR}_${SCALA_VER}-${NESSIE_VERSION}.jar
+RUN curl -sL --retry 3 https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-${SPARK_MINOR}_${SCALA_VERSION}/${ICEBERG_VERSION}/iceberg-spark-runtime-${SPARK_MINOR}_${SCALA_VERSION}-${ICEBERG_VERSION}.jar -o ${SPARK_HOME}/jars/iceberg-spark-runtime-${SPARK_MINOR}_${SCALA_VERSION}-${ICEBERG_VERSION}.jar && \
+    curl -sL --retry 3 https://repo1.maven.org/maven2/org/projectnessie/nessie-integrations/nessie-spark-extensions-${SPARK_MINOR}_${SCALA_VERSION}/${NESSIE_VERSION}/nessie-spark-extensions-${SPARK_MINOR}_${SCALA_VERSION}-${NESSIE_VERSION}.jar -o ${SPARK_HOME}/jars/nessie-spark-extensions-${SPARK_MINOR}_${SCALA_VERSION}-${NESSIE_VERSION}.jar
+
+#RUN echo "jar spark-hadoop-cloud" &&\ 
+#    curl -sL --retry 3 -L "https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_${SCALA_VERSION}/${SPARK_VERSION}/spark-hadoop-cloud_${SCALA_VERSION}-${SPARK_VERSION}.jar" -o ${SPARK_HOME}/jars/spark-hadoop-cloud_${SCALA_VERSION}-${SPARK_VERSION}.jar
+
+#RUN echo "jar hadoop-aws" &&\
+#    curl -sL --retry 3 -L "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar" -o ${SPARK_HOME}/jars/hadoop-aws-${HADOOP_VERSION}.jar
+
+#RUN echo "jar aws-java-sdk-bundle" &&\
+#    curl -sL --retry 3 -L "https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/${AWS_VERSION}/aws-java-sdk-bundle-${AWS_VERSION}.jar" -o ${SPARK_HOME}/jars/aws-java-sdk-bundle-${AWS_VERSION}.jar
 
 #######################
 # OPTIONAL : example jars
@@ -130,7 +140,7 @@ RUN curl -sL --retry 3 \
   | gunzip \
   | tar x -C ${SPARK_HOME}/examples/jars --strip-components=3 --wildcards --no-anchored '*TPCx-HS-master_Spark*.jar'
 RUN curl -sL --retry 3 \
-    https://github.com/julienlau/spark-data-generator/releases/download/1.0/parquet-data-generator_2.12-3.3.0_1.0.jar -o ./parquet-data-generator_2.12-3.3.0_1.0.jar
+    https://github.com/julienlau/spark-data-generator/releases/download/1.0/parquet-data-generator_${SCALA_VERSION}-3.3.0_1.0.jar -o ./parquet-data-generator_${SCALA_VERSION}-3.3.0_1.0.jar
 ########
 
 #######################

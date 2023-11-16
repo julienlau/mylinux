@@ -1222,14 +1222,15 @@ unalias sparkInit 2>/dev/null
 sparkInit()
 {
     exporte SPARK_HOME=/opt/apache-spark
-    exporte SPARK_HOME=/opt/spark
+    export SPARK_HOME=${SPARK_HOME:=/opt/spark}
     exporte PATH=$PATH:${SPARK_HOME}/bin
     exporte HADOOP_HOME=/opt/hadoop
+    export HADOOP_HOME=${HADOOP_HOME:=$SPARK_HOME}
     exporte SPARK_DIST_CLASSPATH=${HADOOP_HOME}/etc/hadoop:${HADOOP_HOME}/share/hadoop/common/lib/*:${HADOOP_HOME}/share/hadoop/common/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/hdfs/lib/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/mapreduce/lib/*:${HADOOP_HOME}/share/hadoop/mapreduce/*:${HADOOP_HOME}/share/hadoop/tools/lib/*
     exporte LD_LIBRARY_PATH=$HADOOP_HOME/lib/native
     #export JAVA_TOOL_OPTIONS='-Dcom.amazonaws.sdk.disableCertChecking=true'
-    echo $HADOOP_HOME
-    echo $SPARK_HOME
+    echo HADOOP_HOME=$HADOOP_HOME
+    echo SPARK_HOME=$SPARK_HOME
 }
 
 unalias cpuPower 2>/dev/null
@@ -2181,22 +2182,10 @@ fi
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-conda_init() {
-    __conda_setup="$('/opt/mambaforge/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-    if [ $? -eq 0 ]; then
-        eval "$__conda_setup"
-    else
-        if [ -f "/opt/mambaforge/etc/profile.d/conda.sh" ]; then
-            . "/opt/mambaforge/etc/profile.d/conda.sh"
-        else
-            export PATH="/opt/mambaforge/bin:$PATH"
-        fi
-    fi
-    unset __conda_setup
-    if [ -f "/opt/mambaforge/etc/profile.d/mamba.sh" ]; then
-        . "/opt/mambaforge/etc/profile.d/mamba.sh"
-    fi
-}
+
+if [ -f "/opt/mambaforge/etc/profile.d/mamba.sh" ]; then
+    . "/opt/mambaforge/etc/profile.d/mamba.sh"
+fi
 # <<< conda initialize <<<
 
 # >>> mamba initialize >>>
@@ -2204,6 +2193,18 @@ conda_init() {
 export MAMBA_EXE='/opt/mambaforge/bin/mamba'
 export MAMBA_ROOT_PREFIX='/home/$USER/mamba';
 mamba_init() {
+__conda_setup="$('/opt/mambaforge/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/mambaforge/etc/profile.d/conda.sh" ]; then
+        . "/opt/mambaforge/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/mambaforge/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+
     __mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
     if [ $? -eq 0 ]; then
         eval "$__mamba_setup"
