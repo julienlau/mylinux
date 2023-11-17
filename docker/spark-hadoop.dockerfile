@@ -1,4 +1,4 @@
-# docker build --progress=plain -t pepitedata/spark:3.5.0 -f spark.dockerfile .
+# docker build --progress=plain -t pepitedata/spark-hadoop:3.5.0-3.3.6 -f spark-hadoop.dockerfile .
 
 #######################
 FROM eclipse-temurin:11-jdk-focal as base
@@ -21,7 +21,33 @@ RUN dpkg --configure -a && \
     ln -sv /bin/bash /bin/sh && \
     echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
     chgrp root /etc/passwd && chmod ug+rw /etc/passwd && \
-    apt autoclean -y
+    rm -rf /var/cache/apt/*
+
+#######################
+# HADOOP
+ENV HADOOP_VERSION=3.3.6
+#----------------------- version to adjust
+ENV HADOOP_HOME=/opt/hadoop
+RUN curl -sL --retry 3 \
+  "http://archive.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz" \
+  | gunzip \
+  | tar -x -C /opt/ \
+ && mv /opt/hadoop-${HADOOP_VERSION} ${HADOOP_HOME} \
+ && rm -rf ${HADOOP_HOME}/share/doc ${HADOOP_HOME}/share/hadoop/yarn \
+ && chown -R spark:spark ${HADOOP_HOME} \
+ && chmod -R go+rX ${HADOOP_HOME}
+
+ENV HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
+ENV PATH=$PATH:${HADOOP_HOME}/bin
+ENV HADOOP_YARN_HOME=${HADOOP_HOME}
+ENV HADOOP_MAPRED_HOME=${HADOOP_HOME}
+ENV HADOOP_OPTIONAL_TOOLS="hadoop-aws"
+# entrypoint.sh will use env var to set properly the classpath : SPARK_HOME HADOOP_HOME HADOOP_CONF_DIR
+# initial classpath given by: ${HADOOP_HOME}/bin/hadoop classpath
+# hadoop classpath -> /opt/hadoop/etc/hadoop:/opt/hadoop/share/hadoop/common/lib/*:/opt/hadoop/share/hadoop/common/*:/opt/hadoop/share/hadoop/hdfs:/opt/hadoop/share/hadoop/hdfs/lib/*:/opt/hadoop/share/hadoop/hdfs/*
+# should work but does not : ENV SPARK_EXTRA_CLASSPATH ${HADOOP_HOME}/share/hadoop/tools/lib/*
+ENV SPARK_DIST_CLASSPATH=${HADOOP_HOME}/etc/hadoop:${HADOOP_HOME}/share/hadoop/common/lib/*:${HADOOP_HOME}/share/hadoop/common/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/hdfs/lib/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/mapreduce/lib/*:${HADOOP_HOME}/share/hadoop/mapreduce/*:${HADOOP_HOME}/share/hadoop/tools/lib/*
+ENV LD_LIBRARY_PATH=$HADOOP_HOME/lib/native
 
 #######################
 # SPARK
@@ -29,13 +55,14 @@ ENV SPARK_VERSION=3.5.0
 ENV SPARK_MINOR=3.5
 ENV SCALA_VERSION=2.12
 #----------------------- version to adjust
-ENV SPARK_PACKAGE=spark-${SPARK_VERSION}-bin-hadoop3
+ENV SPARK_PACKAGE=spark-${SPARK_VERSION}-bin-without-hadoop
 ENV SPARK_HOME=/opt/spark
 RUN curl -sL --retry 3 \
     https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/${SPARK_PACKAGE}.tgz | gunzip | tar x -C /opt/ && \
     mv /opt/${SPARK_PACKAGE} ${SPARK_HOME} && \
     mkdir -p ${SPARK_HOME}/examples && \
     curl -sL --retry 3 https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_${SCALA_VERSION}/${SPARK_VERSION}/spark-hadoop-cloud_${SCALA_VERSION}-${SPARK_VERSION}.jar -o ${SPARK_HOME}/jars/spark-hadoop-cloud_${SCALA_VERSION}-${SPARK_VERSION}.jar && \
+    cp ${HADOOP_HOME}/etc/hadoop/hadoop-metrics2.properties ${SPARK_HOME}/conf/ && \
     touch ${SPARK_HOME}/RELEASE && \
     chown -R spark:spark ${SPARK_HOME} && \
     chmod -R go+rX ${SPARK_HOME}
@@ -77,7 +104,7 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 
 RUN set -ex && \
     apt-get update -y && \
-    apt-get install -y --no-install-recommends --allow-downgrades -y python$PYV atop nmon vim && \
+    apt-get install -y --no-install-recommends --allow-downgrades -y python$PYV atop nmon vim &&\
     apt autoclean -y &&\
     ln -s /usr/bin/python$PYV /usr/bin/python3 && \
     ln -s /usr/bin/python3 /usr/bin/python && \
@@ -95,14 +122,15 @@ WORKDIR ${SPARK_HOME}/examples/jars
 RUN curl -sL --retry 3 https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-${SPARK_MINOR}_${SCALA_VERSION}/${ICEBERG_VERSION}/iceberg-spark-runtime-${SPARK_MINOR}_${SCALA_VERSION}-${ICEBERG_VERSION}.jar -o ${SPARK_HOME}/jars/iceberg-spark-runtime-${SPARK_MINOR}_${SCALA_VERSION}-${ICEBERG_VERSION}.jar && \
     curl -sL --retry 3 https://repo1.maven.org/maven2/org/projectnessie/nessie-integrations/nessie-spark-extensions-${SPARK_MINOR}_${SCALA_VERSION}/${NESSIE_VERSION}/nessie-spark-extensions-${SPARK_MINOR}_${SCALA_VERSION}-${NESSIE_VERSION}.jar -o ${SPARK_HOME}/jars/nessie-spark-extensions-${SPARK_MINOR}_${SCALA_VERSION}-${NESSIE_VERSION}.jar
 
-RUN echo "jar spark-hadoop-cloud" &&\ 
-    curl -sL --retry 3 -L "https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_${SCALA_VERSION}/${SPARK_VERSION}/spark-hadoop-cloud_${SCALA_VERSION}-${SPARK_VERSION}.jar" -o ${SPARK_HOME}/jars/spark-hadoop-cloud_${SCALA_VERSION}-${SPARK_VERSION}.jar
+#RUN echo "jar spark-hadoop-cloud" &&\ 
+#    curl -sL --retry 3 -L "https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_${SCALA_VERSION}/${SPARK_VERSION}/spark-hadoop-cloud_${SCALA_VERSION}-${SPARK_VERSION}.jar" -o ${SPARK_HOME}/jars/spark-hadoop-cloud_${SCALA_VERSION}-${SPARK_VERSION}.jar
 
-RUN echo "jar hadoop-aws" &&\
-    curl -sL --retry 3 -L "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar" -o ${SPARK_HOME}/jars/hadoop-aws-${HADOOP_VERSION}.jar
+#RUN echo "jar hadoop-aws" &&\
+#    curl -sL --retry 3 -L "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar" -o ${SPARK_HOME}/jars/hadoop-aws-${HADOOP_VERSION}.jar
 
-RUN echo "jar aws-java-sdk-bundle" &&\
-    curl -sL --retry 3 -L "https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/${AWS_VERSION}/aws-java-sdk-bundle-${AWS_VERSION}.jar" -o ${SPARK_HOME}/jars/aws-java-sdk-bundle-${AWS_VERSION}.jar
+#RUN echo "jar aws-java-sdk-bundle" &&\
+#    curl -sL --retry 3 -L "https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/${AWS_VERSION}/aws-java-sdk-bundle-${AWS_VERSION}.jar" -o ${SPARK_HOME}/jars/aws-java-sdk-bundle-${AWS_VERSION}.jar && \
+#     curl -sL --retry 3 "https://repo1.maven.org/maven2/software/amazon/awssdk/url-connection-client/${AWS_VERSION}/url-connection-client-${AWS_VERSION}.jar" -o ${SPARK_HOME}/jars/url-connection-client-${AWS_VERSION}.jar
 
 #######################
 # OPTIONAL : example jars
