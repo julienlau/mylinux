@@ -1,5 +1,6 @@
 #!/bin/bash
 #set -e
+shopt -s expand_aliases
 
 if [[ $# -gt 0 ]]; then
     listKs=$1
@@ -8,11 +9,13 @@ fi
 date
 
 #### TO BE ADAPTED TO THE ENV ###
-export cassandra_dir=/opt/apache-cassandra-3.11.12
+export cassandra_dir=/opt/apache-cassandra-4.1.3
+alias mynt='nodetool'
+alias mycqlsh='cqlsh'
 #alias mynt='sudo -u cassandra ${cassandra_dir}/bin/nodetool'
 #alias mycqlsh='sudo -u cassandra ${cassandra_dir}/bin/cqlsh'
-alias mynt='ccm node1 nodetool'
-alias mycqlsh='ccm node1 cqlsh -u cassandra -p cassandra'
+#alias mynt='ccm node1 nodetool'
+#alias mycqlsh='ccm node1 cqlsh -u cassandra -p cassandra'
 #################################
 
 java -version
