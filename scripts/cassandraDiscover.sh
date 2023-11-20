@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# run using : sudo ./cassandraDiscover.sh > cassandraDiscover-$HOSTNAME-$(date '+%y%m%d')_$(date '+%H%M%S').log 2>&1
+# prereq : sudo yum install -y nmon iostat hwinfo hdparm
+
 #set -e
 shopt -s expand_aliases
 
@@ -10,13 +14,20 @@ date
 
 #### TO BE ADAPTED TO THE ENV ###
 export cassandra_dir=/opt/apache-cassandra-4.1.3
-alias mynt='nodetool'
-alias mycqlsh='cqlsh'
-#alias mynt='sudo -u cassandra ${cassandra_dir}/bin/nodetool'
-#alias mycqlsh='sudo -u cassandra ${cassandra_dir}/bin/cqlsh'
+export cassandra_dir=/product/cassandra/default
+#alias mynt='nodetool'
+#alias mycqlsh='cqlsh'
+alias mynt='sudo -u cassandra ${cassandra_dir}/bin/nodetool'
+alias mycqlsh='sudo -u cassandra ${cassandra_dir}/bin/cqlsh'
 #alias mynt='ccm node1 nodetool'
 #alias mycqlsh='ccm node1 cqlsh -u cassandra -p cassandra'
 #################################
+
+echo '-----------------------------'
+echo HOSTNAME=$HOSTNAME
+uname -a
+cat /etc/os-release
+echo '-----------------------------'
 
 java -version
 ps -ef | grep java |grep cassandra
@@ -38,19 +49,27 @@ lsmem
 echo "===== Disk ====="
 lsblk -o NAME,KNAME,MAJ:MIN,RM,SIZE,RO,TYPE,MOUNTPOINT
 lshw -class disk
-smartctl -a /dev/sda
-hdparm -i /dev/sda
+smartctl -a /dev/nvme6n1p1
+hdparm -i /dev/nvme6n1p1
 hwinfo --disk
 pvdisplay -m
 lvs --segments -o +devices
 df -h
+echo "===== RA : Read Ahead ====="
+blockdev --report
+echo "===== Swap ====="
+cat /proc/swaps
 echo "===== Clock ====="
 timedatectl | grep synchronized;
 # ntpstat
-systemctl status ntp*.service
-
+systemctl status ntp*.service chrony*.service
+echo "===== ulimit ====="
+ulimit -a
+echo "===== Sysctl ====="
+sysctl -p
 echo "===== Connection to cassandra (assuming use of standard port) ====="
 lsof -i -n -P | grep 9042 | grep ESTABLISHED
+
 echo "===== VERSION ====="
 mynt version
 echo "===== INFO ====="
@@ -94,11 +113,12 @@ if [[ -z ${listKs} ]]; then
 fi
 
 for ks in $listKs; do
-    listTable=`mycqlsh -e 'USE ${ks}; DESC tables;' | grep -v -e '^[[:space:]]*$'`
+    echo "Keyspace: ${ks}"
+    listTable=`mycqlsh -e "USE ${ks}; DESC tables;" | grep -v -e '^[[:space:]]*$'`
     for table in $listTable ; do
         echo "===== tablehistograms ${ks} $table ====="
         mynt tablehistograms ${ks} $table
-        # echo "===== toppartitions ${ks} $table ====="
-        # mynt toppartitions ${ks} $table 1000
+        echo "===== toppartitions ${ks} $table (1000ms) ====="
+        mynt toppartitions ${ks} $table 1000
     done
 done

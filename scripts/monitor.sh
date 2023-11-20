@@ -74,19 +74,23 @@ set -e
 cd $path
 
 time=$((60 * $durationMinute))
+count=$(($time/$intervalSec))
+time=$(($time+10))
 
-echo "nmon -f -r mymonitor -s ${intervalSec} -c $(($time/$intervalSec))"
-nmon -f -r mymonitor -s ${intervalSec} -c $(($time/$intervalSec))
+echo "nmon -f -r mymonitor -s ${intervalSec} -c ${count}"
+nmon -f -r mymonitor -s ${intervalSec} -c ${count}
 
 if [[ $enableIostat -eq 1 ]]; then
-    echo "iostat -tNxm ${step} $(($time/$intervalSec))"
+    echo "iostat -tNxm ${step} ${count}"
     export S_TIME_FORMAT=ISO
-    iostat -tNxm ${step} $(($time/$intervalSec)) > $(pwd)/iostat-mymonitor-${HOSTNAME}_$(date '+%y%m%d')_$(date '+%H%M').log &
+    timeout -s 2 -k 1 ${time} iostat -tNxm ${step} ${count} > $(pwd)/iostat-mymonitor-${HOSTNAME}_$(date '+%y%m%d')_$(date '+%H%M').log &
 fi
 
 if [[ $enableTcpdump -eq 1 ]]; then
     echo "tcpdump -i eth0 'tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)'"
     timeout -s 2 -k 1 ${time} tcpdump -i eth0 -C 1000 -W 9 -s 1024 'tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)' -w $(pwd)/tcpdump-mymonitor-${HOSTNAME}_$(date '+%y%m%d')_$(date '+%H%M').pcap
 fi
+
+ps -f
 
 echo "done"
