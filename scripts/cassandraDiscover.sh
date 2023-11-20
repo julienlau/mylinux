@@ -107,18 +107,21 @@ echo "===== tpstats ====="
 mynt tpstats
 echo "===== tablestats ====="
 mynt tablestats
+echo "===== tablestats END ====="
 
 if [[ -z ${listKs} ]]; then
     listKs=`mycqlsh -e 'DESC keyspaces;' | grep -v -e '^[[:space:]]*$' | sed 's/ /\n/g' | grep -v ^system`
 fi
 
 for ks in $listKs; do
-    echo "Keyspace: ${ks}"
+    #echo "Keyspace: ${ks}"
     listTable=`mycqlsh -e "USE ${ks}; DESC tables;" | grep -v -e '^[[:space:]]*$'`
     for table in $listTable ; do
         echo "===== tablehistograms ${ks} $table ====="
         mynt tablehistograms ${ks} $table
-        echo "===== toppartitions ${ks} $table (1000ms) ====="
-        mynt toppartitions ${ks} $table 1000
+        if [[ ! -z $ENV && "$ENV" != "non-prod" ]]; then
+            echo "===== toppartitions ${ks} $table (1000ms) ====="
+            mynt toppartitions ${ks} $table 1000
+        fi
     done
 done
