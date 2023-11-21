@@ -8,7 +8,7 @@ After=network.target
 User=cassandra
 Group=data
 # Environment=JAVA_HOME=/usr/lib64/jvm/java-1.8.0-openjdk
-Environment=JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
+Environment=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ExecStart=/usr/bin/env "${JAVA_HOME}/bin/java" -jar /opt/cassandra_exporter/cassandra_exporter.jar /opt/cassandra_exporter/config.yml
 StandardOutput=journal
 StandardError=journal

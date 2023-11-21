@@ -2,12 +2,35 @@
 
 # run using : sudo ./cassandraDiscover.sh > cassandraDiscover-$HOSTNAME-$(date '+%y%m%d')_$(date '+%H%M%S').log 2>&1
 # prereq : sudo yum install -y nmon iostat hwinfo hdparm
+# if ENV is undefined we cannot now if it is safe to run toppartitions
+# if list keyspace is not defined, all keyspaces are analyzed
 
 #set -e
 shopt -s expand_aliases
 
-if [[ $# -gt 0 ]]; then
-    listKs=$1
+for i in "$@"; do
+    case $i in
+        -e=*|--env=*)
+            ENV="${i#*=}"
+            shift # past argument=value
+            ;;
+        -k=*|--keyspaces=*)
+            listKs="${i#*=}"
+            shift # past argument=value
+            ;;
+        -*|--*)
+            echo "Unknown option $i"
+            exit 1
+            ;;
+        *)
+            ;;
+    esac
+done
+
+
+if [[ -z $ENV ]]; then
+    echo "var ENV is not defined"
+    exit 1
 fi
 
 date
@@ -67,7 +90,7 @@ echo "===== ulimit ====="
 ulimit -a
 echo "===== Sysctl ====="
 sysctl -p
-echo "===== Connection to cassandra (assuming use of standard port) ====="
+echo "===== Connection to cassandra (assuming use of standard port 9042) ====="
 lsof -i -n -P | grep 9042 | grep ESTABLISHED
 
 echo "===== VERSION ====="
@@ -119,9 +142,9 @@ for ks in $listKs; do
     for table in $listTable ; do
         echo "===== tablehistograms ${ks} $table ====="
         mynt tablehistograms ${ks} $table
-        if [[ ! -z $ENV && "$ENV" != "non-prod" ]]; then
-            echo "===== toppartitions ${ks} $table (1000ms) ====="
-            mynt toppartitions ${ks} $table 1000
+        if [[ ! -z $ENV && "$ENV" != "prod" && "$ENV" != "PROD" ]]; then
+            echo "===== toppartitions ${ks} $table (20000ms) ====="
+            mynt toppartitions ${ks} $table 20000
         fi
     done
 done
