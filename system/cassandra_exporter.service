@@ -1,19 +1,16 @@
 # /lib/systemd/system/cassandra_exporter.service
 
 [Unit]
-Description=Cassandra Exporter for monitoring
+Description=Cassandra Exporter (from criteo) for monitoring using prometheus
 After=network.target
 
 [Service]
+Restart=on-failure
 User=cassandra
-Group=data
-# Environment=JAVA_HOME=/usr/lib64/jvm/java-1.8.0-openjdk
-Environment=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-ExecStart=/usr/bin/env "${JAVA_HOME}/bin/java" -jar /opt/cassandra_exporter/cassandra_exporter.jar /opt/cassandra_exporter/config.yml
-StandardOutput=journal
-StandardError=journal
-LimitNOFILE=infinity
-LimitMEMLOCK=infinity
+ExecStart=/usr/bin/env java -jar /opt/cassandra_exporter/cassandra_exporter.jar /opt/cassandra_exporter/config.yml
+ExecReload=/bin/kill -HUP $MAINPID
+TimeoutStopSec=20s
+SendSIGKILL=no
 
 [Install]
 WantedBy=cassandra.service

@@ -9,12 +9,40 @@ After=network-online.target
 [Service]
 User=prometheus
 Restart=on-failure
+ExecReload=/bin/kill -HUP $MAINPID
+TimeoutStopSec=20s
+SendSIGKILL=no
 
 #Change this line if you download the 
 #Prometheus on different path user
-ExecStart=/opt/prometheus/prometheus \
+ExecStart=/usr/bin/prometheus \
   --config.file=/home/prometheus/prometheus/prometheus.yml \
-  --storage.tsdb.path=/home/prometheus/prometheus/data
+  --web.enable-admin-api \
+  --storage.tsdb.path=/data/prometheus/data \
+  --storage.tsdb.retention.time=45d
+
+# systemd hardening-options
+AmbientCapabilities=
+CapabilityBoundingSet=
+DeviceAllow=/dev/null rw
+DevicePolicy=strict
+LimitMEMLOCK=0
+LimitNOFILE=32768
+LockPersonality=true
+MemoryDenyWriteExecute=true
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+PrivateUsers=true
+ProtectControlGroups=true
+#ProtectHome=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=full
+RemoveIPC=true
+RestrictNamespaces=true
+RestrictRealtime=true
+SystemCallArchitectures=native
 
 [Install]
 WantedBy=multi-user.target

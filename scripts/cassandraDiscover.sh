@@ -113,7 +113,7 @@ mycqlsh -e 'SELECT * FROM system.peer_events;SELECT * FROM system.range_xfers;'
 echo "===== ring ====="
 mynt ring
 echo "===== SCHEMA ====="
-mycqlsh -e "DESC tables;DESC schema;DESC KEYSPACE system_traces;DESC KEYSPACE system_auth;DESC KEYSPACE system_distributed;"
+mycqlsh -e "DESC tables;DESC schema;SELECT * FROM system_schema.views;DESC KEYSPACE system_traces;DESC KEYSPACE system_auth;DESC KEYSPACE system_distributed;"
 echo "===== compactionhistory ====="
 mynt compactionhistory
 echo "===== compactionstats ====="
