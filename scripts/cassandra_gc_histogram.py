@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright 2010 Bitly
@@ -69,7 +69,6 @@ class MVSD(object):
 
 DataPoint = namedtuple('DataPoint', ['value', 'count'])
 
-
 def test_mvsd():
     mvsd = MVSD()
     for x in range(10):
@@ -78,7 +77,6 @@ def test_mvsd():
     assert '%.2f' % mvsd.mean() == "4.50"
     assert '%.2f' % mvsd.var() == "8.25"
     assert '%.14f' % mvsd.sd() == "2.87228132326901"
-
 
 def load_stream(input_stream, agg_value_key, agg_key_value):
     for line in input_stream:
@@ -97,31 +95,27 @@ def load_stream(input_stream, agg_value_key, agg_key_value):
                 yield DataPoint(Decimal(key), int(value))
             else:
                 yield DataPoint(Decimal(clean_line), 1)
-        except:
+        except Exception as e:
             logging.exception('failed %r', line)
-            print >>sys.stderr, "invalid line %r" % line
-
+            print("invalid line %r" % line, file=sys.stderr)
 
 def median(values, key=None):
     if not key:
         key = None  # map and sort accept None as identity
     length = len(values)
     if length % 2:
-        median_indeces = [length/2]
+        median_indeces = [length//2]
     else:
-        median_indeces = [length/2-1, length/2]
+        median_indeces = [length//2-1, length//2]
 
     values = sorted(values, key=key)
-    return sum(map(key,
-                   [values[i] for i in median_indeces])) / len(median_indeces)
-
+    return sum(map(key, [values[i] for i in median_indeces])) / len(median_indeces)
 
 def test_median():
     assert 6 == median([8, 7, 9, 1, 2, 6, 3])  # odd-sized list
     assert 4 == median([4, 5, 2, 1, 9, 10])  # even-sized int list. (4+5)/2 = 4
     # even-sized float list. (4.0+5)/2 = 4.5
     assert "4.50" == "%.2f" % median([4.0, 5, 2, 1, 9, 10])
-
 
 def histogram(stream, options):
     """
@@ -243,7 +237,7 @@ def histogram(stream, options):
         print("# Mean = %f; Variance = %f; SD = %f; Median %f - in seconds" %
               (mvsd.mean(), mvsd.var(), mvsd.sd(),
                median(accepted_data, key=lambda x: x.value)))
-    print "# each " + options.dot + " represents a count of %d" % bucket_scale
+    print("# each " + options.dot + " represents a count of %d" % bucket_scale)
     bucket_min = min_v
     bucket_max = min_v
     percentage = ""
@@ -258,8 +252,8 @@ def histogram(stream, options):
         if options.percentage:
             percentage = " (%0.2f%%)" % (100 * Decimal(bucket_count) /
                                          Decimal(samples))
-        print format_string % (bucket_min, bucket_max, bucket_count, options.dot *
-                               star_count, percentage)
+        print(format_string % (bucket_min, bucket_max, bucket_count, options.dot *
+                               star_count, percentage))
 
 
 if __name__ == "__main__":
@@ -296,7 +290,7 @@ if __name__ == "__main__":
     if sys.stdin.isatty():
         # if isatty() that means it's run without anything piped into it
         parser.print_usage()
-        print "for more help use --help"
+        print("for more help use --help")
         sys.exit(1)
     histogram(load_stream(sys.stdin, options.agg_value_key,
                           options.agg_key_value), options)

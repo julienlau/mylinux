@@ -86,6 +86,7 @@ echo "===== Clock ====="
 timedatectl | grep synchronized;
 # ntpstat
 systemctl status ntp*.service chrony*.service
+chronyc tracking || ntpq -c rl
 echo "===== ulimit ====="
 ulimit -a
 echo "===== Sysctl ====="

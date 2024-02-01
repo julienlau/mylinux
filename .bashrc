@@ -40,7 +40,7 @@
 
 # tar compress parallel
 # tar -I "xz -T0" -cf archive.tar.xz ./file.csv
-# XZ_OPT='-T0 -9' tar -cvJf archive.tar.xz ./file.csv
+# XZ_OPT='-T0 -9' tar -cJf archive.tar.xz ./file.csv
 export XZ_OPT='-T0'
 
 # echo "set zoom level on an anker webcam" ; v4l2-ctl --list-devices ; v4l2-ctl --device /dev/video4 --list-ctrls ; v4l2-ctl --device /dev/video4 --set-ctrl=zoom_absolute=400
@@ -291,6 +291,7 @@ myip()
 }
 
 alias ippub="curl i-p.show"
+alias ippubEC2="curl http://169.254.169.254/latest/meta-data/public-ipv4"
 
 unalias spfy 2>/dev/null
 spfy()
@@ -1294,7 +1295,7 @@ function ccm_update_node_config {
 unalias cassandraInit 2>/dev/null
 cassandraInit()
 {
-    export CASSANDRA_VERSION=3.11.5
+    export CASSANDRA_VERSION=4.1.3
     exporte CASSANDRA_HOME=/opt/apache-cassandra-${CASSANDRA_VERSION}
     exporte CASSANDRA_HOME=/opt/cassandra
     if [[ -e ${CASSANDRA_HOME} ]]; then
@@ -1890,14 +1891,15 @@ kernelpurge() {
             awk '{ print $2 }'
                )
     echo "Old Kernels to be removed WARNING double check nvidia !!!"
+    echo "if you want to proceed then rerun with the arg 'exec'"
     echo "$OLD_KERNELS"
     
-    sudo apt-get autoremove --purge
-    # if [ "$1" == "exec" ]; then
-    #     for PACKAGE in $OLD_KERNELS; do
-    #         sudo apt purge -y "$PACKAGE"
-    #     done
-    # fi
+    if [ "$1" == "exec" ]; then
+        sudo apt-get autoremove --purge
+        for PACKAGE in $OLD_KERNELS; do
+            sudo apt purge -y "$PACKAGE"
+        done
+    fi
 }
 
 #------------------------------------------------------------------------------
@@ -1986,17 +1988,17 @@ alias kc=kubectl
 alias ka=kubeadm
 alias k=kubectl
 alias kubectx="kubectl ctx"
-alias kk="kubectl -n \$ns"
+alias kk="kubectl -n \$KUBE_NS"
 # for spark-submit vanilla
-alias sparkclean="kk get pods --field-selector=status.phase!=Running | awk '{print \$1}' | grep -v '^NAME$' | xargs kubectl delete pods -n \${SPARK_KUBE_NS}"
+alias sparkclean="kk get pods --field-selector=status.phase!=Running | awk '{print \$1}' | grep -v '^NAME$' | xargs kubectl delete pods -n \${KUBE_NS}"
 alias sparklogs="kk logs"
 alias sparkls="kk get pods -l=spark-app-name"
 alias sparkll="kk get pods -l=spark-app-name -o 'custom-columns=NAMESPACE:.metadata.namespace,Name:.metadata.name,PHASE:.status.phase,RESTARTS:RESTART:.status.containerStatuses[0].restartCount,CREATED:.metadata.creationTimestamp,IPS:status.podIPs,NODE:.spec.nodeName,IMAGE:.spec.containers[0].image,LABELS:.metadata.labels'"
 # for spark-operator
 alias sls="kk get sparkapp"
-alias sw="watch -c -n 5 kubectl get sparkapp -n \${SPARK_KUBE_NS}"
+alias sw="watch -c -n 5 kubectl get sparkapp -n \${KUBE_NS}"
 alias srm="kk delete sparkapp"
-alias sclean="kk get sparkapp | grep -e ' COMPLETED ' -e ' FAILED ' | awk '{print \$1}' | grep -v '^NAME$' | xargs kubectl delete sparkapp -n \${SPARK_KUBE_NS}"
+alias sclean="kk get sparkapp | grep -e ' COMPLETED ' -e ' FAILED ' | awk '{print \$1}' | grep -v '^NAME$' | xargs kubectl delete sparkapp -n \${KUBE_NS}"
 
 alias kdesc="kubectl describe nodes | grep --color=never -e '  cpu ' -e '  memory ' -e 'Name: ' -e 'worker-pool-name' -e 'node.kubernetes.io/instance-type' -e 'topology.kubernetes.io/zone'"
 alias kallocated='kubectl get nodes --no-headers | awk '\''{print $1}'\'' | xargs -I {} sh -c '\''echo   {} ; kubectl describe node {} | grep Allocated -A 5 | grep -ve Event -ve Allocated -ve percent -ve -- ; echo '\'''
@@ -2047,7 +2049,7 @@ alias vnetls="virsh net-dhcp-leases default"
 # reset jack / headset detection
 alias headset='sudo alsactl restore'
 
-alias topsocketused="ps -ef | pgrep -lf `lsof +c 0 -i tcp -i udp | awk '{print $1}' | sort | uniq -c | sort -n | tail -1 | awk '{print $2}'`"
+#alias topsocketused="ps -ef | pgrep -lf `lsof +c 0 -i tcp -i udp | awk '{print $1}' | sort | uniq -c | sort -n | tail -1 | awk '{print $2}'`"
 
 # modify environment variables only on specific machine
 # jlu local linux
@@ -2095,6 +2097,7 @@ exporte PATH=$PATH:/opt/apache-maven/bin
 exporte SPARK_HOME=/opt/spark
 exporte HADOOP_HOME=/opt/hadoop
 export PYTHONDONTWRITEBYTECODE=1
+export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
 exporte PYTHONPATH=$PYTHONPATH:$GDAL_DIR/swig/python
 exporte PYTHONPATH=$PYTHONPATH:/opt/twsapi-9.79.01/IBJts/source/pythonclient
 exporte LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib64:/usr/local/lib:/opt/cuda/lib64:/opt/cuda/lib64/stubs:/opt/cuda/extras/CUPTI/lib64
