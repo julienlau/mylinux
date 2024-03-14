@@ -1,14 +1,37 @@
+import logging
+from logging.handlers import RotatingFileHandler
 import argparse
 import glob
-import logging
 import requests
 import time
 import numpy as np
 import concurrent.futures
 from datetime import datetime
 
-# Setup logger
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Define the start time at the beginning of your script
+start_time_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+log_filename = f"log_{start_time_str}.txt"
+
+# Setup logger with multiple handlers
+def setup_logging():
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    
+    # Format for our loglines
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    
+    # Setup STDOUT handler
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+    
+    # Setup File handler
+    file_handler = RotatingFileHandler(log_filename, maxBytes=5000000, backupCount=5)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
+# Ensure to call this function at the beginning of your main function
+setup_logging()
 
 def perform_ocr(file_path, ocr_url, timeout, max_redirects, headers, cert):
     logging.info(f"Starting OCR request for file: {file_path}")
