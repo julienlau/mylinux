@@ -5,11 +5,13 @@ import requests
 import time
 import numpy as np
 import concurrent.futures
+from datetime import datetime
 
 # Setup logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def perform_ocr(file_path, ocr_url, timeout, max_redirects, headers, cert):
+    logging.info(f"Starting OCR request for file: {file_path}")
     with open(file_path, 'rb') as file:
         files = {'file': (file_path, file)}
         session = requests.Session()
@@ -19,8 +21,10 @@ def perform_ocr(file_path, ocr_url, timeout, max_redirects, headers, cert):
         total_time = time.time() - start_time
         if response.status_code == 200:
             redirect_time = total_time - response.elapsed.total_seconds()
+            logging.info(f"Completed OCR request for file: {file_path} in {total_time:.2f}s (including redirects)")
             return file_path, total_time, redirect_time
         else:
+            logging.error(f"OCR request for file: {file_path} failed with status code {response.status_code}")
             return file_path, None, None
 
 def perform_ocr_concurrently(files, ocr_url, timeout, max_redirects, max_workers, headers, cert):
@@ -64,6 +68,7 @@ def parse_arguments():
     return parser.parse_args()
 
 def main():
+    start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     args = parse_arguments()
     files = glob.glob(f'{args.directory}/*.pdf') * args.repeats
     ocr_url = args.base_url
@@ -85,11 +90,12 @@ def main():
             results[ocr_url]['redirect_timings'].append(redirect_time)
     results = calculate_statistics(results)
 
+    # Output results
     with open(args.output_file, 'w') as f:
-        f.write("| OCR URL | Average Time (s) | Std Dev (s) | Minimum Time (s) | Maximum Time (s) | Avg Redirect Time (s) |\n")
-        f.write("|---------|------------------|-------------|------------------|------------------|-----------------------|\n")
+        f.write("| Start Time | Concurrency | OCR URL | Average Time (s) | Std Dev (s) | Minimum Time (s) | Maximum Time (s) | Avg Redirect Time (s) |\n")
+        f.write("|------------|-------------|---------|------------------|-------------|------------------|------------------|-----------------------|\n")
         for ocr_url, data in results.items():
-            f.write(f"| {ocr_url} | {data['average']:.2f} | {data['std_dev']:.2f} | {data['min_time']:.2f} | {data['max_time']:.2f} | {data['avg_redirect_time']:.2f} |\n")
+            f.write(f"| {start_time} | {args.concurrency} | {ocr_url} | {data['average']:.2f} | {data['std_dev']:.2f} | {data['min_time']:.2f} | {data['max_time']:.2f} | {data['avg_redirect_time']:.2f} |\n")
 
 if __name__ == "__main__":
     main()
