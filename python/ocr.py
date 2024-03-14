@@ -4,77 +4,92 @@ import logging
 import requests
 import time
 import numpy as np
+import concurrent.futures
 
 # Setup logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def perform_ocr(file_path, ocr_url, timeout, max_redirects):
+def perform_ocr(file_path, ocr_url, timeout, max_redirects, headers, cert):
     with open(file_path, 'rb') as file:
         files = {'file': (file_path, file)}
         session = requests.Session()
         session.max_redirects = max_redirects
         start_time = time.time()
-        response = session.post(ocr_url, files=files, timeout=timeout, allow_redirects=True)
+        response = session.post(ocr_url, files=files, timeout=timeout, headers=headers, cert=cert, allow_redirects=True)
         total_time = time.time() - start_time
         if response.status_code == 200:
-            # Assuming 'elapsed' includes total time minus time spent in redirects
             redirect_time = total_time - response.elapsed.total_seconds()
-            return total_time, redirect_time
+            return file_path, total_time, redirect_time
         else:
-            raise Exception(f"OCR request failed with status {response.status_code}")
+            return file_path, None, None
 
-def prewarm_ocr(ocr_url, timeout):
-    # Implement prewarming logic here if needed
-    pass
+def perform_ocr_concurrently(files, ocr_url, timeout, max_redirects, max_workers, headers, cert):
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_file = {executor.submit(perform_ocr, file, ocr_url, timeout, max_redirects, headers, cert): file for file in files}
+        results = {}
+        for future in concurrent.futures.as_completed(future_to_file):
+            file_path, total_time, redirect_time = future.result()
+            if total_time is not None:
+                if ocr_url not in results:
+                    results[ocr_url] = {'timings': [], 'redirect_timings': []}
+                results[ocr_url]['timings'].append(total_time)
+                results[ocr_url]['redirect_timings'].append(redirect_time)
+        return results
 
-def benchmark_ocr(files, ocr_urls, repeats, prewarm, timeout, max_redirects):
-    results = {}
-    for ocr_url in ocr_urls:
-        logging.info(f"Testing OCR at {ocr_url}")
-        if prewarm:
-            prewarm_ocr(ocr_url, timeout)
-        for file_path in files:
-            timings = []
-            redirect_timings = []
-            for _ in range(repeats):
-                try:
-                    total_time, redirect_time = perform_ocr(file_path, ocr_url, timeout, max_redirects)
-                    timings.append(total_time)
-                    redirect_timings.append(redirect_time)
-                except Exception as e:
-                    logging.error(f"Error during OCR processing: {e}")
-            results[(ocr_url, file_path)] = {
-                'average': np.mean(timings),
-                'std_dev': np.std(timings),
-                'min_time': np.min(timings),
-                'max_time': np.max(timings),
-                'avg_redirect_time': np.mean(redirect_timings)
-            }
+def calculate_statistics(results):
+    for ocr_url, data in results.items():
+        timings = data['timings']
+        redirect_timings = data['redirect_timings']
+        data.update({
+            'average': np.mean(timings),
+            'std_dev': np.std(timings),
+            'min_time': np.min(timings),
+            'max_time': np.max(timings),
+            'avg_redirect_time': np.mean(redirect_timings)
+        })
     return results
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Benchmark OCR solutions")
+    parser = argparse.ArgumentParser(description="Benchmark OCR solutions with concurrency and authentication support")
     parser.add_argument("--directory", required=True, help="Path to the directory containing PDF files")
     parser.add_argument("--repeats", type=int, default=5, help="Number of times to repeat OCR processing for each file")
     parser.add_argument("--timeout", type=int, default=60, help="HTTP request timeout in seconds")
     parser.add_argument("--max-redirects", type=int, default=10, help="Maximum number of redirects to follow for an OCR request")
+    parser.add_argument("--output-file", required=True, help="Output file name to write the Markdown table")
+    parser.add_argument("--base-url", required=True, help="Base URL of the OCR service")
+    parser.add_argument("--concurrency", type=int, default=1, help="Number of concurrent OCR queries to perform")
+    parser.add_argument("--bearer-token", help="Bearer token for OCR requests")
+    parser.add_argument("--cert-file", default="client.crt", help="Client certificate file")
+    parser.add_argument("--key-file", default="client.key", help="Client key file")
     return parser.parse_args()
 
 def main():
     args = parse_arguments()
-    files = glob.glob(f'{args.directory}/*.pdf')
-    ocr_urls = [
-        # Add OCR URLs here
-    ]
-    results = benchmark_ocr(files, ocr_urls, args.repeats, prewarm=True, timeout=args.timeout, max_redirects=args.max_redirects)
+    files = glob.glob(f'{args.directory}/*.pdf') * args.repeats
+    ocr_url = args.base_url
+    headers = {"Accept": "application/json"}
+    cert = (args.cert_file, args.key_file)
 
-    # Print results in Markdown format
-    print("| Input Filename | OCR URL | Average Time (s) | Std Dev (s) | Minimum Time (s) | Maximum Time (s) | Avg Redirect Time (s) |")
-    print("|----------------|---------|------------------|-------------|------------------|------------------|-----------------------|")
-    for key, value in results.items():
-        ocr_url, file_path = key
-        filename = file_path.split('/')[-1]
-        print(f"| {filename} | {ocr_url} | {value['average']:.2f} | {value['std_dev']:.2f} | {value['min_time']:.2f} | {value['max_time']:.2f} | {value['avg_redirect_time']:.2f} |")
+    if args.bearer_token:
+        headers["Authorization"] = f"Bearer {args.bearer_token}"
+
+    if args.concurrency > 1:
+        results = perform_ocr_concurrently(files, ocr_url, args.timeout, args.max_redirects, args.concurrency, headers, cert)
+    else:
+        results = {}
+        for file in files:
+            _, total_time, redirect_time = perform_ocr(file, ocr_url, args.timeout, args.max_redirects, headers, cert)
+            if ocr_url not in results:
+                results[ocr_url] = {'timings': [], 'redirect_timings': []}
+            results[ocr_url]['timings'].append(total_time)
+            results[ocr_url]['redirect_timings'].append(redirect_time)
+    results = calculate_statistics(results)
+
+    with open(args.output_file, 'w') as f:
+        f.write("| OCR URL | Average Time (s) | Std Dev (s) | Minimum Time (s) | Maximum Time (s) | Avg Redirect Time (s) |\n")
+        f.write("|---------|------------------|-------------|------------------|------------------|-----------------------|\n")
+        for ocr_url, data in results.items():
+            f.write(f"| {ocr_url} | {data['average']:.2f} | {data['std_dev']:.2f} | {data['min_time']:.2f} | {data['max_time']:.2f} | {data['avg_redirect_time']:.2f} |\n")
 
 if __name__ == "__main__":
     main()
