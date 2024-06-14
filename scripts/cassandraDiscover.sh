@@ -91,6 +91,8 @@ echo "===== ulimit ====="
 ulimit -a
 echo "===== Sysctl ====="
 sysctl -p
+echo "===== fs.file-max ====="
+echo "fs.file-max=$(cat /proc/sys/fs/file-max)"
 echo "===== Connection to cassandra (assuming use of standard port 9042) ====="
 lsof -i -n -P | grep 9042 | grep ESTABLISHED
 
