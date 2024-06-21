@@ -75,3 +75,5 @@ echo "===== sudo -u ${mc_user} mc admin config export $minio ====="
 sudo -u ${mc_user} mc admin config export $minio
 echo "===== sudo -u ${mc_user} mc admin scanner info $minio --interval 10 ====="
 sudo -u ${mc_user} mc admin scanner info $minio --interval 10  -q -n 1 --no-color 
+echo "===== sudo -u ${mc_user} mc admin info --json $minio ====="
+sudo -u ${mc_user} mc admin info --json $minio
