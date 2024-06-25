@@ -45,8 +45,9 @@ lsmem
 echo "===== Disk ====="
 lsblk -o NAME,KNAME,MAJ:MIN,RM,SIZE,RO,TYPE,MOUNTPOINT
 lshw -class disk
-smartctl -a /dev/nvme6n1p1
-hdparm -i /dev/nvme6n1p1
+# TODO : adapt to conf
+smartctl -a /dev/sd*
+hdparm -i /dev/sd*
 hwinfo --disk
 pvdisplay -m
 lvs --segments -o +devices
@@ -69,6 +70,10 @@ echo "fs.file-max=$(cat /proc/sys/fs/file-max)"
 echo "===== sockets summary ====="
 ss -s
 
+echo "===== /lib/systemd/system/minio.service ====="
+cat /lib/systemd/system/minio.service || echo ""
+echo "===== /etc/default/minio ====="
+grep -v -i password /etc/default/minio || echo ""
 echo "===== sudo -u ${mc_user} mc admin info $minio ====="
 sudo -u ${mc_user} mc admin info $minio
 echo "===== sudo -u ${mc_user} mc admin config export $minio ====="
@@ -77,3 +82,5 @@ echo "===== sudo -u ${mc_user} mc admin scanner info $minio --interval 10 ====="
 sudo -u ${mc_user} mc admin scanner info $minio --interval 10  -q -n 1 --no-color 
 echo "===== sudo -u ${mc_user} mc admin info --json $minio ====="
 sudo -u ${mc_user} mc admin info --json $minio
+echo "===== timeout 3 xfsslower-bpfcc 1 ====="
+timeout 3 xfsslower-bpfcc 1
