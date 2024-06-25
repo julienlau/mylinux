@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# run using : sudo ./minioDiscover.sh > minioDiscover-$HOSTNAME-$(date '+%y%m%d')_$(date '+%H%M%S').log 2>&1
-# prereq : sudo yum install -y nmon iostat hwinfo hdparm
-
 minio=local
 mc_user=minio-client
 #set -e
@@ -11,7 +8,7 @@ shopt -s expand_aliases
 for i in "$@"; do
     case $i in
         -a=*|--alias=*)
-            minio="${a#*=}"
+            minio="${i#*=}"
             shift # past argument=value
             ;;
         -u=*|--user=*)
@@ -20,6 +17,9 @@ for i in "$@"; do
             ;;
         -*|--*)
             echo "Unknown option $i"
+            echo 'run using :'
+            echo "sudo $0"' > minioDiscover-$(uname -n)-$(date '+%y%m%d')_$(date '+%H%M%S').log 2>&1'
+            echo 'prereq : sudo apt install -y nmon hwinfo bpfcc-tools linux-headers-$(uname -r)'
             exit 1
             ;;
         *)
@@ -28,6 +28,7 @@ for i in "$@"; do
 done
 
 date
+testsudo
 
 echo '-----------------------------'
 echo HOSTNAME=$HOSTNAME
@@ -40,9 +41,10 @@ hostname; uname -a; uptime; echo 'Boot time :'; date -d @$(vmstat --stats | awk 
 echo "===== CPU ====="
 lscpu
 echo "===== MEM ====="
-free -k
+free -m
 lsmem
 echo "===== Disk ====="
+cat /etc/fstab
 lsblk -o NAME,KNAME,MAJ:MIN,RM,SIZE,RO,TYPE,MOUNTPOINT
 lshw -class disk
 # TODO : adapt to conf
