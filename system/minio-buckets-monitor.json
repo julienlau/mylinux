@@ -1,0 +1,2965 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 69,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 34,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Value",
+          "sortDesc": false,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total requests per bucket",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "decbytes",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 53,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Value",
+          "sortDesc": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "max by(bucket) (minio_bucket_usage_total_bytes)",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Total size",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 57,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Value",
+          "sortDesc": false,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by(bucket) (max by (bucket,server)(minio_bucket_objects_size_distribution{range=~\"BETWEEN_1024_B_AND_1_MB|LESS_THAN_1024_B\", job=\"$scrape_jobs\"}))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total objects with size <1MB",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "id": 58,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Value",
+          "sortDesc": false,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_5xx_errors_total{job=\"$scrape_jobs\"}[2m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total 5xx error",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 18
+      },
+      "id": 44,
+      "maxDataPoints": 60,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 100
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(api) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Request types in time",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 18
+      },
+      "id": 46,
+      "maxDataPoints": 90,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 100
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Requests per bucket in time",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "decbytes",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 26
+      },
+      "id": 49,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Value",
+          "sortDesc": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_traffic_received_bytes{job=\"$scrape_jobs\"}[5m]))",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Total bytes received per bucket",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "decbytes",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 26
+      },
+      "id": 50,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_traffic_sent_bytes{job=\"$scrape_jobs\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total sent bytes per bucket",
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "lower",
+                  "options": {
+                    "value": 0
+                  }
+                },
+                "fieldName": "airflow-logs"
+              }
+            ],
+            "match": "all",
+            "type": "exclude"
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 34
+      },
+      "id": 59,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Value",
+          "sortDesc": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by(api) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total requests per api",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 34
+      },
+      "id": 42,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\", api=\"putobject\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total putObject per bucket",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 42
+      },
+      "id": 40,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\", api=\"getobject\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total getObject per bucket",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 42
+      },
+      "id": 54,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\", api=\"putobjectpart\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total putObjectPart per bucket",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 50
+      },
+      "id": 38,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\", api=~\"listobjectsv2|listobjectsv1\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total listObject(v1 and v2) per bucket",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 50
+      },
+      "id": 52,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\", api=~\"deleteobject|deletemultipleobjects\"}[5m]))",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Total deleteObject / deleteMultipleObjects per bucket",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 58
+      },
+      "id": 36,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Value",
+          "sortDesc": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\", api=\"headobject\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total getHeadObject per bucket",
+      "type": "piechart"
+    },
+    {
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 66
+      },
+      "id": 16,
+      "title": "Row title",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes",
+          "unitScale": true
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byValue",
+              "options": {
+                "op": "gte",
+                "reducer": "allIsZero",
+                "value": 0
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 67
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by(bucket) (increase(minio_bucket_traffic_sent_bytes{job=\"$scrape_jobs\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Traffic bytes sent per bucket (agg 5m)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes",
+          "unitScale": true
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byValue",
+              "options": {
+                "op": "gte",
+                "reducer": "allIsZero",
+                "value": 0
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 67
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_traffic_received_bytes{job=\"$scrape_jobs\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Traffic bytes received per bucket (agg 5m)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byValue",
+              "options": {
+                "op": "gte",
+                "reducer": "allIsZero",
+                "value": 0
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 76
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total request number per bucket (agg 5m)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byValue",
+              "options": {
+                "op": "gte",
+                "reducer": "allIsZero",
+                "value": 0
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 76
+      },
+      "id": 32,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "(10e6*( sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\"}[5m]))))/( sum by(bucket) (increase(minio_bucket_traffic_sent_bytes{job=\"$scrape_jobs\"}[5m])+increase(minio_bucket_traffic_received_bytes{job=\"$scrape_jobs\"}[5m])) ) ",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Requests / MB per bucket (agg 5min)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byValue",
+              "options": {
+                "op": "gte",
+                "reducer": "allIsZero",
+                "value": 0
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 84
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_4xx_errors_total{job=\"$scrape_jobs\"}[1m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "4xx errors per bucket (agg 1m)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byValue",
+              "options": {
+                "op": "gte",
+                "reducer": "allIsZero",
+                "value": 0
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 84
+      },
+      "id": 12,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_5xx_errors_total{job=\"$scrape_jobs\"}[1m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "5xx errors per bucket (agg 1m)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 92
+      },
+      "id": 14,
+      "options": {
+        "displayMode": "basic",
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "avg by(bucket) (increase(minio_bucket_requests_ttfb_seconds_distribution{api=\"getobject\", job=\"$scrape_jobs\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Time to first byte on getObject per bucket",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 92
+      },
+      "id": 8,
+      "options": {
+        "displayMode": "basic",
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (minio_bucket_objects_size_distribution{range=~\"BETWEEN_1024_B_AND_1_MB|LESS_THAN_1024_B|BETWEEN_1_MB_AND_10_MB\", job=\"$scrape_jobs\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Count objects <10Mb per bucket",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 100
+      },
+      "id": 18,
+      "options": {
+        "displayMode": "basic",
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "avg by(bucket) (increase(minio_bucket_requests_ttfb_seconds_distribution{api=\"putobject\", job=\"$scrape_jobs\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Time to first byte for putObject per Bucket",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 100
+      },
+      "id": 24,
+      "options": {
+        "displayMode": "basic",
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\", api=\"getobject\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Number of getObject per bucket",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 108
+      },
+      "id": 20,
+      "options": {
+        "displayMode": "basic",
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "avg by(bucket) (increase(minio_bucket_requests_ttfb_seconds_distribution{job=\"$scrape_jobs\", api=~\"listobjectsv2|listobjectsv1\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Time to first byte on listObjects (v1 and v2) per bucket",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 108
+      },
+      "id": 26,
+      "options": {
+        "displayMode": "basic",
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\", api=\"putobject\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Number of putObject per bucket",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 116
+      },
+      "id": 22,
+      "options": {
+        "displayMode": "basic",
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "avg by(bucket) (increase(minio_bucket_requests_ttfb_seconds_distribution{job=\"$scrape_jobs\", api=\"headobject\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Time to first bytes on getHeadObject per bucket",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 116
+      },
+      "id": 27,
+      "options": {
+        "displayMode": "basic",
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\", api=~\"listobjectsv2|listobjectsv1\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Number of listObjects (v1 and v2) per bucket",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unitScale": true
+        },
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "{api=\"getobject\", bucket=\"airflow-logs\"}",
+                  "{api=\"getobject\", bucket=\"applicatif-spark-history-server\"}",
+                  "{api=\"getobject\", bucket=\"archive-enriched-hpna-reports\"}",
+                  "{api=\"getobject\", bucket=\"archive-enriched-keepalive\"}",
+                  "{api=\"getobject\", bucket=\"archive-enriched-myperf\"}",
+                  "{api=\"getobject\", bucket=\"archive-enriched-naf\"}",
+                  "{api=\"getobject\", bucket=\"archive-enriched-ngn\"}",
+                  "{api=\"getobject\", bucket=\"archive-enriched-pcal\"}",
+                  "{api=\"getobject\", bucket=\"archive-enriched-rsyslog\"}",
+                  "{api=\"getobject\", bucket=\"archive-enriched-sbg\"}",
+                  "{api=\"getobject\", bucket=\"archive-enriched-spg\"}",
+                  "{api=\"getobject\", bucket=\"archive-enriched-syslog\"}",
+                  "{api=\"getobject\", bucket=\"archive-enriched-volte-sessions\"}",
+                  "{api=\"getobject\", bucket=\"archive-enriched-xdr4g\"}",
+                  "{api=\"getobject\", bucket=\"archive-enriched-youbora\"}",
+                  "{api=\"getobject\", bucket=\"archive-kpi-arcturus\"}",
+                  "{api=\"getobject\", bucket=\"archive-kpi-fixe\"}",
+                  "{api=\"getobject\", bucket=\"archive-kpi-mobile\"}",
+                  "{api=\"getobject\", bucket=\"archive-kpi-naf\"}",
+                  "{api=\"getobject\", bucket=\"archive-kpi-twamp\"}",
+                  "{api=\"getobject\", bucket=\"archive-kpi-volte\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-bdr\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-bka\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-dim\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-emr\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-lynx\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-man\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-manhattan\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-msf\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-myperf\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-ngn\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-oct\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-twamp\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-und\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-utf\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-volte\"}",
+                  "{api=\"getobject\", bucket=\"archive-raw-zabbix\"}",
+                  "{api=\"getobject\", bucket=\"backup-elastic-discovery\"}",
+                  "{api=\"getobject\", bucket=\"backup-elastic-fixe\"}",
+                  "{api=\"getobject\", bucket=\"backup-elastic-logos\"}",
+                  "{api=\"getobject\", bucket=\"backup-elastic-metrologie\"}",
+                  "{api=\"getobject\", bucket=\"backup-elastic-mobile\"}",
+                  "{api=\"getobject\", bucket=\"backup-elastic-monitoring\"}",
+                  "{api=\"getobject\", bucket=\"backup-elastic-preprod\"}",
+                  "{api=\"getobject\", bucket=\"backup-elastic-supervision\"}",
+                  "{api=\"getobject\", bucket=\"ingest-enriched-bka-sr-nano-daily\"}",
+                  "{api=\"getobject\", bucket=\"ingest-enriched-bka-sr-nano-quarter\"}",
+                  "{api=\"getobject\", bucket=\"ingest-enriched-exfo2g\"}",
+                  "{api=\"getobject\", bucket=\"ingest-enriched-exfo3g\"}",
+                  "{api=\"getobject\", bucket=\"ingest-kpi-clickhouse\"}",
+                  "{api=\"getobject\", bucket=\"ingest-kpi-dme\"}",
+                  "{api=\"getobject\", bucket=\"ingest-kpi-fusion\"}",
+                  "{api=\"getobject\", bucket=\"ingest-kpi-ngn\"}",
+                  "{api=\"getobject\", bucket=\"ingest-kpi-twamp\"}",
+                  "{api=\"getobject\", bucket=\"ingest-kpi-v3d\"}",
+                  "{api=\"getobject\", bucket=\"ingest-kpi-zdv\"}",
+                  "{api=\"getobject\", bucket=\"ingest-raw-dlm\"}",
+                  "{api=\"getobject\", bucket=\"ingest-raw-hpna\"}",
+                  "{api=\"getobject\", bucket=\"ingest-raw-iowa\"}",
+                  "{api=\"getobject\", bucket=\"kpi-exfo\"}",
+                  "{api=\"getobject\", bucket=\"metier-cqf-share\"}",
+                  "{api=\"getobject\", bucket=\"metier-ivs\"}",
+                  "{api=\"getobject\", bucket=\"metier-oqf\"}",
+                  "{api=\"getobject\", bucket=\"metier-oqs\"}",
+                  "{api=\"getobject\", bucket=\"metier-osp\"}",
+                  "{api=\"getobject\", bucket=\"metier-taf\"}",
+                  "{api=\"getobject\", bucket=\"metier-taf-share\"}",
+                  "{api=\"getobject\", bucket=\"metier-tpr\"}",
+                  "{api=\"getobject\", bucket=\"metier-tti\"}",
+                  "{api=\"getobject\", bucket=\"preprod-applicatif-clickhouse\"}",
+                  "{api=\"getobject\", bucket=\"thanos-storage\"}",
+                  "{api=\"headobject\", bucket=\"airflow-logs\"}",
+                  "{api=\"headobject\", bucket=\"applicatif-spark-history-server\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-hpna-reports\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-isbc-oracle\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-keepalive\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-metastore\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-myperf\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-naf\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-ngn\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-pcal\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-rsyslog\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-sbg\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-spg\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-syslog\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-volte-sessions\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-xdr4g\"}",
+                  "{api=\"headobject\", bucket=\"archive-enriched-youbora\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-arcturus\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-bdr\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-cdr\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-coeur\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-fixe\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-mobile\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-naf\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-ngn\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-orion\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-port\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-qoe\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-rrf\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-service-arcturus\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-twamp\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-volte\"}",
+                  "{api=\"headobject\", bucket=\"archive-kpi-wilbur\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-airties\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-bdr\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-bka\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-bogedo\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-dares\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-dim\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-dockdream\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-emr\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-florida\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-idaho\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-logos\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-lynx\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-maco\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-man\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-manhattan\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-mediaflex\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-mme\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-msf\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-myperf\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-ngn\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-oct\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-ottawa\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-rer\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-spirit\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-twamp\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-und\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-utf\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-volte\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-volte-sessions\"}",
+                  "{api=\"headobject\", bucket=\"archive-raw-zabbix\"}",
+                  "{api=\"headobject\", bucket=\"checkpoint-bka-sr-nano-daily\"}",
+                  "{api=\"headobject\", bucket=\"checkpoint-bka-sr-nano-quarter\"}",
+                  "{api=\"headobject\", bucket=\"data-kpi-socle-test\"}",
+                  "{api=\"headobject\", bucket=\"ingest-enriched-bka-sr-nano-daily\"}",
+                  "{api=\"headobject\", bucket=\"ingest-enriched-bka-sr-nano-quarter\"}",
+                  "{api=\"headobject\", bucket=\"ingest-enriched-exfo2g\"}",
+                  "{api=\"headobject\", bucket=\"ingest-enriched-exfo3g\"}",
+                  "{api=\"headobject\", bucket=\"ingest-kpi-clickhouse\"}",
+                  "{api=\"headobject\", bucket=\"ingest-kpi-dme\"}",
+                  "{api=\"headobject\", bucket=\"ingest-kpi-fusion\"}",
+                  "{api=\"headobject\", bucket=\"ingest-kpi-manhattan\"}",
+                  "{api=\"headobject\", bucket=\"ingest-kpi-ngn\"}",
+                  "{api=\"headobject\", bucket=\"ingest-kpi-paylib\"}",
+                  "{api=\"headobject\", bucket=\"ingest-kpi-sirius\"}",
+                  "{api=\"headobject\", bucket=\"ingest-kpi-tdc\"}",
+                  "{api=\"headobject\", bucket=\"ingest-kpi-twamp\"}",
+                  "{api=\"headobject\", bucket=\"ingest-kpi-v3d\"}",
+                  "{api=\"headobject\", bucket=\"ingest-kpi-zdv\"}",
+                  "{api=\"headobject\", bucket=\"ingest-raw-dlm\"}",
+                  "{api=\"headobject\", bucket=\"ingest-raw-hpna\"}",
+                  "{api=\"headobject\", bucket=\"ingest-raw-iowa\"}",
+                  "{api=\"headobject\", bucket=\"kpi-exfo\"}",
+                  "{api=\"headobject\", bucket=\"metier-cqf\"}",
+                  "{api=\"headobject\", bucket=\"metier-cqf-share\"}",
+                  "{api=\"headobject\", bucket=\"metier-iad\"}",
+                  "{api=\"headobject\", bucket=\"metier-ivs\"}",
+                  "{api=\"headobject\", bucket=\"metier-oqf\"}",
+                  "{api=\"headobject\", bucket=\"metier-oqs\"}",
+                  "{api=\"headobject\", bucket=\"metier-oqs-share\"}",
+                  "{api=\"headobject\", bucket=\"metier-osp\"}",
+                  "{api=\"headobject\", bucket=\"metier-taf\"}",
+                  "{api=\"headobject\", bucket=\"metier-taf-naf\"}",
+                  "{api=\"headobject\", bucket=\"metier-taf-share\"}",
+                  "{api=\"headobject\", bucket=\"metier-tpr\"}",
+                  "{api=\"headobject\", bucket=\"metier-trb\"}",
+                  "{api=\"headobject\", bucket=\"metier-tti\"}",
+                  "{api=\"headobject\", bucket=\"thanos-storage\"}",
+                  "{api=\"putobject\", bucket=\"airflow-logs\"}",
+                  "{api=\"putobject\", bucket=\"applicatif-loki\"}",
+                  "{api=\"putobject\", bucket=\"applicatif-spark-history-server\"}",
+                  "{api=\"putobject\", bucket=\"archive-enriched-dslam\"}",
+                  "{api=\"putobject\", bucket=\"archive-enriched-myperf\"}",
+                  "{api=\"putobject\", bucket=\"archive-enriched-spg\"}",
+                  "{api=\"putobject\", bucket=\"archive-enriched-syslog\"}",
+                  "{api=\"putobject\", bucket=\"archive-kpi-bdr\"}",
+                  "{api=\"putobject\", bucket=\"archive-kpi-cdr\"}",
+                  "{api=\"putobject\", bucket=\"archive-kpi-naf\"}",
+                  "{api=\"putobject\", bucket=\"archive-kpi-twamp\"}",
+                  "{api=\"putobject\", bucket=\"archive-kpi-volte\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-bdr\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-dares\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-dockdream\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-emr\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-idaho\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-logos\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-lynx\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-maco\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-manhattan\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-mediaflex\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-mme\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-msf\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-myperf\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-oct\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-ottawa\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-rer\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-spirit\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-twamp\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-und\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-utf\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-volte\"}",
+                  "{api=\"putobject\", bucket=\"archive-raw-zabbix\"}",
+                  "{api=\"putobject\", bucket=\"backup-elastic-discovery\"}",
+                  "{api=\"putobject\", bucket=\"backup-elastic-fixe\"}",
+                  "{api=\"putobject\", bucket=\"backup-elastic-logos\"}",
+                  "{api=\"putobject\", bucket=\"backup-elastic-metrologie\"}",
+                  "{api=\"putobject\", bucket=\"backup-elastic-mobile\"}",
+                  "{api=\"putobject\", bucket=\"backup-elastic-monitoring\"}",
+                  "{api=\"putobject\", bucket=\"backup-elastic-preprod\"}",
+                  "{api=\"putobject\", bucket=\"backup-elastic-supervision\"}",
+                  "{api=\"putobject\", bucket=\"data-kpi-socle-test\"}",
+                  "{api=\"putobject\", bucket=\"ingest-enriched-bka-sr-nano-quarter\"}",
+                  "{api=\"putobject\", bucket=\"ingest-enriched-exfo2g\"}",
+                  "{api=\"putobject\", bucket=\"ingest-enriched-exfo3g\"}",
+                  "{api=\"putobject\", bucket=\"ingest-kpi-clickhouse\"}",
+                  "{api=\"putobject\", bucket=\"ingest-kpi-dme\"}",
+                  "{api=\"putobject\", bucket=\"ingest-kpi-paylib\"}",
+                  "{api=\"putobject\", bucket=\"ingest-kpi-tdc\"}",
+                  "{api=\"putobject\", bucket=\"ingest-kpi-v3d\"}",
+                  "{api=\"putobject\", bucket=\"ingest-raw-iowa\"}",
+                  "{api=\"putobject\", bucket=\"metier-cqf\"}",
+                  "{api=\"putobject\", bucket=\"metier-cqf-share\"}",
+                  "{api=\"putobject\", bucket=\"metier-ivs\"}",
+                  "{api=\"putobject\", bucket=\"metier-ocr\"}",
+                  "{api=\"putobject\", bucket=\"metier-oqf\"}",
+                  "{api=\"putobject\", bucket=\"metier-oqs\"}",
+                  "{api=\"putobject\", bucket=\"metier-osc\"}",
+                  "{api=\"putobject\", bucket=\"metier-osp\"}",
+                  "{api=\"putobject\", bucket=\"metier-taf\"}",
+                  "{api=\"putobject\", bucket=\"metier-tpr\"}",
+                  "{api=\"putobject\", bucket=\"metier-trb\"}",
+                  "{api=\"putobject\", bucket=\"metier-tti\"}",
+                  "{api=\"putobject\", bucket=\"preprod-applicatif-clickhouse\"}",
+                  "{api=\"putobject\", bucket=\"warp-benchmark-bucket\"}",
+                  "{api=\"putobject\", bucket=\"checkpoint-enriched-exfo2g\"}",
+                  "{api=\"putobject\", bucket=\"preprod-raw-exfo4g-checkpoint\"}",
+                  "{api=\"putobject\", bucket=\"checkpoint-enriched-exfo3g\"}",
+                  "{api=\"putobject\", bucket=\"preprod-enriched-exfo4g-checkpoint\"}",
+                  "{api=\"putobject\", bucket=\"ingest-enriched-vcas\"}",
+                  "{api=\"putobject\", bucket=\"synchro-data-exfo3g-checkpoint\"}",
+                  "{api=\"putobject\", bucket=\"preprod-raw-exfo4g\"}",
+                  "{api=\"getobject\", bucket=\"backup-elastic-securite\"}",
+                  "{api=\"putobject\", bucket=\"checkpoint-vcas-enriched-kafkatodelta\"}",
+                  "{api=\"putobject\", bucket=\"synchro-data-exfo2g-checkpoint\"}",
+                  "{api=\"putobject\", bucket=\"backup-elastic-securite\"}",
+                  "{api=\"getobject\", bucket=\"owa\"}",
+                  "{api=\"getobject\", bucket=\"console\"}",
+                  "{api=\"getobject\", bucket=\"wordpress\"}",
+                  "{api=\"getobject\", bucket=\"cgi-bin\"}",
+                  "{api=\"getobject\", bucket=\"sgms\"}",
+                  "{api=\"getobject\", bucket=\"solr\"}",
+                  "{api=\"getobject\", bucket=\"dana-na\"}",
+                  "{api=\"getobject\", bucket=\"joomla\"}"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 124
+      },
+      "id": 51,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "(avg by(bucket,api) (minio_bucket_requests_ttfb_seconds_distribution{job=\"$scrape_jobs\", api=~\"headobject|getobject|putobject\"}))*(sum by(bucket,api) (minio_bucket_requests_total{job=\"$scrape_jobs\", api=~\"headobject|getobject|putobject\"}))",
+          "hide": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "(avg_ttfb * nbr_of_request) for each bucket - api_call_type couple",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 124
+      },
+      "id": 28,
+      "options": {
+        "displayMode": "basic",
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\", api=\"headobject\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Number getHeadObject per bucket",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 132
+      },
+      "id": 30,
+      "options": {
+        "displayMode": "basic",
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (increase(minio_bucket_requests_total{job=\"$scrape_jobs\"}[$__rate_interval]))",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Nombre total de requêtes par bucket",
+      "transformations": [],
+      "type": "bargauge"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "minio-prod-bucket",
+          "value": "minio-prod-bucket"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "scrape_jobs",
+        "options": [
+          {
+            "selected": true,
+            "text": "minio-prod-bucket",
+            "value": "minio-prod-bucket"
+          },
+          {
+            "selected": false,
+            "text": "minio-perf-bucket",
+            "value": "minio-perf-bucket"
+          },
+          {
+            "selected": false,
+            "text": "minio-prod-hot2",
+            "value": "minio-prod-hot2"
+          },
+          {
+            "selected": false,
+            "text": "minio-prod-cold2",
+            "value": "minio-prod-cold2"
+          }
+        ],
+        "query": "minio-prod-bucket,minio-perf-bucket,minio-prod-hot2,minio-prod-cold2",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Minio buckets monitor",
+  "uid": "N3fEhmhIz",
+  "version": 33,
+  "weekStart": ""
+}
