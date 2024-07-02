@@ -1,0 +1,13 @@
+[Unit]
+Description=dummy
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/tmp/dummy.sh
+StandardOutput=append:/var/log/dummy.log
+StandardError=append:/var/log/dummy.log
+
+[Install]
+WantedBy=default.target
+
