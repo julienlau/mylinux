@@ -1,5 +1,6 @@
 # useradd -m -s /bin/bash prometheus
-# mkdir -p /home/prometheus/prometheus/data
+# mkdir -p /data/prometheus/data
+# chown -R prometheus /data/prometheus
 
 [Unit]
 Description=Prometheus Server

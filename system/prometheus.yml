@@ -41,8 +41,8 @@ scrape_configs:
     # If prometheus-node-exporter is installed, grab stats about the local
     # machine by default.
     static_configs:
-      - targets: ['localhost:9100', 'vm1:9100', 'vm2:9100', 'vm3:9100']
+      - targets: ['host.docker.internal:9100', 'localhost:9100', 'vm1:9100', 'vm2:9100', 'vm3:9100']
   - job_name: cassandra_exporter
     static_configs:
-      - targets: ['localhost:9105', 'vm1:9105', 'vm2:9105', 'vm3:9105']
+      - targets: ['host.docker.internal:9105','localhost:9105', 'vm1:9105', 'vm2:9105', 'vm3:9105']
 
