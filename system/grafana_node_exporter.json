@@ -98,7 +98,7 @@
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 0.75
               }
             ]
           },
@@ -468,7 +468,7 @@
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 0.1
               }
             ]
           },
@@ -960,7 +960,7 @@
             "uid": "BNNQwH34z"
           },
           "editorMode": "code",
-          "expr": "irate(node_network_receive_bytes_total{job='$job',device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])*8+irate(node_network_transmit_bytes_total{job='$job',device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])*8",
+          "expr": "irate(node_network_receive_bytes_total{job='$job',device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*',device=~\"bond[0-9]\"}[5m])*8+irate(node_network_transmit_bytes_total{job='$job',device!~'tunl.*|cali.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*',device=~\"bond[0-9]\"}[5m])*8",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -5243,6 +5243,8 @@
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true,
           "width": 300
         },
         "tooltip": {
@@ -5253,27 +5255,71 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "BNNQwH34z"
+          },
+          "editorMode": "code",
           "expr": "irate(node_network_receive_drop_total{instance=~\"$node\",job=~\"$job\",device!~'cali.*|tunl.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])",
           "format": "time_series",
           "hide": false,
           "interval": "2m",
-          "intervalFactor": 2,
-          "legendFormat": "{{instance}}:{{device}} Receive",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}}:{{device}} Receive drop",
+          "range": true,
           "refId": "G",
           "step": 4
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "BNNQwH34z"
+          },
+          "editorMode": "code",
           "expr": "irate(node_network_transmit_drop_total{instance=~\"$node\",job=~\"$job\",device!~'cali.*|tunl.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])",
           "format": "time_series",
           "hide": false,
           "interval": "2m",
-          "intervalFactor": 2,
-          "legendFormat": "{{instance}}:{{device}} Transmit",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}}:{{device}} Transmit drop",
+          "range": true,
           "refId": "H",
+          "step": 4
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "BNNQwH34z"
+          },
+          "editorMode": "code",
+          "expr": "irate(node_network_receive_errs_total{instance=\"$node\",job=\"$job\",device!~'cali.*|tunl.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])",
+          "format": "time_series",
+          "hide": false,
+          "interval": "2m",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}}:{{device}} Receive retran",
+          "range": true,
+          "refId": "A",
+          "step": 4
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "BNNQwH34z"
+          },
+          "editorMode": "code",
+          "expr": "irate(node_network_transmit_errs_total{instance=~\"$node\",job=~\"$job\",device!~'cali.*|tunl.*|tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])",
+          "format": "time_series",
+          "hide": false,
+          "interval": "2m",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}}:{{device}} Transmit retran",
+          "range": true,
+          "refId": "B",
           "step": 4
         }
       ],
-      "title": "Network Traffic Drop",
+      "title": "Network Traffic Drop / Retransmitted",
       "type": "timeseries"
     },
     {
@@ -6152,7 +6198,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -6390,7 +6437,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -7816,7 +7864,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "1m",
+  "refresh": "10s",
   "schemaVersion": 39,
   "tags": [
     "node_exporter",
@@ -7844,9 +7892,9 @@
       },
       {
         "current": {
-          "selected": false,
-          "text": "prod.res.minio.prod.data",
-          "value": "prod.res.minio.prod.data"
+          "selected": true,
+          "text": "prod.res.minio.hot",
+          "value": "prod.res.minio.hot"
         },
         "datasource": {
           "type": "prometheus",
@@ -7877,10 +7925,10 @@
         "current": {
           "selected": true,
           "text": [
-            "BTRSHSA23:9100"
+            "minio-prod-hot3:9100"
           ],
           "value": [
-            "BTRSHSA23:9100"
+            "minio-prod-hot3:9100"
           ]
         },
         "datasource": {
@@ -7911,8 +7959,8 @@
       {
         "current": {
           "selected": false,
-          "text": "/data/19",
-          "value": "/data/19"
+          "text": "/data/2",
+          "value": "/data/2"
         },
         "datasource": {
           "type": "prometheus",
@@ -8011,8 +8059,8 @@
         "allFormat": "glob",
         "current": {
           "selected": false,
-          "text": "btrshsa23",
-          "value": "btrshsa23"
+          "text": "btrshea69",
+          "value": "btrshea69"
         },
         "datasource": {
           "type": "prometheus",
@@ -8043,8 +8091,8 @@
       {
         "current": {
           "selected": false,
-          "text": "[a-z]+|nvme[0-9]+n[0-9]+",
-          "value": "[a-z]+|nvme[0-9]+n[0-9]+"
+          "text": "[a-z]+|nvme[0-9]+[a-z][0-9]+.*",
+          "value": "[a-z]+|nvme[0-9]+[a-z][0-9]+.*"
         },
         "hide": 2,
         "includeAll": false,
@@ -8053,18 +8101,18 @@
         "options": [
           {
             "selected": true,
-            "text": "[a-z]+|nvme[0-9]+n[0-9]+",
-            "value": "[a-z]+|nvme[0-9]+n[0-9]+"
+            "text": "[a-z]+|nvme[0-9]+[a-z][0-9]+.*",
+            "value": "[a-z]+|nvme[0-9]+[a-z][0-9]+.*"
           }
         ],
-        "query": "[a-z]+|nvme[0-9]+n[0-9]+",
+        "query": "[a-z]+|nvme[0-9]+[a-z][0-9]+.*",
         "skipUrlSync": false,
         "type": "custom"
       }
     ]
   },
   "time": {
-    "from": "2024-07-01T22:00:00.000Z",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -8096,6 +8144,6 @@
   "timezone": "",
   "title": "Node Exporter",
   "uid": "hb7fSE0Zzx",
-  "version": 10,
+  "version": 16,
   "weekStart": ""
 }
