@@ -65,6 +65,7 @@ fi
 echo "===== System ====="
 hostname; uname -a; uptime; echo 'Boot time :'; date -d @$(vmstat --stats | awk '/boot time/ {print $1}'); systemctl list-units --no-pager
 echo "===== CPU ====="
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 lscpu
 echo "===== MEM ====="
 free -k
