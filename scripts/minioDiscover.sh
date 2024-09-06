@@ -38,8 +38,11 @@ echo '-----------------------------'
 
 echo "===== System ====="
 hostname; uname -a; uptime; echo 'Boot time :'; date -d @$(vmstat --stats | awk '/boot time/ {print $1}'); systemctl list-units --no-pager
+echo "scaling_governor=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)"
+echo "zone_reclaim_mode=$(cat /proc/sys/vm/zone_reclaim_mode)"
+echo "transparent_hugepage_defrag=$(cat /sys/kernel/mm/transparent_hugepage/defrag)"
+head /sys/block/*/queue/scheduler
 echo "===== CPU ====="
-cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 lscpu
 echo "===== MEM ====="
 free -m
