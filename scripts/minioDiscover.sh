@@ -49,7 +49,7 @@ free -m
 lsmem
 echo "===== Disk ====="
 cat /etc/fstab
-lsblk -o NAME,KNAME,MAJ:MIN,RM,SIZE,RO,TYPE,MOUNTPOINT
+lsblk -o NAME,KNAME,MAJ:MIN,RM,SIZE,RO,TYPE,UUID,MOUNTPOINT
 lshw -class disk
 # TODO : adapt to conf
 smartctl -a /dev/sd*
