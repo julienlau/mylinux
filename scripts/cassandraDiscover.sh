@@ -74,7 +74,7 @@ echo "===== MEM ====="
 free -k
 lsmem
 echo "===== Disk ====="
-lsblk -o NAME,KNAME,MAJ:MIN,RM,SIZE,RO,TYPE,MOUNTPOINT
+lsblk -o NAME,KNAME,MAJ:MIN,RM,SIZE,RO,TYPE,UUID,MOUNTPOINT
 lshw -class disk
 smartctl -a /dev/nvme6n1p1
 hdparm -i /dev/nvme6n1p1
