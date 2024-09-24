@@ -88,5 +88,9 @@ echo "===== sudo -u ${mc_user} mc admin scanner info $minio --interval 10 ====="
 sudo -u ${mc_user} mc admin scanner info $minio --interval 10  -q -n 1 --no-color 
 echo "===== sudo -u ${mc_user} mc admin info --json $minio ====="
 sudo -u ${mc_user} mc admin info --json $minio
+echo "===== sudo -u ${mc_user} mc ilm tier info $minio ====="
+sudo -u ${mc_user} mc ilm tier info $minio
+echo "===== sudo -u ${mc_user} mc ilm tier ls $minio ====="
+sudo -u ${mc_user} mc ilm tier ls $minio
 echo "===== timeout 3 xfsslower-bpfcc 1 ====="
 timeout 3 xfsslower-bpfcc 1
