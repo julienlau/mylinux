@@ -1,6 +1,7 @@
 #!/bin/bash
-# check disk status with smartctl
-# 
+# check disk status based on smartctl logs
+# If you are unsure about the health status, consider 
+# isolating the disk and running a smart test with : smartctl -t long /dev/XXX
 
 disk=all
 ignore=0
