@@ -1,12 +1,11 @@
 [Unit]
+# Beaware first check: systemctl | grep wlan0
+# and disable these : systemctl disable sys-devices-platform-soc-3f300000.mmcnr-mmc_host-mmc1-mmc1:0001-mmc1:0001:1-net-wlan0.device sys-subsystem-net-devices-wlan0.device
 Description=Disable network interface wlan0
-Documentation=man:swapon(8) man:systemd.swap(5)
-After=local-fs.target
+Wants=network.target
+After=network.target
 
 [Service]
 Type=oneshot
 User=root
 ExecStart=ifconfig wlan0 down
-
-[Install]
-WantedBy=multi-user.target
