@@ -6,7 +6,7 @@ RUN groupadd -g 10001 me && useradd me -m -u 10000 -g 10001 -s /bin/bash
 RUN set -ex && \
     apt-get update && \
     ln -s /lib /lib64 && \
-    apt install -y atop bash binutils curl dnsutils dstat fio gawk htop iftop inetutils-traceroute ioping iotop iperf iptraf iputils-tracepath iputils-ping libc6 lsof netcat nethogs net-tools nmap nmon openssl procps qperf rclone strace sudo sysbench sysstat tini vim python3 python3-requests && \
+    apt install -y atop bash binutils curl dnsutils dstat fio gawk htop iftop inetutils-traceroute ioping iotop iperf iptraf iputils-tracepath iputils-ping libc6 lsof netcat nethogs net-tools nmap nmon openssl procps qperf rclone strace sudo sysbench sysstat tini vim python3 python3-requests python3-yaml python3-kubernetes python3-lxml jq && \
     rm /bin/sh && \
     ln -sv /bin/bash /bin/sh && \
     chgrp root /etc/passwd && chmod ug+rw /etc/passwd && \

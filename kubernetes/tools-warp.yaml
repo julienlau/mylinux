@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tools
+spec:
+  serviceName: tools
+  replicas: 1
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tools
+      app.kubernetes.io/instance: data-input
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: tools
+        app.kubernetes.io/instance: data-input
+    spec:
+      containers:
+        - name: my-tools
+          image: pepitedata/tools:focal
+          command: ["tail", "-f", "/dev/null"]
+          imagePullPolicy: Always
+          volumeMounts:
+          # - mountPath: /sharedvol
+          #   name: vol-sparklogs
+          - mountPath: /results
+            name: vol-data
+          resources:
+            requests: 
+              cpu: "250m"
+              memory: "200M"
+            limits:
+              cpu: "500m"
+              memory: "1G"
+      # imagePullSecrets:
+      #   - name: all
+      volumes:
+      # - name: vol-sparklogs
+      #   persistentVolumeClaim:
+      #     claimName: pvc-spark-share
+      - name: vol-data
+        persistentVolumeClaim:
+          claimName: warp-pvc

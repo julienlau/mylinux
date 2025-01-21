@@ -38,6 +38,10 @@ echo '-----------------------------'
 
 echo "===== System ====="
 hostname; uname -a; uptime; echo 'Boot time :'; date -d @$(vmstat --stats | awk '/boot time/ {print $1}'); systemctl list-units --no-pager
+echo "scaling_governor=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)"
+echo "zone_reclaim_mode=$(cat /proc/sys/vm/zone_reclaim_mode)"
+echo "transparent_hugepage_defrag=$(cat /sys/kernel/mm/transparent_hugepage/defrag)"
+head /sys/block/*/queue/scheduler
 echo "===== CPU ====="
 lscpu
 echo "===== MEM ====="
@@ -45,7 +49,7 @@ free -m
 lsmem
 echo "===== Disk ====="
 cat /etc/fstab
-lsblk -o NAME,KNAME,MAJ:MIN,RM,SIZE,RO,TYPE,MOUNTPOINT
+lsblk -o NAME,KNAME,MAJ:MIN,RM,SIZE,RO,TYPE,UUID,LABEL,MOUNTPOINT
 lshw -class disk
 # TODO : adapt to conf
 smartctl -a /dev/sd*
@@ -84,5 +88,9 @@ echo "===== sudo -u ${mc_user} mc admin scanner info $minio --interval 10 ====="
 sudo -u ${mc_user} mc admin scanner info $minio --interval 10  -q -n 1 --no-color 
 echo "===== sudo -u ${mc_user} mc admin info --json $minio ====="
 sudo -u ${mc_user} mc admin info --json $minio
+echo "===== sudo -u ${mc_user} mc ilm tier info $minio ====="
+sudo -u ${mc_user} mc ilm tier info $minio
+echo "===== sudo -u ${mc_user} mc ilm tier ls $minio ====="
+sudo -u ${mc_user} mc ilm tier ls $minio
 echo "===== timeout 3 xfsslower-bpfcc 1 ====="
 timeout 3 xfsslower-bpfcc 1

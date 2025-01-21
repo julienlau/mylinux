@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: delete-old-pods
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: delete-old-pods
+        spec:
+          restartPolicy: Never
+          serviceAccountName: spark-sa
+          containers:
+          - name: delete-old-pods
+            image: pepitedata/delete-old-pods:edge
+            imagePullPolicy: Always
+            resources:
+              requests: 
+                cpu: "250m"
+                memory: "200M"
+              limits: 
+                cpu: "250m"
+                memory: "200M"
+            env:
+            - name: MAX_AGE_HOURS
+              value: "1"
+            - name: MAX_AGE_PENDING_HOURS
+              value: "1"
+          imagePullSecrets:
+            - name: all

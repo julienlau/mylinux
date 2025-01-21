@@ -1,0 +1,185 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fio-pvc
+  labels:
+      app: fio
+spec:
+  storageClassName: sc-test
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1000Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fio-config
+data:
+  fio.cfg: |-
+    ; -- start job file --
+    [global]
+    ioengine=libaio
+    verify=0
+    gtod_reduce=1
+    disable_lat=0
+    bs=16k
+    direct=1
+    buffered=0
+    iodepth=256
+    numjobs=1
+    size=10G
+    time_based=1
+    runtime=60
+    overwrite=1
+    group_reporting=1
+    ; space used by each test is : numjobs x size
+    ; it is not cleaned after each job
+
+    [writelatency-sync]
+    name=writelatency-sync
+    rw=randwrite
+    bs=1K
+    iodepth=1
+    fsync=1
+    size=1G
+    stonewall
+
+    [writelatency]
+    name=writelatency
+    rw=randwrite
+    bs=1K
+    iodepth=1
+    size=1G
+    stonewall
+
+    [readlatency]
+    name=readlatency
+    rw=randread
+    bs=1K
+    iodepth=1
+    size=1G
+    stonewall
+
+    [seqread]
+    name=seqread
+    rw=read
+    bs=256m
+    iodepth=1
+    stonewall
+
+    [seqwrite]
+    name=seqwrite
+    rw=write
+    bs=256m
+    iodepth=1
+    stonewall
+
+    [randwrite]
+    name=randwrite
+    rw=randwrite
+    bs=16k
+    numjobs=4
+    size=2G
+    stonewall
+
+    [randread]
+    name=randread
+    rw=randread
+    bs=16k
+    numjobs=4
+    size=2G
+    stonewall
+
+    [randrw]
+    name=randrw
+    rw=randrw
+    bs=16k
+    numjobs=4
+    size=2G
+    stonewall
+
+    [randwrite256k]
+    name=randwrite256k
+    rw=randwrite
+    bs=256k
+    numjobs=4
+    size=2G
+    stonewall
+
+    [randread256k]
+    name=randread256k
+    rw=randread
+    bs=256k
+    numjobs=4
+    size=2G
+    stonewall
+
+    [randrw256k]
+    name=randrw256k
+    rw=randrw
+    bs=256k
+    numjobs=4
+    size=2G
+    stonewall
+    ; -- end job file --
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: fio
+  name: fio-test
+spec:
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      labels:
+        app: fio
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 10.0.1.7
+        #ibm-cloud.kubernetes.io/machine-type: cx2.32x64
+      containers:
+      - name: fio
+        image: pepitedata/tools:latest
+        imagePullPolicy: Always
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "run : fio /opt/fio.cfg"
+          cd /mnt && fio /opt/fio.cfg
+        volumeMounts:
+        - mountPath: /opt/
+          name: fio-config-volume
+          readOnly: true
+        - mountPath: /mnt/
+          name: fio-vol
+          readOnly: false
+      dnsPolicy: ClusterFirst
+      restartPolicy: Never
+      imagePullSecrets: 
+        - name: all
+      volumes:
+      - name: fio-vol
+        persistentVolumeClaim:
+          claimName: fio-pvc
+      - configMap:
+          defaultMode: 420
+          name: fio-config
+        name: fio-config-volume
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - fio
+              topologyKey: "kubernetes.io/hostname"

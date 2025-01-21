@@ -1,0 +1,13 @@
+[Unit]
+# other method : blacklist the driver module.
+# check which driver is used : lshw -C network | grep -e "*-" -e driver
+# echo "blacklist brcmfmac" > /etc/modprobe.d/99-wifi-blacklist.conf
+
+Description=Disable network interface wlan0
+Wants=network.target
+After=network.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=ifconfig wlan0 down

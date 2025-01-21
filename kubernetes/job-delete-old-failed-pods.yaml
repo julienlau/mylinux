@@ -11,7 +11,7 @@ spec:
           containers:
           - name: delete-old-failed-pods
             image: python:3.10
-            command: ["python", "-c", "kube-delete-old-failed-pods.py"]
+            command: ["python", "-c", "kube-delete-old-pods.py"]
             volumeMounts:
             - name: script-volume
               mountPath: /scripts

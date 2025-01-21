@@ -60,11 +60,23 @@
             }
           ],
           "thresholds": {
-            "mode": "percentage",
+            "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "orange",
                 "value": null
+              },
+              {
+                "color": "super-light-orange",
+                "value": 3600
+              },
+              {
+                "color": "super-light-yellow",
+                "value": 86400
+              },
+              {
+                "color": "green",
+                "value": 172800
               }
             ]
           },
@@ -79,7 +91,7 @@
         "x": 0,
         "y": 0
       },
-      "id": 1,
+      "id": 112,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -106,7 +118,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "editorMode": "builder",
+          "editorMode": "code",
           "exemplar": true,
           "expr": "time() - max(minio_node_process_starttime_seconds{job=\"$scrape_jobs\"})",
           "format": "time_series",
@@ -130,6 +142,41 @@
       "description": "",
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
           "mappings": [
             {
               "options": {
@@ -141,45 +188,58 @@
               "type": "special"
             }
           ],
+          "max": 7200,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "orange",
                 "value": null
+              },
+              {
+                "color": "super-light-orange",
+                "value": 3600
+              },
+              {
+                "color": "super-light-yellow",
+                "value": 86400
+              },
+              {
+                "color": "green",
+                "value": 172800
               }
             ]
           },
-          "unit": "bytes",
+          "unit": "dtdurations",
           "unitScale": true
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
+        "h": 6,
         "w": 3,
         "x": 3,
         "y": 0
       },
-      "id": 65,
+      "id": 111,
       "links": [],
       "maxDataPoints": 100,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
+        "legend": {
           "calcs": [
-            "last"
+            "mean",
+            "lastNotNull"
           ],
-          "fields": "",
-          "values": false
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": false
         },
-        "showPercentChange": false,
-        "text": {},
-        "textMode": "auto",
-        "wideLayout": true
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
       "pluginVersion": "10.3.1",
       "targets": [
@@ -188,21 +248,23 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (instance) (minio_s3_traffic_received_bytes{job=\"$scrape_jobs\"})",
-          "format": "table",
+          "expr": "time() - (minio_node_process_starttime_seconds{job=\"$scrape_jobs\"})",
+          "format": "time_series",
           "hide": false,
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{instance}}",
+          "legendFormat": "{{server}}",
           "metric": "process_start_time_seconds",
+          "range": true,
           "refId": "A",
           "step": 60
         }
       ],
-      "title": "Total S3 Traffic Inbound",
-      "type": "stat"
+      "title": "Uptime",
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -343,7 +405,6 @@
       "description": "",
       "fieldConfig": {
         "defaults": {
-          "decimals": 0,
           "mappings": [
             {
               "options": {
@@ -368,7 +429,7 @@
               }
             ]
           },
-          "unit": "short",
+          "unit": "none",
           "unitScale": true
         },
         "overrides": []
@@ -389,7 +450,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "max"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -408,7 +469,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(increase(minio_s3_requests_5xx_errors_total{job=\"$scrape_jobs\"}[$__rate_interval]))",
+          "expr": "sum(idelta(minio_s3_requests_5xx_errors_total{job=\"$scrape_jobs\"}[$__rate_interval])>=0)",
           "format": "table",
           "hide": false,
           "instant": false,
@@ -515,52 +576,59 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
-          "mappings": [],
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "semi-dark-red",
-                "value": 80
               }
             ]
           },
+          "unit": "bytes",
           "unitScale": true
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 12,
-        "w": 7,
+        "h": 3,
+        "w": 3,
         "x": 17,
         "y": 0
       },
-      "id": 52,
+      "id": 65,
       "links": [],
+      "maxDataPoints": 100,
       "options": {
-        "displayMode": "basic",
-        "maxVizHeight": 300,
-        "minVizHeight": 10,
-        "minVizWidth": 0,
-        "namePlacement": "auto",
-        "orientation": "horizontal",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "diff"
           ],
           "fields": "",
           "values": false
         },
-        "showUnfilled": false,
-        "sizing": "auto",
+        "showPercentChange": false,
         "text": {},
-        "valueMode": "color"
+        "textMode": "auto",
+        "wideLayout": true
       },
       "pluginVersion": "10.3.1",
       "targets": [
@@ -571,18 +639,20 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by(range)(minio_cluster_objects_size_distribution{job=\"$scrape_jobs\"})",
-          "format": "time_series",
+          "expr": "sum(minio_s3_traffic_received_bytes{job=\"$scrape_jobs\"})",
+          "format": "table",
+          "hide": false,
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{range}}",
+          "legendFormat": "{{instance}}",
+          "metric": "process_start_time_seconds",
           "refId": "A",
-          "step": 300
+          "step": 60
         }
       ],
-      "title": "Object size distribution",
-      "type": "bargauge"
+      "title": "Total S3 Traffic Inbound",
+      "type": "stat"
     },
     {
       "datasource": {
@@ -620,8 +690,8 @@
       "gridPos": {
         "h": 3,
         "w": 3,
-        "x": 3,
-        "y": 3
+        "x": 20,
+        "y": 0
       },
       "id": 64,
       "links": [],
@@ -633,7 +703,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "last"
+            "diff"
           ],
           "fields": "",
           "values": false
@@ -650,8 +720,9 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (instance) (minio_s3_traffic_sent_bytes{job=\"$scrape_jobs\"})",
+          "expr": "sum(minio_s3_traffic_sent_bytes{job=\"$scrape_jobs\"})",
           "format": "table",
           "hide": false,
           "instant": false,
@@ -659,7 +730,7 @@
           "intervalFactor": 1,
           "legendFormat": "",
           "metric": "process_start_time_seconds",
-          "refId": "A",
+          "refId": "B",
           "step": 60
         }
       ],
@@ -719,7 +790,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "max"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -738,7 +809,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(increase(minio_node_drive_errors_availability{job=\"$scrape_jobs\"}[$__rate_interval]))",
+          "expr": "sum(idelta(minio_node_drive_errors_availability{job=\"$scrape_jobs\"}[$__rate_interval])>=0)",
           "format": "table",
           "hide": false,
           "instant": false,
@@ -839,6 +910,80 @@
       ],
       "title": "Total Goroutines",
       "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 7,
+        "x": 17,
+        "y": 3
+      },
+      "id": 52,
+      "links": [],
+      "options": {
+        "displayMode": "basic",
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": false,
+        "sizing": "auto",
+        "text": {},
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "sum by(range)(minio_cluster_objects_size_distribution{job=\"$scrape_jobs\"})",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{range}}",
+          "refId": "A",
+          "step": 300
+        }
+      ],
+      "title": "Object size distribution",
+      "type": "bargauge"
     },
     {
       "datasource": {
@@ -1050,11 +1195,11 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 3,
+        "w": 2,
         "x": 6,
         "y": 6
       },
-      "id": 44,
+      "id": 66,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -1083,7 +1228,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "max(minio_cluster_usage_object_total{job=\"$scrape_jobs\"})",
+          "expr": "max(minio_cluster_bucket_total{job=\"$scrape_jobs\"})",
           "format": "time_series",
           "instant": false,
           "interval": "1m",
@@ -1092,7 +1237,86 @@
           "refId": "A"
         }
       ],
-      "title": "Number of Objects",
+      "title": "Number of Buckets",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbytes",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 1,
+        "x": 8,
+        "y": 6
+      },
+      "id": 113,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "topk(1, sum(minio_cluster_capacity_usable_free_bytes{job=\"$scrape_jobs\"}) by (instance)) ",
+          "format": "time_series",
+          "instant": false,
+          "interval": "1m",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Free space",
       "type": "stat"
     },
     {
@@ -1138,16 +1362,13 @@
             }
           },
           "mappings": [],
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           },
@@ -1199,7 +1420,8 @@
           "calcs": [
             "mean",
             "max",
-            "lastNotNull"
+            "lastNotNull",
+            "sum"
           ],
           "displayMode": "table",
           "placement": "bottom",
@@ -1240,7 +1462,7 @@
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{server}}",
+          "legendFormat": "__auto",
           "range": true,
           "refId": "B"
         }
@@ -1301,7 +1523,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "max"
           ],
           "fields": "",
           "values": false
@@ -1318,7 +1540,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "exemplar": true,
+          "editorMode": "code",
+          "exemplar": false,
           "expr": "minio_cluster_nodes_offline_total{job=\"$scrape_jobs\"}",
           "format": "table",
           "hide": false,
@@ -1327,6 +1550,7 @@
           "intervalFactor": 1,
           "legendFormat": "",
           "metric": "process_start_time_seconds",
+          "range": false,
           "refId": "A",
           "step": 60
         }
@@ -1387,7 +1611,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "max"
           ],
           "fields": "",
           "values": false
@@ -1404,7 +1628,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "exemplar": true,
+          "editorMode": "code",
+          "exemplar": false,
           "expr": "minio_cluster_drive_offline_total{job=\"$scrape_jobs\"}",
           "format": "table",
           "hide": false,
@@ -1413,6 +1638,7 @@
           "intervalFactor": 1,
           "legendFormat": "",
           "metric": "process_start_time_seconds",
+          "range": false,
           "refId": "A",
           "step": 60
         }
@@ -1466,7 +1692,7 @@
         "x": 6,
         "y": 9
       },
-      "id": 66,
+      "id": 44,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -1495,7 +1721,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "max(minio_cluster_bucket_total{job=\"$scrape_jobs\"})",
+          "expr": "max(minio_cluster_usage_object_total{job=\"$scrape_jobs\"})",
           "format": "time_series",
           "instant": false,
           "interval": "1m",
@@ -1504,7 +1730,7 @@
           "refId": "A"
         }
       ],
-      "title": "Number of Buckets",
+      "title": "Number of Objects",
       "type": "stat"
     },
     {
@@ -1844,16 +2070,13 @@
             }
           },
           "mappings": [],
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           },
@@ -1905,7 +2128,8 @@
           "calcs": [
             "mean",
             "max",
-            "lastNotNull"
+            "lastNotNull",
+            "sum"
           ],
           "displayMode": "table",
           "placement": "bottom",
@@ -1946,7 +2170,7 @@
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{server}}",
+          "legendFormat": "__auto",
           "range": true,
           "refId": "B"
         }
@@ -2015,10 +2239,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 2000
               }
             ]
           },
@@ -2044,8 +2264,10 @@
             "lastNotNull"
           ],
           "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "single",
@@ -2061,15 +2283,15 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum without (server,instance) (minio_node_go_routine_total{job=\"$scrape_jobs\"})",
-          "format": "table",
+          "expr": "minio_node_go_routine_total{job=\"$scrape_jobs\"}",
+          "format": "time_series",
           "hide": false,
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "goroutines",
+          "legendFormat": "{{server}}",
           "metric": "process_start_time_seconds",
-          "refId": "A",
+          "refId": "B",
           "step": 60
         }
       ],
@@ -2180,12 +2402,13 @@
           "calcs": [
             "mean",
             "max",
-            "lastNotNull"
+            "lastNotNull",
+            "sum"
           ],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
-          "sortBy": "Max",
+          "sortBy": "Mean",
           "sortDesc": true
         },
         "tooltip": {
@@ -2202,7 +2425,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (server) (rate(minio_s3_requests_total{job=\"$scrape_jobs\"}[$__rate_interval]))",
+          "expr": "sum by (server) (irate(minio_s3_requests_total{job=\"$scrape_jobs\"}[$__rate_interval])>=0)",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{server,api}}",
@@ -2210,7 +2433,7 @@
           "refId": "A"
         }
       ],
-      "title": "S3 API Request Rate",
+      "title": "S3 API Request rate",
       "type": "timeseries"
     },
     {
@@ -2317,7 +2540,8 @@
           "calcs": [
             "mean",
             "max",
-            "lastNotNull"
+            "lastNotNull",
+            "sum"
           ],
           "displayMode": "table",
           "placement": "right",
@@ -2339,7 +2563,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (server) (rate(minio_s3_requests_4xx_errors_total{job=\"$scrape_jobs\"}[$__rate_interval]))",
+          "expr": "sum by (server) (irate(minio_s3_requests_4xx_errors_total{job=\"$scrape_jobs\"}[$__rate_interval])>=0)",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{server,api}}",
@@ -2347,7 +2571,7 @@
           "refId": "A"
         }
       ],
-      "title": "S3 API Request 4xx Error Rate",
+      "title": "S3 API Request 4xx Error rate",
       "type": "timeseries"
     },
     {
@@ -2454,7 +2678,8 @@
           "calcs": [
             "mean",
             "max",
-            "lastNotNull"
+            "lastNotNull",
+            "sum"
           ],
           "displayMode": "table",
           "placement": "right",
@@ -2476,7 +2701,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (server) (rate(minio_s3_requests_5xx_errors_total{job=\"$scrape_jobs\"}[$__rate_interval]))",
+          "expr": "sum by (server) (irate(minio_s3_requests_5xx_errors_total{job=\"$scrape_jobs\"}[$__rate_interval])>=0)",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{server,api}}",
@@ -2484,7 +2709,7 @@
           "refId": "A"
         }
       ],
-      "title": "S3 API Request 5xx Error Rate",
+      "title": "S3 API Request 5xx Error rate",
       "type": "timeseries"
     },
     {
@@ -2743,14 +2968,244 @@
       "type": "timeseries"
     },
     {
-      "aliasColors": {
-        "10.13.1.25:9000 DELETE": "red",
-        "10.13.1.25:9000 GET": "green",
-        "10.13.1.25:9000 POST": "blue"
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
       },
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 39
+      },
+      "id": 114,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "minio_cluster_nodes_offline_total{job=\"$scrape_jobs\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{server}}",
+          "metric": "process_start_time_seconds",
+          "range": true,
+          "refId": "A",
+          "step": 60
+        }
+      ],
+      "title": "Total Offline Servers",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 39
+      },
+      "id": 115,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "minio_cluster_drive_offline_total{job=\"$scrape_jobs\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{server}}",
+          "metric": "process_start_time_seconds",
+          "range": true,
+          "refId": "A",
+          "step": 60
+        }
+      ],
+      "title": "Total Offline Drives",
+      "type": "timeseries"
+    },
+    {
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -2758,60 +3213,147 @@
       "description": "Total number of bytes received and sent among all MinIO server instances",
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 43,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
           "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "Bps",
           "unitScale": true
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "10.13.1.25:9000 DELETE"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "10.13.1.25:9000 GET"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "10.13.1.25:9000 POST"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "fill": 10,
-      "fillGradient": 1,
       "gridPos": {
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 39
+        "y": 45
       },
-      "hiddenSeries": false,
       "id": 17,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "rightSide": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
       "links": [],
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Mean",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
       },
-      "percentage": false,
       "pluginVersion": "10.3.1",
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(minio_inter_node_traffic_sent_bytes{job=\"$scrape_jobs\"}[$__rate_interval])",
+          "expr": "irate(minio_inter_node_traffic_sent_bytes{job=\"$scrape_jobs\"}[$__rate_interval])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Internode Bytes Received [{{server}}]",
           "metric": "minio_http_requests_duration_seconds_count",
+          "range": true,
           "refId": "A",
           "step": 4
         },
@@ -2820,44 +3362,17 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(minio_inter_node_traffic_received_bytes{job=\"$scrape_jobs\"}[$__rate_interval])",
+          "expr": "irate(minio_inter_node_traffic_received_bytes{job=\"$scrape_jobs\"}[$__rate_interval])",
           "interval": "",
           "legendFormat": "Internode Bytes Sent [{{server}}]",
+          "range": true,
           "refId": "B"
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "Internode Data Transfer",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:211",
-          "format": "bytes",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:212",
-          "format": "s",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -2906,8 +3421,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2924,13 +3438,17 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 39
+        "y": 45
       },
       "id": 84,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "mean",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -3008,7 +3526,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 49
+        "y": 55
       },
       "hiddenSeries": false,
       "id": 77,
@@ -3102,7 +3620,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 49
+        "y": 55
       },
       "hiddenSeries": false,
       "id": 76,
@@ -3196,7 +3714,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 58
+        "y": 64
       },
       "hiddenSeries": false,
       "id": 74,
@@ -3318,8 +3836,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -3336,7 +3853,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 58
+        "y": 64
       },
       "id": 82,
       "options": {
@@ -3371,13 +3888,6 @@
       "type": "timeseries"
     },
     {
-      "aliasColors": {
-        "Offline 10.13.1.25:9000": "dark-red",
-        "Total 10.13.1.25:9000": "blue"
-      },
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -3385,47 +3895,119 @@
       "description": "Number of online drives per MinIO Server",
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 0,
           "links": [],
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short",
           "unitScale": true
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Offline 10.13.1.25:9000"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total 10.13.1.25:9000"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 66
+        "y": 72
       },
-      "hiddenSeries": false,
       "id": 11,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "rightSide": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": false,
-      "linewidth": 1,
       "links": [],
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Mean",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
       },
-      "percentage": false,
       "pluginVersion": "10.3.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
           "datasource": {
@@ -3454,48 +4036,10 @@
           "refId": "B"
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "Node Syscalls",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:185",
-          "decimals": 0,
-          "format": "short",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:186",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "timeseries"
     },
     {
-      "aliasColors": {
-        "available 10.13.1.25:9000": "green",
-        "used 10.13.1.25:9000": "blue"
-      },
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -3503,47 +4047,118 @@
       "description": "",
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
           "links": [],
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none",
           "unitScale": true
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "available 10.13.1.25:9000"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "used 10.13.1.25:9000"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 66
+        "y": 72
       },
-      "hiddenSeries": false,
       "id": 8,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "rightSide": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
       "links": [],
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Mean",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
       },
-      "percentage": false,
       "pluginVersion": "10.3.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
           "datasource": {
@@ -3557,39 +4172,8 @@
           "refId": "B"
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "Node File Descriptors",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:212",
-          "format": "none",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:213",
-          "format": "none",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "timeseries"
     },
     {
       "aliasColors": {},
@@ -3612,7 +4196,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 75
+        "y": 81
       },
       "hiddenSeries": false,
       "id": 73,
@@ -3699,150 +4283,185 @@
       }
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short",
           "unitScale": true
         },
         "overrides": []
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 75
+        "y": 81
       },
-      "hiddenSeries": false,
       "id": 98,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
       },
-      "percentage": false,
       "pluginVersion": "10.3.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "rate(minio_node_scanner_objects_scanned{job=\"$scrape_jobs\"}[$__rate_interval])",
           "interval": "1m",
           "legendFormat": "[{{server}}]",
+          "range": true,
           "refId": "A"
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "Scanned Objects",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:212",
-          "format": "none",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:213",
-          "format": "none",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "timeseries"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short",
           "unitScale": true
         },
         "overrides": []
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 82
+        "y": 88
       },
-      "hiddenSeries": false,
       "id": 75,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
       },
-      "percentage": false,
       "pluginVersion": "10.3.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
           "datasource": {
@@ -3856,327 +4475,305 @@
           "refId": "A"
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "Scanned Versions",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:212",
-          "format": "none",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:213",
-          "format": "none",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "timeseries"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short",
           "unitScale": true
         },
         "overrides": []
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 82
+        "y": 88
       },
-      "hiddenSeries": false,
       "id": 99,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
       },
-      "percentage": false,
       "pluginVersion": "10.3.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "rate(minio_node_scanner_directories_scanned{job=\"$scrape_jobs\"}[$__rate_interval])",
           "interval": "1m",
           "legendFormat": "[{{server}}]",
+          "range": true,
           "refId": "A"
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "Scanned Directories",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:212",
-          "format": "none",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:213",
-          "format": "none",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "timeseries"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none",
           "unitScale": true
         },
         "overrides": []
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 89
+        "y": 95
       },
-      "hiddenSeries": false,
       "id": 100,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
       },
-      "percentage": false,
       "pluginVersion": "10.3.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "rate(minio_node_scanner_bucket_scans_started{job=\"$scrape_jobs\"}[$__rate_interval])",
           "interval": "1m",
           "legendFormat": "[{{server}}]",
+          "range": true,
           "refId": "A"
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "Bucket Scans Started",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:212",
-          "format": "none",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:213",
-          "format": "none",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "timeseries"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none",
           "unitScale": true
         },
         "overrides": []
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 89
+        "y": 95
       },
-      "hiddenSeries": false,
       "id": 101,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
       },
-      "percentage": false,
       "pluginVersion": "10.3.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "rate(minio_node_scanner_bucket_scans_finished{job=\"$scrape_jobs\"}[$__rate_interval])",
           "interval": "1m",
           "legendFormat": "[{{server}}]",
+          "range": true,
           "refId": "A"
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "Bucket Scans Finished",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:212",
-          "format": "none",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:213",
-          "format": "none",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "timeseries"
     },
     {
       "aliasColors": {},
@@ -4199,7 +4796,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 96
+        "y": 102
       },
       "hiddenSeries": false,
       "id": 79,
@@ -4295,7 +4892,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 96
+        "y": 102
       },
       "hiddenSeries": false,
       "id": 102,
@@ -4391,7 +4988,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 103
+        "y": 109
       },
       "hiddenSeries": false,
       "id": 103,
@@ -4514,8 +5111,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4532,7 +5128,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 103
+        "y": 109
       },
       "id": 104,
       "options": {
@@ -4612,8 +5208,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4630,7 +5225,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 110
+        "y": 116
       },
       "id": 83,
       "options": {
@@ -4689,7 +5284,7 @@
         "h": 7,
         "w": 4,
         "x": 12,
-        "y": 110
+        "y": 116
       },
       "hiddenSeries": false,
       "id": 105,
@@ -4785,7 +5380,7 @@
         "h": 7,
         "w": 4,
         "x": 16,
-        "y": 110
+        "y": 116
       },
       "hiddenSeries": false,
       "id": 85,
@@ -4908,8 +5503,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4926,7 +5520,7 @@
         "h": 7,
         "w": 4,
         "x": 20,
-        "y": 110
+        "y": 116
       },
       "id": 106,
       "options": {
@@ -5006,8 +5600,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -5045,7 +5638,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 117
+        "y": 123
       },
       "id": 87,
       "options": {
@@ -5075,7 +5668,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "increase(minio_node_drive_errors_availability{job=\"$scrape_jobs\"}[5m])",
+          "expr": "idelta(minio_node_drive_errors_availability{job=\"$scrape_jobs\"}[$__rate_interval])>=0",
           "interval": "1m",
           "legendFormat": "[{{server}}:{{drive}}]",
           "range": true,
@@ -5133,8 +5726,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -5172,7 +5764,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 117
+        "y": 123
       },
       "id": 107,
       "options": {
@@ -5202,7 +5794,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "increase(minio_node_drive_errors_timeout{job=\"$scrape_jobs\"}[5m])",
+          "expr": "idelta(minio_node_drive_errors_timeout{job=\"$scrape_jobs\"}[$__rate_interval])",
           "interval": "1m",
           "legendFormat": "[{{server}}:{{drive}}]",
           "range": true,
@@ -5235,8 +5827,7 @@
             "mode": "percentage",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -5249,7 +5840,7 @@
         "h": 5,
         "w": 4,
         "x": 0,
-        "y": 124
+        "y": 130
       },
       "id": 89,
       "links": [],
@@ -5314,7 +5905,7 @@
         "h": 5,
         "w": 4,
         "x": 4,
-        "y": 124
+        "y": 130
       },
       "hiddenSeries": false,
       "id": 90,
@@ -5413,7 +6004,7 @@
         "h": 5,
         "w": 4,
         "x": 8,
-        "y": 124
+        "y": 130
       },
       "hiddenSeries": false,
       "id": 91,
@@ -5511,7 +6102,7 @@
         "h": 5,
         "w": 6,
         "x": 12,
-        "y": 124
+        "y": 130
       },
       "hiddenSeries": false,
       "id": 92,
@@ -5606,10 +6197,10 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 6,
+        "h": 5,
         "w": 6,
         "x": 18,
-        "y": 124
+        "y": 130
       },
       "hiddenSeries": false,
       "id": 93,
@@ -5684,7 +6275,7 @@
       }
     }
   ],
-  "refresh": false,
+  "refresh": "",
   "schemaVersion": 39,
   "tags": [
     "minio"
@@ -5706,24 +6297,9 @@
             "selected": true,
             "text": "minio-prod",
             "value": "minio-prod"
-          },
-          {
-            "selected": false,
-            "text": "minio-perf",
-            "value": "minio-perf"
-          },
-          {
-            "selected": false,
-            "text": "minio-prod-hot2",
-            "value": "minio-prod-hot2"
-          },
-          {
-            "selected": false,
-            "text": "minio-prod-cold2",
-            "value": "minio-prod-cold2"
           }
         ],
-        "query": "minio-prod,minio-perf,minio-prod-hot2,minio-prod-cold2",
+        "query": "minio-prod",
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
@@ -5731,8 +6307,8 @@
     ]
   },
   "time": {
-    "from": "2024-07-02T08:40:04.558Z",
-    "to": "2024-07-02T22:59:54.123Z"
+    "from": "now-1h",
+    "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -5761,6 +6337,6 @@
   "timezone": "",
   "title": "MinIO Dashboard",
   "uid": "TgmJnqnnk",
-  "version": 39,
+  "version": 59,
   "weekStart": ""
 }

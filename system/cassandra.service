@@ -13,6 +13,11 @@ After=network.target
 Wants=cassandra_exporter.service
 
 [Service]
+CPUSchedulingPolicy=fifo
+CPUSchedulingPriority=99
+IOSchedulingClass=realtime
+IOSchedulingPriority=0
+
 PIDFile=/var/lib/cassandra/cassandra.pid
 User=cassandra
 Group=data
@@ -35,6 +40,7 @@ LimitNOFILE=100000
 LimitMEMLOCK=infinity
 LimitNPROC=32768
 LimitAS=infinity
+MemoryMax=90%
 Restart=no
 TimeoutStopSec=60
 TimeoutStartSec=60

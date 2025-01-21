@@ -64,13 +64,17 @@ fi
 
 echo "===== System ====="
 hostname; uname -a; uptime; echo 'Boot time :'; date -d @$(vmstat --stats | awk '/boot time/ {print $1}'); systemctl list-units --no-pager
+echo "scaling_governor=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)"
+echo "zone_reclaim_mode=$(cat /proc/sys/vm/zone_reclaim_mode)"
+echo "transparent_hugepage_defrag=$(cat /sys/kernel/mm/transparent_hugepage/defrag)"
+head /sys/block/*/queue/scheduler
 echo "===== CPU ====="
 lscpu
 echo "===== MEM ====="
 free -k
 lsmem
 echo "===== Disk ====="
-lsblk -o NAME,KNAME,MAJ:MIN,RM,SIZE,RO,TYPE,MOUNTPOINT
+lsblk -o NAME,KNAME,MAJ:MIN,RM,SIZE,RO,TYPE,UUID,LABEL,MOUNTPOINT
 lshw -class disk
 smartctl -a /dev/nvme6n1p1
 hdparm -i /dev/nvme6n1p1

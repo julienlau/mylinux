@@ -8,8 +8,7 @@ spec:
   containers:
     - name: my-tools
       imagePullPolicy: Always
-      #image: pepitedata/tools:focal
-      image: registry.gitlab.com/cleyrop-org/apps/cleyrop/backend/core/dataflow/dev:lighter-flow-poc
+      image: pepitedata/tools:focal
       command: ["tail", "-f", "/dev/null"]
       resources:
         requests:
@@ -18,8 +17,8 @@ spec:
         # limits:
         #   cpu: "500m"
         #   memory: "1G"
-  imagePullSecrets:
-    - name: all
-    - name: registry-gitlab
+  # imagePullSecrets:
+  #   - name: all
+  #   - name: registry-gitlab
   # nodeSelector:
   #   ibm-cloud.kubernetes.io/worker-pool-name: "default"
