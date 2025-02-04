@@ -17,7 +17,7 @@ spec:
           serviceAccountName: spark-sa
           containers:
           - name: delete-old-pods
-            image: pepitedata/delete-old-pods:edge
+            image: pepitedata/kube-delete-old-pods:edge
             imagePullPolicy: Always
             resources:
               requests: 
