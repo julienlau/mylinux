@@ -4,6 +4,8 @@ metadata:
   name: delete-old-pods
 spec:
   schedule: "*/10 * * * *"
+  failedJobsHistoryLimit: 2
+  successfulJobsHistoryLimit: 2
   jobTemplate:
     spec:
       template:
