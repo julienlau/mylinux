@@ -1,5 +1,5 @@
 # docker build --progress=plain -t pepitedata/kube-delete-old-pods:edge -f kube-delete-old-pods.dockerfile .
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 USER    root
 

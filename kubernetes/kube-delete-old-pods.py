@@ -1,12 +1,10 @@
 """
-- What : Apply a TTL logic to delete pods in the current namespace. The aim is to prevent resoures exhaustion (IP addressess).
-- Input parameters from environment variables:
+Apply a TTL logic to delete pods in the current namespace.
+Input parameters from environment variables:
     - MAX_AGE_HOURS: if a pod not in state (Running, Pending) has its creation time older than this, then delete it.
     - MAX_AGE_PENDING_HOURS: [optional] if a pod in state Pending has its creation time older than this, then delete it. Disabled by default.
     - MAX_AGE_SUCEEDED_HOURS: [optional] if a pod in state Suceeded has its creation time older than this, then delete it.
     - NAMESPACE: [optional] default to current namespace.
-- To be integrated to a container image including the packages : openssl python3 python3-requests python3-yaml python3-kubernetes python3-lxml
-- The cronjob running this pod, can be ran every hour with restartPolicy=Never and must use a service account with "*" permissions on pods of the current namespace.
 """
 
 from kubernetes import client, config
