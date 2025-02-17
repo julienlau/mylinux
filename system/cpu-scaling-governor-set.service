@@ -1,0 +1,13 @@
+# /etc/systemd/system/cpu-scaling-governor-set.service
+[Unit]
+Description=CPU frequency governor set to performance
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+User=root
+ExecStart=/bin/sh -c 'echo performance | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor'
+ExecStop=/bin/sh -c 'echo conservative | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor'
+
+[Install]
+WantedBy=multi-user.target
