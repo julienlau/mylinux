@@ -1398,35 +1398,35 @@ bash_prompt_shortener() {
 
 function kusage() {
     # Function returning resources usage on current kubernetes cluster
-    local node_count=0
-    local total_percent_cpu=0
-    local total_percent_mem=0
+        local node_count=0
+        local total_percent_cpu=0
+        local total_percent_mem=0
 
-    echo -e "NODE\t\t CPU_allocatable\t Memory_allocatable\t CPU_requests%\t Memory_requests%\t CPU_limits%\t Memory_limits%\t"
-    for n in $(kubectl get nodes --no-headers -o custom-columns=NAME:.metadata.name); do
+    echo "NODE\t\t CPU_allocatable\t Memory_allocatable\t CPU_requests%\t Memory_requests%\t CPU_limits%\t Memory_limits%\t"
+        for n in $(kubectl get nodes --no-headers -o custom-columns=NAME:.metadata.name); do
         local desc=$(kubectl describe node $n)
-        local abs_cpu=$(echo "$desc" | grep -A5 -E "Resource" | grep -E "cpu" | tr -d '(%)'| awk '{print $2}')
-        local percent_cpu=$(echo "$desc" | grep -A5 -E "Resource" | grep -E "cpu" | tr -d '(%)'| awk '{print $3}')
-        local node_cpu=$(echo "$desc" | grep -A5 -E "Allocatable:" | grep -E "cpu" | tr -d '(%)'| awk '{print $2}')
+        local abs_cpu=$(echo $desc | grep -A5 -E "Resource" | grep -E "cpu" | tr -d '(%)'| awk '{print $2}')
+                local percent_cpu=$(echo $desc | grep -A5 -E "Resource" | grep -E "cpu" | tr -d '(%)'| awk '{print $3}')
+        local node_cpu=$(echo $desc | grep -A5 -E "Allocatable:" | grep -E "cpu" | tr -d '(%)'| awk '{print $2}')
         local allocatable_cpu=$(echo $node_cpu $abs_cpu | tr -d 'mKi' | awk '{print int($1 - $2)}')
-        local percent_cpu_lim=$(echo "$desc" | grep -A5 -E "Resource" | grep -E "cpu" | tr -d '(%)'| awk '{print $5}')
-        local abs_mem=$(echo "$desc" | grep -A5 -E "Resource" | grep -E "memory" | tr -d '(%)'| awk '{print $2}')
-        local percent_mem=$(echo "$desc" | grep -A5 -E "Resource" | grep -E "memory" | tr -d '(%)'| awk '{print $3}')
-        local node_mem=$(echo "$desc" | grep -A5 -E "Capacity:" | grep -E "memory" | tr -d '(%)'| awk '{print $2}')
+        local percent_cpu_lim=$(echo $desc | grep -A5 -E "Resource" | grep -E "cpu" | tr -d '(%)'| awk '{print $5}')
+        local abs_mem=$(echo $desc | grep -A5 -E "Resource" | grep -E "memory" | tr -d '(%)'| awk '{print $2}')
+                local percent_mem=$(echo $desc | grep -A5 -E "Resource" | grep -E "memory" | tr -d '(%)'| awk '{print $3}')
+        local node_mem=$(echo $desc | grep -A5 -E "Capacity:" | grep -E "memory" | tr -d '(%)'| awk '{print $2}')
         local allocatable_mem=$(echo $node_mem $abs_mem | tr -d 'mKi' | awk '{print int($1 - $2)}')
-        local percent_mem_lim=$(echo "$desc" | grep -A5 -E "Resource" | grep -E "memory" | tr -d '(%)'| awk '{print $5}')
-        echo -e "$n\t $((${allocatable_cpu}/1000))\t\t\t $((${allocatable_mem}/1024/1024))Gi\t\t\t ${percent_cpu}%\t\t ${percent_mem}%\t\t\t ${percent_cpu_lim}%\t\t ${percent_mem_lim}%\t"
+        local percent_mem_lim=$(echo $desc | grep -A5 -E "Resource" | grep -E "memory" | tr -d '(%)'| awk '{print $5}')
+                echo "$n\t $((${allocatable_cpu}/1000))\t\t\t $((${allocatable_mem}/1024/1024))Gi\t\t\t ${percent_cpu}%\t\t ${percent_mem}%\t\t\t ${percent_cpu_lim}%\t\t ${percent_mem_lim}%\t"
 
-        node_count=$((node_count + 1))
-        total_percent_cpu=$((total_percent_cpu + percent_cpu))
-        total_percent_mem=$((total_percent_mem + percent_mem))
-    done
+                node_count=$((node_count + 1))
+                total_percent_cpu=$((total_percent_cpu + percent_cpu))
+                total_percent_mem=$((total_percent_mem + percent_mem))
+        done
 
-    local avg_percent_cpu=$((total_percent_cpu / node_count))
-    local avg_percent_mem=$((total_percent_mem / node_count))
+        local avg_percent_cpu=$((total_percent_cpu / node_count))
+        local avg_percent_mem=$((total_percent_mem / node_count))
 
-    echo -e "Average usage (requests) : ${avg_percent_cpu}% CPU, ${avg_percent_mem}% memory."
-}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+        echo "Average usage (requests) : ${avg_percent_cpu}% CPU, ${avg_percent_mem}% memory."
+}                                                                                                                                                                                                                                                                                
 
 unalias mycolor 2>/dev/null
 mycolor () {
@@ -1984,10 +1984,12 @@ alias hrm="hdfs dfs -rm"
 alias hcp="hdfs dfs -cp"
 alias hmv="hdfs dfs -mv"
 alias hschema="hadoop jar /opt/tools/latest/depjars/parquet-tools-1.9.0.jar schema"
-alias kc=kubectl
 alias ka=kubeadm
 alias k=kubectl
-alias kubectx="kubectl ctx"
+alias kc="kubectl config current-context"
+alias kctx="kubectl config use-context"
+alias kctxs="kubectl config get-contexts"
+alias kns="kubectl config set-context --current --namespace"
 alias kk="kubectl -n \$KUBE_NS"
 # for spark-submit vanilla
 alias sparkclean="kk get pods --field-selector=status.phase!=Running | awk '{print \$1}' | grep -v '^NAME$' | xargs kubectl delete pods -n \${KUBE_NS}"
@@ -2012,6 +2014,8 @@ alias kpvcs="kubectl get pods --all-namespaces -o=json | jq -c '.items[] | {pod:
 alias gitlog="git log | head -30; git slog | head"
 alias gitfp="git fetch --all ; git pull"
 alias gitfps='list=$(find . -type d -name ".git" | sed "s/.git//g"); cwd=$(pwd); for d in $(echo $list) ; do cd $cwd/$d && pwd && git fetch -t && git pull && cd $cwd; done'
+alias gitprune="git reflog expire --expire=now --all; git gc --aggressive --prune=now"
+
 alias alarm="vlc ~/alarm.mp3"
 #------------------------------------------------------------------------------
 # Export
@@ -2113,6 +2117,7 @@ exporte CPLUS_INCLUDE_PATH=/usr/include/gdal
 exporte C_INCLUDE_PATH=/usr/include/gdal
 export DOCKER_CONFIG=${DOCKER_CONFIG:-~/.docker}
 
+exporte PATH=$PATH:/var/lib/flatpak/exports/share
 
 # Source azure env
 if [ -f ~/azure.completion.sh ]; then
@@ -2156,8 +2161,8 @@ fi
 # yum install make gcc kernel-headers kernel-devel perl dkms bzip2 curl wget jq nmon sysstat htop vim firewalld git
 
 # sudo add-apt-repository ppa:ubuntugis/ppa
-# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjdk-8-jdk openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa skopeo alsa-tools tcpick fzf ripgrep v4l-utils libcairo2-dev pkg-config python3-dev libgirepository1.0-dev
-# sudo apt-get install bpfcc-tools libbpf-tools linux-headers-$(uname -r) # xfsslower
+# sudo apt install gnome-clocks chrony curl baobab ncdu gnuplot python3-pip python3-dev jq exfat-utils pidgin git git-cvs gitg lrzip figlet emacs nano nmap meld libjpeg62 libreadline5 terminator tilix doxygen fakeroot clementine bzr fossil mercurial apache2-utils hexchat dstat htop nmon atop iotop sysstat nethogs gdb restic rclone tcpdump iptraf iperf fio sysbench mtr xdotool xsel ghex lame fbreader ecryptfs-utils openjfx libopenjfx-jni libjemalloc-dev vlc libavfilter-dev libsecret-1-0 libsecret-1-dev ethtool linux-tools-common linux-tools-generic linux-cloud-tools-generic libjemalloc2 tuna hwloc pulseeffects apt-transport-https guvcview kazam gnome-tweaks gnome-shell-extensions numactl duf bat zsh exa skopeo alsa-tools tcpick fzf ripgrep v4l-utils libcairo2-dev pkg-config python3-dev libgirepository1.0-dev
+# sudo apt-get install bpfcc-tools libbpf-tools linux-headers-$(uname -r) # xfsslower nvme-cli
 # sudo apt install cheese guvcview okular
 # sudo apt install clamav clamtk clamav-daemon inotify-tools
 # sudo apt install prometheus-node-exporter prometheus prometheus-alertmanager 
