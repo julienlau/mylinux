@@ -6,7 +6,7 @@ metadata:
   labels:
       app: fio
 spec:
-  storageClassName: sc-test
+  storageClassName: ceph1-rwo-gp-now-delete
   accessModes:
     - ReadWriteOnce
   resources:
@@ -141,8 +141,8 @@ spec:
       labels:
         app: fio
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: 10.0.1.7
+      #nodeSelector:
+        #kubernetes.io/hostname: 10.0.1.7
         #ibm-cloud.kubernetes.io/machine-type: cx2.32x64
       containers:
       - name: fio
@@ -153,7 +153,8 @@ spec:
         - -c
         - |
           echo "run : fio /opt/fio.cfg"
-          cd /mnt && fio /opt/fio.cfg
+          cd /mnt && sudo fio /opt/fio.cfg | sudo tee fio.log
+          sleep 600
         volumeMounts:
         - mountPath: /opt/
           name: fio-config-volume
