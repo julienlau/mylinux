@@ -27,6 +27,10 @@ scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
   - job_name: 'prometheus'
 
+    # Override the global default and scrape targets from this job every 5 seconds.
+    scrape_interval: 60s
+    scrape_timeout: 60s
+
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
 
@@ -37,8 +41,8 @@ scrape_configs:
     # If prometheus-node-exporter is installed, grab stats about the local
     # machine by default.
     static_configs:
-      - targets: ['host.docker.internal:9100', 'localhost:9100', 'vm1:9100', 'vm2:9100', 'vm3:9100', 'nas:9100']
+      - targets: ['localhost:9100', 'einstein:9100', 'vm1:9100', 'vm2:9100', 'vm3:9100', 'vm4:9100', 'vm5:9100', 'nas:9100']
   - job_name: cassandra_exporter
     static_configs:
-      - targets: ['host.docker.internal:9105','localhost:9105', 'vm1:9105', 'vm2:9105', 'vm3:9105']
+      - targets: ['localhost:9105', 'vm1:9105', 'vm2:9105', 'vm3:9105']
 
