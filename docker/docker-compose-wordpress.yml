@@ -1,0 +1,56 @@
+# Project: wp WordPress Stack
+# Description: WordPress + MariaDB + phpMyAdmin, with custom ports for local development
+# docker compose -f docker-compose-wordpress.yml -p wp up -d
+
+services:
+  db:
+    image: mariadb:11
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: "${WP_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - wpnet
+
+  wordpress:
+    image: wordpress:php8.2-fpm
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: "${WP_PASSWORD}"
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - wpnet
+    ports:
+      - "18080:80"
+      - "9000:9000"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - "18081:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+    depends_on:
+      - db
+    networks:
+      - wpnet
+
+volumes:
+  db_data:
+  wordpress_data:
+
+networks:
+  wpnet:
+    driver: bridge
