@@ -11,3 +11,14 @@ ExecStop=/bin/sh -c 'echo conservative | tee /sys/devices/system/cpu/cpu*/cpufre
 
 [Install]
 WantedBy=multi-user.target
+
+# ALTERNATIVE 
+# sudo apt install cpufrequtils
+# echo GOVERNOR="performance" |sudo tee /etc/init.d/cpufrequtils
+# sudo systemctl daemon-reload
+# sudo systemctl restart cpufrequtils.service
+# sudo systemctl enable cpufrequtils.service
+
+# ALTERNATIVE Centos/Redhat
+# sudo yum install tuned
+# sudo tuned-adm profile latency-performance
