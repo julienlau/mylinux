@@ -20,7 +20,7 @@ metadata:
   name: delete-old-pods
 subjects:
   - kind: ServiceAccount
-    name: podclean
+    name: delete-old-pods
 roleRef:
   kind: Role
   name: delete-old-pods
