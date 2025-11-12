@@ -1,3 +1,31 @@
+# for ns in $(kubectl get ns -o custom-columns=NAME:.metadata.name --no-headers 2>/dev/null | grep -v -e "^kube-" -e "-system$" -e default); do kubectl -n $ns apply -f ./cron-delete-old-pods.yaml; done
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: delete-old-pods
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: delete-old-pods
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: delete-old-pods
+subjects:
+  - kind: ServiceAccount
+    name: podclean
+roleRef:
+  kind: Role
+  name: delete-old-pods
+  apiGroup: rbac.authorization.k8s.io
+---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -14,7 +42,7 @@ spec:
             app.kubernetes.io/name: delete-old-pods
         spec:
           restartPolicy: Never
-          serviceAccountName: spark-sa
+          serviceAccountName: delete-old-pods
           containers:
           - name: delete-old-pods
             image: pepitedata/kube-delete-old-pods:edge
