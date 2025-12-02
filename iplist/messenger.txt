@@ -1,3 +1,5 @@
+telegram.org
+signal.org
 discord.com
 discord.app
 discord.gg
