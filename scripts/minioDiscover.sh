@@ -1,19 +1,24 @@
 #!/bin/bash
 
-minio=local
+minioalias=local
 mc_user=minio-client
+mc="mc"
 #set -e
 shopt -s expand_aliases
 
 for i in "$@"; do
     case $i in
         -a=*|--alias=*)
-            minio="${i#*=}"
+            minioalias="${i#*=}"
             shift # past argument=value
             ;;
         -u=*|--user=*)
             mc_user="${i#*=}"
             shift # past argument=value
+            ;;
+        --sudo)
+            sudo=1
+            shift
             ;;
         -*|--*)
             echo "Unknown option $i"
@@ -28,7 +33,11 @@ for i in "$@"; do
 done
 
 date
-testsudo
+
+if [[ "$sudo" == "1" ]]; then
+    mc="sudo -u ${mc_user} mc"
+    testsudo
+fi
 
 echo '-----------------------------'
 echo HOSTNAME=$HOSTNAME
@@ -80,17 +89,17 @@ echo "===== /lib/systemd/system/minio.service ====="
 cat /lib/systemd/system/minio.service || echo ""
 echo "===== /etc/default/minio ====="
 grep -v -i password /etc/default/minio || echo ""
-echo "===== sudo -u ${mc_user} mc admin info $minio ====="
-sudo -u ${mc_user} mc admin info $minio
-echo "===== sudo -u ${mc_user} mc admin config export $minio ====="
-sudo -u ${mc_user} mc admin config export $minio
-echo "===== sudo -u ${mc_user} mc admin scanner info $minio --interval 10 ====="
-sudo -u ${mc_user} mc admin scanner info $minio --interval 10  -q -n 1 --no-color 
-echo "===== sudo -u ${mc_user} mc admin info --json $minio ====="
-sudo -u ${mc_user} mc admin info --json $minio
-echo "===== sudo -u ${mc_user} mc ilm tier info $minio ====="
-sudo -u ${mc_user} mc ilm tier info $minio
-echo "===== sudo -u ${mc_user} mc ilm tier ls $minio ====="
-sudo -u ${mc_user} mc ilm tier ls $minio
+echo "===== ${mc} admin info $minioalias ====="
+${mc} admin info $minioalias
+echo "===== ${mc} admin config export $minioalias ====="
+${mc} admin config export $minioalias
+echo "===== ${mc} admin scanner info $minioalias --interval 10 ====="
+${mc} admin scanner info $minioalias --interval 10  -q -n 1 --no-color
+echo "===== ${mc} admin info --json $minioalias ====="
+${mc} admin info --json $minioalias
+echo "===== ${mc} ilm tier info $minioalias ====="
+${mc} ilm tier info $minioalias
+echo "===== ${mc} ilm tier ls $minioalias ====="
+${mc} ilm tier ls $minioalias
 echo "===== timeout 3 xfsslower-bpfcc 1 ====="
 timeout 3 xfsslower-bpfcc 1
