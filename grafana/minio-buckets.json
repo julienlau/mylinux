@@ -26,7 +26,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 19237,
   "graphTooltip": 0,
-  "id": 21,
+  "id": 66,
   "links": [
     {
       "icon": "external link",
@@ -60,7 +60,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unitScale": true
         },
         "overrides": []
       },
@@ -71,6 +72,7 @@
         "y": 0
       },
       "id": 52,
+      "links": [],
       "options": {
         "displayMode": "basic",
         "maxVizHeight": 300,
@@ -90,7 +92,7 @@
         "text": {},
         "valueMode": "color"
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "10.3.1",
       "targets": [
         {
           "datasource": {
@@ -132,7 +134,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unitScale": true
         },
         "overrides": []
       },
@@ -143,6 +146,7 @@
         "y": 0
       },
       "id": 53,
+      "links": [],
       "options": {
         "displayMode": "basic",
         "maxVizHeight": 300,
@@ -162,7 +166,7 @@
         "text": {},
         "valueMode": "color"
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "10.3.1",
       "targets": [
         {
           "datasource": {
@@ -202,7 +206,8 @@
             }
           },
           "mappings": [],
-          "unit": "short"
+          "unit": "short",
+          "unitScale": true
         },
         "overrides": []
       },
@@ -232,7 +237,6 @@
           "values": false
         },
         "tooltip": {
-          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -309,7 +313,8 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "short",
+          "unitScale": true
         },
         "overrides": []
       },
@@ -334,7 +339,6 @@
           "sortDesc": true
         },
         "tooltip": {
-          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -412,7 +416,8 @@
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "reqps",
+          "unitScale": true
         },
         "overrides": [
           {
@@ -482,7 +487,6 @@
           "showLegend": true
         },
         "tooltip": {
-          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -563,7 +567,8 @@
               }
             ]
           },
-          "unit": "binBps"
+          "unit": "binBps",
+          "unitScale": true
         },
         "overrides": [
           {
@@ -633,7 +638,6 @@
           "showLegend": true
         },
         "tooltip": {
-          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -714,7 +718,8 @@
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "reqps",
+          "unitScale": true
         },
         "overrides": [
           {
@@ -784,7 +789,6 @@
           "showLegend": true
         },
         "tooltip": {
-          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -865,7 +869,8 @@
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "reqps",
+          "unitScale": true
         },
         "overrides": [
           {
@@ -935,7 +940,6 @@
           "showLegend": true
         },
         "tooltip": {
-          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -1016,7 +1020,8 @@
               }
             ]
           },
-          "unit": "bytes"
+          "unit": "bytes",
+          "unitScale": true
         },
         "overrides": [
           {
@@ -1066,7 +1071,6 @@
           "showLegend": true
         },
         "tooltip": {
-          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -1147,7 +1151,8 @@
               }
             ]
           },
-          "unit": "bytes"
+          "unit": "bytes",
+          "unitScale": true
         },
         "overrides": [
           {
@@ -1197,7 +1202,6 @@
           "showLegend": true
         },
         "tooltip": {
-          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -1278,7 +1282,8 @@
               }
             ]
           },
-          "unit": "bytes"
+          "unit": "bytes",
+          "unitScale": true
         },
         "overrides": [
           {
@@ -1328,7 +1333,6 @@
           "showLegend": true
         },
         "tooltip": {
-          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -1409,7 +1413,8 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "short",
+          "unitScale": true
         },
         "overrides": [
           {
@@ -1459,7 +1464,6 @@
           "showLegend": true
         },
         "tooltip": {
-          "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
@@ -1496,7 +1500,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "semi-dark-red",
@@ -1515,6 +1520,7 @@
         "y": 25
       },
       "id": 58,
+      "links": [],
       "options": {
         "displayMode": "basic",
         "maxVizHeight": 300,
@@ -1568,7 +1574,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "semi-dark-red",
@@ -1587,6 +1594,7 @@
         "y": 25
       },
       "id": 59,
+      "links": [],
       "options": {
         "displayMode": "basic",
         "maxVizHeight": 300,
@@ -2369,29 +2377,29 @@
       {
         "current": {
           "selected": false,
-          "text": "minio-prod-bucket",
-          "value": "minio-prod-bucket"
+          "text": "minio-prod",
+          "value": "minio-prod"
         },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(minio_cluster_nodes_online_total,job)",
         "hide": 0,
         "includeAll": false,
         "multi": false,
         "name": "scrape_jobs",
-        "options": [
-          {
-            "selected": true,
-            "text": "minio-prod-bucket",
-            "value": "minio-prod-bucket"
-          },
-          {
-            "selected": false,
-            "text": "minio-perf-bucket",
-            "value": "minio-perf-bucket"
-          }
-        ],
-        "query": "minio-prod-bucket,minio-perf-bucket",
-        "queryValue": "",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(minio_cluster_nodes_online_total,job)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
         "skipUrlSync": false,
-        "type": "custom"
+        "sort": 0,
+        "type": "query"
       },
       {
         "current": {
@@ -2426,7 +2434,6 @@
     "from": "now-1h",
     "to": "now"
   },
-  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {
     "refresh_intervals": [
       "10s",
@@ -2454,6 +2461,6 @@
   "timezone": "",
   "title": "MinIO Bucket Dashboard",
   "uid": "TgmJnqnnk2",
-  "version": 1,
+  "version": 28,
   "weekStart": ""
 }
