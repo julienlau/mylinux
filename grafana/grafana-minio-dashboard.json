@@ -42,39 +42,6 @@
   "panels": [
     {
       "datasource": {
-        "type": "datasource",
-        "uid": "grafana"
-      },
-      "description": "",
-      "gridPos": {
-        "h": 2,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "id": 118,
-      "links": [
-        {
-          "targetBlank": true,
-          "title": "",
-          "url": "https://k8s/grafana/d/TgmJnqnnl/minio-dashboard-from-thanos"
-        }
-      ],
-      "options": {
-        "code": {
-          "language": "plaintext",
-          "showLineNumbers": false,
-          "showMiniMap": false
-        },
-        "content": "<a href=\"https://k8s/grafana/d/TgmJnqnnl/minio-dashboard-from-thanos\" target=\"_blank\"> Merci de modifier si necessaire la variable ci dessus pour afficher la vue souhaitée: scrape_jobs...</a>",
-        "mode": "html"
-      },
-      "pluginVersion": "10.3.1",
-      "title": "Historical view 30d/default",
-      "type": "text"
-    },
-    {
-      "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
@@ -122,7 +89,7 @@
         "h": 6,
         "w": 3,
         "x": 0,
-        "y": 2
+        "y": 0
       },
       "id": 112,
       "links": [],
@@ -253,7 +220,7 @@
         "h": 6,
         "w": 3,
         "x": 3,
-        "y": 2
+        "y": 0
       },
       "id": 111,
       "links": [],
@@ -369,7 +336,7 @@
         "h": 6,
         "w": 4,
         "x": 6,
-        "y": 2
+        "y": 0
       },
       "id": 50,
       "interval": "1m",
@@ -472,7 +439,7 @@
         "h": 3,
         "w": 4,
         "x": 10,
-        "y": 2
+        "y": 0
       },
       "id": 110,
       "links": [],
@@ -583,7 +550,7 @@
         "h": 3,
         "w": 3,
         "x": 14,
-        "y": 2
+        "y": 0
       },
       "id": 61,
       "links": [],
@@ -666,7 +633,7 @@
         "h": 3,
         "w": 3,
         "x": 17,
-        "y": 2
+        "y": 0
       },
       "id": 65,
       "links": [],
@@ -749,7 +716,7 @@
         "h": 3,
         "w": 3,
         "x": 20,
-        "y": 2
+        "y": 0
       },
       "id": 64,
       "links": [],
@@ -836,7 +803,7 @@
         "h": 3,
         "w": 4,
         "x": 10,
-        "y": 5
+        "y": 3
       },
       "id": 109,
       "links": [],
@@ -932,7 +899,7 @@
         "h": 3,
         "w": 3,
         "x": 14,
-        "y": 5
+        "y": 3
       },
       "id": 62,
       "links": [],
@@ -999,6 +966,7 @@
               }
             ]
           },
+          "unit": "short",
           "unitScale": true
         },
         "overrides": []
@@ -1007,7 +975,7 @@
         "h": 9,
         "w": 7,
         "x": 17,
-        "y": 5
+        "y": 3
       },
       "id": 52,
       "links": [],
@@ -1039,7 +1007,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by(range)(minio_cluster_objects_size_distribution{job=\"$scrape_jobs\"})",
+          "expr": "max by(range)(minio_cluster_objects_size_distribution{job=\"$scrape_jobs\"})",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1093,7 +1061,7 @@
         "h": 2,
         "w": 3,
         "x": 0,
-        "y": 8
+        "y": 6
       },
       "id": 53,
       "links": [],
@@ -1175,7 +1143,7 @@
         "h": 2,
         "w": 3,
         "x": 3,
-        "y": 8
+        "y": 6
       },
       "id": 9,
       "links": [],
@@ -1264,7 +1232,7 @@
         "h": 3,
         "w": 2,
         "x": 6,
-        "y": 8
+        "y": 6
       },
       "id": 66,
       "links": [],
@@ -1343,7 +1311,7 @@
         "h": 3,
         "w": 1,
         "x": 8,
-        "y": 8
+        "y": 6
       },
       "id": 113,
       "links": [],
@@ -1479,7 +1447,7 @@
         "h": 6,
         "w": 8,
         "x": 9,
-        "y": 8
+        "y": 6
       },
       "id": 70,
       "options": {
@@ -1578,7 +1546,7 @@
         "h": 2,
         "w": 3,
         "x": 0,
-        "y": 10
+        "y": 8
       },
       "id": 69,
       "links": [],
@@ -1666,7 +1634,7 @@
         "h": 2,
         "w": 3,
         "x": 3,
-        "y": 10
+        "y": 8
       },
       "id": 78,
       "links": [],
@@ -1757,7 +1725,7 @@
         "h": 3,
         "w": 3,
         "x": 6,
-        "y": 11
+        "y": 9
       },
       "id": 44,
       "links": [],
@@ -1830,7 +1798,7 @@
         "h": 2,
         "w": 3,
         "x": 0,
-        "y": 12
+        "y": 10
       },
       "id": 80,
       "links": [],
@@ -1905,7 +1873,7 @@
         "h": 2,
         "w": 3,
         "x": 3,
-        "y": 12
+        "y": 10
       },
       "id": 81,
       "links": [],
@@ -2015,7 +1983,7 @@
         "h": 6,
         "w": 9,
         "x": 0,
-        "y": 14
+        "y": 12
       },
       "id": 68,
       "options": {
@@ -2162,7 +2130,7 @@
         "h": 6,
         "w": 8,
         "x": 9,
-        "y": 14
+        "y": 12
       },
       "id": 63,
       "options": {
@@ -2301,7 +2269,7 @@
         "h": 6,
         "w": 7,
         "x": 17,
-        "y": 14
+        "y": 12
       },
       "id": 108,
       "links": [],
@@ -2444,7 +2412,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 20
+        "y": 18
       },
       "id": 60,
       "options": {
@@ -2582,7 +2550,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 20
+        "y": 18
       },
       "id": 86,
       "options": {
@@ -2726,7 +2694,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 30
+        "y": 28
       },
       "id": 117,
       "options": {
@@ -2857,7 +2825,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 30
+        "y": 28
       },
       "id": 88,
       "options": {
@@ -2985,7 +2953,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 40
+        "y": 38
       },
       "id": 95,
       "options": {
@@ -3113,7 +3081,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 40
+        "y": 38
       },
       "id": 97,
       "options": {
@@ -3226,7 +3194,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 51
+        "y": 49
       },
       "id": 114,
       "links": [],
@@ -3348,7 +3316,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 51
+        "y": 49
       },
       "id": 115,
       "links": [],
@@ -3507,7 +3475,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 57
+        "y": 55
       },
       "id": 17,
       "links": [],
@@ -3649,7 +3617,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 57
+        "y": 55
       },
       "id": 84,
       "options": {
@@ -3677,10 +3645,10 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (instance) (increase(minio_heal_objects_heal_total{job=\"$scrape_jobs\"}[5m]))",
+          "expr": "sum by (instance) (increase(minio_heal_objects_heal_total{job=\"$scrape_jobs\"}[1h]))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Obj/s healed in current self heal run",
+          "legendFormat": "Obj/h healed in current self heal run",
           "range": true,
           "refId": "A"
         },
@@ -3691,10 +3659,10 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (instance) (increase(minio_heal_objects_error_total{job=\"$scrape_jobs\"}[5m]))",
+          "expr": "sum by (instance) (increase(minio_heal_objects_error_total{job=\"$scrape_jobs\"}[1h]))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Obj/s Heal errors in current self heal run",
+          "legendFormat": "Obj/h Heal errors in current self heal run",
           "range": true,
           "refId": "B"
         },
@@ -3705,10 +3673,10 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (instance) (increase(minio_heal_objects_total{job=\"$scrape_jobs\"}[5m])) ",
+          "expr": "sum by (instance) (increase(minio_heal_objects_total{job=\"$scrape_jobs\"}[1h])) ",
           "hide": false,
           "interval": "",
-          "legendFormat": "Obj/s scanned in current self heal run",
+          "legendFormat": "Obj/h scanned in current self heal run",
           "range": true,
           "refId": "C"
         }
@@ -3780,7 +3748,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 67
+        "y": 65
       },
       "id": 119,
       "options": {
@@ -3878,7 +3846,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 67
+        "y": 65
       },
       "id": 120,
       "options": {
@@ -3935,7 +3903,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 77
+        "y": 75
       },
       "hiddenSeries": false,
       "id": 77,
@@ -4029,7 +3997,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 77
+        "y": 75
       },
       "hiddenSeries": false,
       "id": 76,
@@ -4123,7 +4091,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 86
+        "y": 84
       },
       "hiddenSeries": false,
       "id": 74,
@@ -4263,7 +4231,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 86
+        "y": 84
       },
       "id": 82,
       "options": {
@@ -4397,7 +4365,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 94
+        "y": 92
       },
       "id": 11,
       "links": [],
@@ -4549,7 +4517,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 94
+        "y": 92
       },
       "id": 8,
       "links": [],
@@ -4608,7 +4576,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 103
+        "y": 101
       },
       "hiddenSeries": false,
       "id": 73,
@@ -4742,8 +4710,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4760,7 +4727,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 103
+        "y": 101
       },
       "id": 98,
       "options": {
@@ -4842,8 +4809,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4860,7 +4826,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 110
+        "y": 108
       },
       "id": 75,
       "options": {
@@ -4940,8 +4906,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4958,7 +4923,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 110
+        "y": 108
       },
       "id": 99,
       "options": {
@@ -5040,8 +5005,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -5058,7 +5022,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 117
+        "y": 115
       },
       "id": 100,
       "options": {
@@ -5145,8 +5109,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -5163,7 +5126,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 117
+        "y": 115
       },
       "id": 101,
       "options": {
@@ -5223,7 +5186,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 124
+        "y": 122
       },
       "hiddenSeries": false,
       "id": 79,
@@ -5319,7 +5282,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 124
+        "y": 122
       },
       "hiddenSeries": false,
       "id": 102,
@@ -5415,7 +5378,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 131
+        "y": 129
       },
       "hiddenSeries": false,
       "id": 103,
@@ -5538,8 +5501,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -5556,7 +5518,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 131
+        "y": 129
       },
       "id": 104,
       "options": {
@@ -5636,8 +5598,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -5654,7 +5615,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 138
+        "y": 136
       },
       "id": 83,
       "options": {
@@ -5713,7 +5674,7 @@
         "h": 7,
         "w": 4,
         "x": 12,
-        "y": 138
+        "y": 136
       },
       "hiddenSeries": false,
       "id": 105,
@@ -5809,7 +5770,7 @@
         "h": 7,
         "w": 4,
         "x": 16,
-        "y": 138
+        "y": 136
       },
       "hiddenSeries": false,
       "id": 85,
@@ -5932,8 +5893,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -5950,7 +5910,7 @@
         "h": 7,
         "w": 4,
         "x": 20,
-        "y": 138
+        "y": 136
       },
       "id": 106,
       "options": {
@@ -6030,8 +5990,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -6069,7 +6028,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 145
+        "y": 143
       },
       "id": 87,
       "options": {
@@ -6157,8 +6116,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -6196,7 +6154,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 145
+        "y": 143
       },
       "id": 107,
       "options": {
@@ -6259,8 +6217,7 @@
             "mode": "percentage",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -6273,7 +6230,7 @@
         "h": 5,
         "w": 4,
         "x": 0,
-        "y": 152
+        "y": 150
       },
       "id": 89,
       "links": [],
@@ -6338,7 +6295,7 @@
         "h": 5,
         "w": 4,
         "x": 4,
-        "y": 152
+        "y": 150
       },
       "hiddenSeries": false,
       "id": 90,
@@ -6437,7 +6394,7 @@
         "h": 5,
         "w": 4,
         "x": 8,
-        "y": 152
+        "y": 150
       },
       "hiddenSeries": false,
       "id": 91,
@@ -6535,7 +6492,7 @@
         "h": 5,
         "w": 6,
         "x": 12,
-        "y": 152
+        "y": 150
       },
       "hiddenSeries": false,
       "id": 92,
@@ -6633,7 +6590,7 @@
         "h": 5,
         "w": 6,
         "x": 18,
-        "y": 152
+        "y": 150
       },
       "hiddenSeries": false,
       "id": 93,
@@ -6735,9 +6692,9 @@
       },
       {
         "current": {
-          "selected": false,
-          "text": "minio-test",
-          "value": "minio-test"
+          "selected": true,
+          "text": "minio",
+          "value": "minio"
         },
         "datasource": {
           "type": "prometheus",
@@ -6794,6 +6751,6 @@
   "timezone": "",
   "title": "MinIO Dashboard",
   "uid": "TgmJnqnnk",
-  "version": 96,
+  "version": 97,
   "weekStart": ""
 }
